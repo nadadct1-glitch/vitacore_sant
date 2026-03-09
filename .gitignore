@@ -1,0 +1,17 @@
+# Fichiers système Mac
+.DS_Store
+
+# Fichiers système Windows
+Thumbs.db
+desktop.ini
+
+# Environnement Python
+.env
+__pycache__/
+*.pyc
+venv/
+env/
+
+# Base de données locale
+*.db
+*.sqlite

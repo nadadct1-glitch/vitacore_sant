@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard — VitaCore</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        :root {
+            --bg: #0a0a0a;
+            --bg2: #111;
+            --bgc: #161616;
+            --bgch: #1e1e1e;
+            --acc: #c8ff00;
+            --acc-dim: rgba(200, 255, 0, .12);
+            --acc-brd: rgba(200, 255, 0, .3);
+            --txt: #f0f0f0;
+            --txt2: #888;
+            --txt3: #444;
+            --brd: #222;
+            --danger: #ff4d4d;
+            --warning: #ffaa00;
+            --success: #00d68f;
+            --info: #0095ff;
+            --r-sm: 8px;
+            --r-md: 14px;
+            --r-lg: 20px;
+            --r-xl: 28px;
+            --tr: all .22s cubic-bezier(.4, 0, .2, 1);
+            --ff: 'Syne', sans-serif;
+            --fb: 'DM Sans', sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            font-family: var(--fb);
+            background: var(--bg);
+            color: var(--txt);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg2)
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--brd);
+            border-radius: 3px
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--acc)
+        }
+
+        /* ── NAVBAR ── */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 28px;
+            background: rgba(10, 10, 10, .88);
+            backdrop-filter: blur(18px);
+            border-bottom: 1px solid var(--brd)
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-family: var(--ff);
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--txt);
+            text-decoration: none
+        }
+
+        .brand-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--acc);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--acc)
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--acc);
+            color: #000;
+            font-weight: 800;
+            font-size: .82rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-family: var(--ff)
+        }
+
+        /* ── LAYOUT ── */
+        .layout {
+            display: flex;
+            min-height: 100vh;
+            padding-top: 73px
+        }
+
+        .sidebar {
+            width: 250px;
+            min-height: calc(100vh - 73px);
+            background: var(--bg2);
+            border-right: 1px solid var(--brd);
+            padding: 24px 14px;
+            position: fixed;
+            top: 73px;
+            left: 0;
+            bottom: 0;
+            overflow-y: auto
+        }
+
+        .sb-sec {
+            margin-bottom: 28px
+        }
+
+        .sb-title {
+            font-size: .67rem;
+            font-weight: 700;
+            color: var(--txt3);
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            margin-bottom: 8px;
+            padding: 0 8px
+        }
+
+        .sb-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: var(--r-sm);
+            color: var(--txt2);
+            text-decoration: none;
+            font-size: .875rem;
+            font-weight: 500;
+            transition: var(--tr);
+            margin-bottom: 2px
+        }
+
+        .sb-link:hover {
+            color: var(--txt);
+            background: var(--bgc)
+        }
+
+        .sb-link.active {
+            color: var(--acc);
+            background: var(--acc-dim);
+            border: 1px solid var(--acc-brd)
+        }
+
+        .main {
+            margin-left: 250px;
+            flex: 1;
+            padding: 32px
+        }
+
+        /* ── CARDS ── */
+        .card {
+            background: var(--bgc);
+            border: 1px solid var(--brd);
+            border-radius: var(--r-lg);
+            padding: 22px;
+            transition: var(--tr)
+        }
+
+        .card:hover {
+            border-color: var(--acc-brd)
+        }
+
+        .card-acc {
+            border-color: var(--acc-brd);
+            box-shadow: 0 0 28px rgba(200, 255, 0, .08)
+        }
+
+        /* ── BUTTONS ── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 10px 20px;
+            border-radius: var(--r-md);
+            border: none;
+            cursor: pointer;
+            font-family: var(--fb);
+            font-weight: 600;
+            font-size: .875rem;
+            text-decoration: none;
+            transition: var(--tr)
+        }
+
+        .btn-primary {
+            background: var(--acc);
+            color: #000;
+            box-shadow: 0 4px 18px rgba(200, 255, 0, .25)
+        }
+
+        .btn-primary:hover {
+            background: #d4ff33;
+            transform: translateY(-1px)
+        }
+
+        .btn-secondary {
+            background: var(--bgc);
+            color: var(--txt);
+            border: 1px solid var(--brd)
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--acc);
+            color: var(--acc)
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--txt2)
+        }
+
+        .btn-ghost:hover {
+            color: var(--acc);
+            background: var(--acc-dim)
+        }
+
+        .btn-sm {
+            padding: 7px 14px;
+            font-size: .8rem
+        }
+
+        /* ── STATS GRID ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 22px
+        }
+
+        .stat {
+            background: var(--bgc);
+            border: 1px solid var(--brd);
+            border-radius: var(--r-lg);
+            padding: 18px;
+            transition: var(--tr)
+        }
+
+        .stat:hover {
+            border-color: var(--acc-brd);
+            transform: translateY(-2px)
+        }
+
+        .stat-lbl {
+            font-size: .72rem;
+            color: var(--txt3);
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            margin-bottom: 6px
+        }
+
+        .stat-val {
+            font-family: var(--ff);
+            font-size: 1.8rem;
+            font-weight: 800
+        }
+
+        .stat-val.acc {
+            color: var(--acc)
+        }
+
+        .stat-sub {
+            font-size: .75rem;
+            color: var(--txt2);
+            margin-top: 3px
+        }
+
+        /* ── SCORE HERO ── */
+        .score-hero {
+            background: var(--bgc);
+            border: 1px solid var(--acc-brd);
+            border-radius: var(--r-xl);
+            padding: 28px;
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            box-shadow: 0 0 28px rgba(200, 255, 0, .08)
+        }
+
+        .score-ring {
+            position: relative;
+            width: 130px;
+            height: 130px;
+            flex-shrink: 0
+        }
+
+        .score-ring canvas {
+            width: 130px !important;
+            height: 130px !important
+        }
+
+        .score-mid {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center
+        }
+
+        .score-num {
+            font-family: var(--ff);
+            font-size: 2.2rem;
+            font-weight: 800;
+            line-height: 1
+        }
+
+        .score-denom {
+            font-size: .72rem;
+            color: var(--txt2)
+        }
+
+        .score-info h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            font-family: var(--ff);
+            margin-bottom: 5px
+        }
+
+        .score-info p {
+            font-size: .85rem;
+            color: var(--txt2);
+            line-height: 1.6
+        }
+
+        .score-tags {
+            display: flex;
+            gap: 7px;
+            margin-top: 12px;
+            flex-wrap: wrap
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 11px;
+            border-radius: 20px;
+            font-size: .73rem;
+            font-weight: 700
+        }
+
+        .badge-success {
+            background: rgba(0, 214, 143, .12);
+            color: var(--success);
+            border: 1px solid rgba(0, 214, 143, .3)
+        }
+
+        .badge-warning {
+            background: rgba(255, 170, 0, .12);
+            color: var(--warning);
+            border: 1px solid rgba(255, 170, 0, .3)
+        }
+
+        .badge-danger {
+            background: rgba(255, 77, 77, .12);
+            color: var(--danger);
+            border: 1px solid rgba(255, 77, 77, .3)
+        }
+
+        .badge-info {
+            background: rgba(0, 149, 255, .12);
+            color: var(--info);
+            border: 1px solid rgba(0, 149, 255, .3)
+        }
+
+        /* ── GRID ── */
+        .dash-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 18px
+        }
+
+        .col {
+            display: flex;
+            flex-direction: column;
+            gap: 18px
+        }
+
+        /* ── VITALS ── */
+        .vital-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px
+        }
+
+        .vital {
+            background: var(--bg2);
+            border: 1px solid var(--brd);
+            border-radius: var(--r-md);
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            transition: var(--tr)
+        }
+
+        .vital:hover {
+            border-color: var(--acc-brd)
+        }
+
+        .vital-ico {
+            width: 38px;
+            height: 38px;
+            border-radius: var(--r-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0
+        }
+
+        .vital-lbl {
+            font-size: .7rem;
+            color: var(--txt3);
+            text-transform: uppercase;
+            letter-spacing: .08em
+        }
+
+        .vital-val {
+            font-family: var(--ff);
+            font-size: 1rem;
+            font-weight: 700;
+            margin-top: 1px
+        }
+
+        .vital-unit {
+            font-size: .72rem;
+            color: var(--txt3);
+            font-weight: 400
+        }
+
+        /* ── DISEASE LIST ── */
+        .disease-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--brd)
+        }
+
+        .disease-item:last-child {
+            border-bottom: none
+        }
+
+        .dis-name {
+            font-weight: 600;
+            font-size: .875rem
+        }
+
+        .dis-date {
+            font-size: .75rem;
+            color: var(--txt2);
+            margin-top: 1px
+        }
+
+        /* ── MED LIST ── */
+        .med-item {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 11px;
+            border-radius: var(--r-md);
+            background: var(--bg2);
+            margin-bottom: 8px;
+            border: 1px solid var(--brd);
+            transition: var(--tr)
+        }
+
+        .med-item:hover {
+            border-color: var(--acc-brd)
+        }
+
+        .med-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            flex-shrink: 0
+        }
+
+        .med-name {
+            font-weight: 600;
+            font-size: .82rem
+        }
+
+        .med-dose {
+            font-size: .74rem;
+            color: var(--txt2)
+        }
+
+        .med-freq {
+            margin-left: auto;
+            font-size: .74rem;
+            color: var(--acc);
+            font-weight: 600
+        }
+
+        /* ── QUICK ACTIONS ── */
+        .qa-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 22px
+        }
+
+        .qa {
+            background: var(--bgc);
+            border: 1px solid var(--brd);
+            border-radius: var(--r-md);
+            padding: 16px 12px;
+            text-align: center;
+            text-decoration: none;
+            color: var(--txt2);
+            transition: var(--tr);
+            cursor: pointer
+        }
+
+        .qa:hover {
+            border-color: var(--acc-brd);
+            color: var(--acc);
+            background: var(--acc-dim);
+            transform: translateY(-2px)
+        }
+
+        .qa-icon {
+            font-size: 1.5rem;
+            margin-bottom: 6px
+        }
+
+        .qa-label {
+            font-size: .78rem;
+            font-weight: 600;
+            line-height: 1.4
+        }
+
+        /* ── SECTION HEADER ── */
+        .sh {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px
+        }
+
+        .sh-title {
+            font-family: var(--ff);
+            font-size: 1.1rem;
+            font-weight: 700
+        }
+
+        /* ── CHART ── */
+        .chart-wrap {
+            position: relative;
+            height: 190px
+        }
+
+        /* ── GREETING ── */
+        .greet-time {
+            font-size: .75rem;
+            color: var(--txt3);
+            text-transform: uppercase;
+            letter-spacing: .1em
+        }
+
+        .greet-name {
+            font-family: var(--ff);
+            font-size: 1.9rem;
+            font-weight: 800;
+            margin: 3px 0
+        }
+
+        .greet-sub {
+            color: var(--txt2);
+            font-size: .875rem
+        }
+
+        /* ── ALERT ── */
+        .health-alert {
+            padding: 12px 16px;
+            border-radius: var(--r-md);
+            margin-bottom: 8px;
+            font-size: .83rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 9px
+        }
+
+        .ha-info {
+            background: rgba(0, 149, 255, .08);
+            border: 1px solid rgba(0, 149, 255, .25);
+            color: #66b3ff
+        }
+
+        .ha-success {
+            background: rgba(0, 214, 143, .08);
+            border: 1px solid rgba(0, 214, 143, .25);
+            color: #33e8a8
+        }
+
+        .ha-warn {
+            background: rgba(255, 170, 0, .08);
+            border: 1px solid rgba(255, 170, 0, .25);
+            color: #ffcc44
+        }
+
+        .ha-danger {
+            background: rgba(255, 77, 77, .08);
+            border: 1px solid rgba(255, 77, 77, .25);
+            color: #ff8080
+        }
+
+        /* ── EMPTY ── */
+        .empty {
+            color: var(--txt2);
+            font-size: .875rem;
+            text-align: center;
+            padding: 20px;
+            border: 1px dashed var(--brd);
+            border-radius: var(--r-md)
+        }
+
+        /* ── BANNER ── */
+        .banner {
+            text-align: center;
+            padding: 40px;
+            border: 1px solid var(--acc-brd);
+            border-radius: var(--r-xl);
+            background: var(--bgc);
+            box-shadow: 0 0 28px rgba(200, 255, 0, .08);
+            margin-bottom: 22px;
+            display: none
+        }
+
+        /* ── LOADER ── */
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(200, 255, 0, .3);
+            border-top-color: var(--acc);
+            border-radius: 50%;
+            animation: spin .6s linear infinite
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        @media(max-width:1100px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr)
+            }
+        }
+
+        @media(max-width:900px) {
+            .dash-grid {
+                grid-template-columns: 1fr
+            }
+
+            .sidebar {
+                display: none
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 20px
+            }
+
+            .qa-grid {
+                grid-template-columns: repeat(2, 1fr)
+            }
+        }
+
+
+        /* ══════════════════════════════════════
+   HAMBURGER BUTTON
+══════════════════════════════════════ */
+        .hamburger {
+            display: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--bgc);
+            border: 1px solid var(--brd2);
+            cursor: pointer;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            flex-shrink: 0;
+            transition: var(--tr);
+            z-index: 400;
+        }
+
+        .hamburger:hover {
+            border-color: var(--rose-brd, var(--skin-brd, rgba(255, 255, 255, .2)));
+        }
+
+        .hamburger span {
+            display: block;
+            width: 18px;
+            height: 2px;
+            background: var(--txt);
+            border-radius: 2px;
+            transition: var(--tr);
+        }
+
+        .hamburger.open span:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+
+        .hamburger.open span:nth-child(2) {
+            opacity: 0;
+            transform: scaleX(0);
+        }
+
+        .hamburger.open span:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+
+        /* ══════════════════════════════════════
+   SIDEBAR OVERLAY (mobile)
+══════════════════════════════════════ */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .6);
+            backdrop-filter: blur(4px);
+            z-index: 198;
+            animation: fadeIn .2s ease;
+        }
+
+        .sidebar-overlay.visible {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* ══════════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+══════════════════════════════════════ */
+        @media (max-width: 900px) {
+
+            /* Show hamburger in nav */
+            .hamburger {
+                display: flex;
+            }
+
+            /* Sidebar: slide in from left */
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform .28s cubic-bezier(.4, 0, .2, 1);
+                z-index: 199;
+                box-shadow: 8px 0 40px rgba(0, 0, 0, .5);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            /* Main content fills full width */
+            .main {
+                margin-left: 0 !important;
+                padding: 14px 14px 80px;
+            }
+
+            /* Grids: 1 column on mobile */
+            .grid-2,
+            .grid-3,
+            .grid-4,
+            .dashboard-grid,
+            .diag-layout,
+            .evolution-layout,
+            .derm-chat-layout,
+            .midwife-layout,
+            .profile-skin-layout,
+            .nutri-grid,
+            .week-detail-layout,
+            .prep-categories {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* Products grid: 2 cols on mobile */
+            .products-grid {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            /* Advice/prep cards: 1 col */
+            .advice-cards,
+            .prep-cards {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* Tabs: scrollable horizontally */
+            .tabs {
+                width: 100% !important;
+                overflow-x: auto;
+                flex-wrap: nowrap !important;
+                scrollbar-width: none;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .tabs::-webkit-scrollbar {
+                display: none;
+            }
+
+            .tab {
+                white-space: nowrap;
+                font-size: .78rem;
+                padding: 7px 12px;
+            }
+
+            /* Nav: compress */
+            .nav {
+                padding: 0 14px;
+                gap: 8px;
+            }
+
+            .nav-badge {
+                display: none;
+            }
+
+            /* Page title smaller */
+            .page-title {
+                font-size: 1.5rem !important;
+            }
+
+            /* Chat layouts: full height */
+            .derm-chat-layout,
+            .midwife-layout {
+                height: auto !important;
+            }
+
+            .chat-col {
+                min-height: 500px;
+            }
+
+            /* Hide side tools on mobile */
+            .derm-tools,
+            .midwife-tools {
+                display: none;
+            }
+
+            /* Concern/forbidden grids: 2 cols */
+            .concern-grid,
+            .forbidden-grid {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            /* Food cats: 3 cols */
+            .food-cats {
+                grid-template-columns: 1fr 1fr 1fr !important;
+            }
+
+            /* Bag list: 2 cols */
+            .bag-list {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            /* Quick stats: wrap */
+            .quick-stats {
+                flex-wrap: wrap;
+            }
+
+            .qs {
+                min-width: 80px !important;
+            }
+
+            /* Skin type grid: 3 cols */
+            .skin-type-grid {
+                grid-template-columns: repeat(3, 1fr) !important;
+            }
+
+            /* Hero week counter */
+            .week-counter {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main {
+                padding: 10px 10px 70px;
+            }
+
+            .page-title {
+                font-size: 1.25rem !important;
+            }
+
+            .products-grid,
+            .advice-cards {
+                grid-template-columns: 1fr !important;
+            }
+
+            .food-cats {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            .bag-list {
+                grid-template-columns: 1fr !important;
+            }
+
+            .card {
+                padding: 14px;
+            }
+
+            .tab {
+                font-size: .72rem;
+                padding: 6px 10px;
+            }
+
+            .prep-categories {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            .advice-categories {
+                grid-template-columns: 1fr 1fr !important;
+            }
+        }
+
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 58px;
+            left: 0;
+            right: 0;
+            background: rgba(8, 4, 16, .98);
+            backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--brd);
+            padding: 10px 14px 18px;
+            z-index: 299;
+            flex-direction: column;
+            gap: 2px;
+            max-height: calc(100vh - 58px);
+            overflow-y: auto;
+        }
+
+        .mobile-menu.open {
+            display: flex;
+        }
+
+        .hamburger {
+            display: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--bgc);
+            border: 1px solid var(--brd2);
+            cursor: pointer;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: var(--tr);
+        }
+
+        .hamburger span {
+            display: block;
+            width: 18px;
+            height: 2px;
+            background: var(--txt);
+            border-radius: 2px;
+            transition: var(--tr);
+        }
+
+        .hamburger.open span:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+
+        .hamburger.open span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.open span:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+
+        @media (max-width: 900px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0 !important;
+                padding: 14px 14px 80px;
+            }
+
+            .nav-badge {
+                display: none;
+            }
+
+            /* vos autres règles responsive ici */
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="nav">
+        <a class="brand" href="dashboard.html"><span class="brand-dot"></span>VitaCore</a>
+        <button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+        <div class="mobile-menu" id="mobile-menu">
+            <a class="sb-link" href="dashboard.html">🏠 Dashboard</a>
+            <a class="sb-link" href="health-form.html">📋 Bilan Santé</a>
+            <a class="sb-link" href="analytics.html">📊 Analyses</a>
+            <a class="sb-link" href="ai-bilan.html">🩺 Bilan IA</a>
+            <a class="sb-link" href="consultation.html">🏥 Consultation IA</a>
+            <a class="sb-link" href="evolution.html">📈 Évolution</a>
+            <a class="sb-link" href="nutri.html">🥦 Nutri</a>
+            <a class="sb-link" href="lifestyle.html">✨ Style de Vie</a>
+            <a class="sb-link" href="derma.html">💆 Derma</a>
+            <a class="sb-link" href="maternite.html">🌸 Maternité</a>
+            <a class="sb-link" href="guide.html">🔮 Guide Oracle</a>
+            <a class="sb-link" href="psyche.html">🧠 Psyché</a>
+            <a class="sb-link" href="nexus_ia.html">🌐 Nexus</a>
+
+            <!-- SÉPARATEUR -->
+            <div style="height:1px;background:var(--brd);margin:8px 0"></div>
+
+            <!-- URGENCES -->
+            <div
+                style="font-size:.61rem;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.14em;margin-bottom:7px;padding:0 8px">
+                Urgences</div>
+            <div
+                style="padding:8px 11px;background:rgba(255,90,122,.05);border:1px solid rgba(255,90,122,.2);border-radius:var(--r-sm);font-size:.74rem;color:var(--danger);line-height:1.6;margin-bottom:12px">
+                ⚠️ Secours Abalo: <strong>88 80</strong><br>Urgences: <strong>88 80</strong><br>Maternité 24h:
+                <strong>voir rubrique</strong>
+            </div>
+            <!-- COMPTE -->
+            <div
+                style="font-size:.61rem;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.14em;margin-bottom:7px;padding:0 8px">
+                Compte</div>
+            <a class="sb-link" href="#" id="logout-btn-mobile">🚪 &nbsp;Déconnexion</a>
+        </div>
+        <div class="nav-right">
+            <div class="avatar" id="nav-avatar">U</div>
+        </div>
+    </nav>
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+    <div class="layout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sb-sec">
+                <div class="sb-tt">Navigation</div>
+                <a class="sb-link active" href="dashboard.html">🏠 &nbsp;Dashboard</a>
+                <a class="sb-link" href="health-form.html">📋 &nbsp;Bilan Santé</a>
+                <a class="sb-link" href="analytics.html">📊 &nbsp;Analyses</a>
+                <a class="sb-link" href="ai-bilan.html">🩺 &nbsp;Bilan IA</a>
+                <a class="sb-link" href="consultation.html">🏥 &nbsp;Consultation IA</a>
+                <a class="sb-link" href="evolution.html">📈 &nbsp;Évolution</a>
+                <a class="sb-link" href="nutri.html">🥦 &nbsp;Nutri · Nutrition IA</a>
+                <a class="sb-link" href="lifestyle.html">✨ &nbsp;Style de Vie</a>
+                <a class="sb-link" href="derma.html">💆 &nbsp;Derma · Beauté IA</a>
+                <a class="sb-link" href="maternite.html">🌸 &nbsp;Maternité · Grossesse IA</a>
+                <a class="sb-link" href="guide.html">🔮 &nbsp;Guide Oracle</a>
+                <a class="sb-link" href="psyche.html">🧠 &nbsp;Psyché</a>
+                <a class="sb-link" href="nexus_ia.html">🌐 &nbsp;Nexus · Analyse</a>
+            </div>
+            <div class="sb-sec">
+                <div class="sb-tt">Urgences</div>
+                <div
+                    style="padding:8px 11px;background:rgba(255,90,122,.05);border:1px solid rgba(255,90,122,.2);border-radius:var(--r-sm);font-size:.74rem;color:var(--danger);line-height:1.6">
+                    ⚠️ Secours Abalo: <strong>88 80</strong><br>Urgences: <strong>88 80</strong><br>Maternité 24h:
+                    <strong>voir rubrique</strong>
+                </div>
+            </div>
+            <div class="sb-sec">
+                <div class="sb-tt">Compte</div>
+                <a class="sb-link" href="#" id="logout-btn">🚪 &nbsp;Déconnexion</a>
+            </div>
+        </aside>
+
+        <main class="main">
+            <!-- GREETING -->
+            <div style="margin-bottom:24px">
+                <div class="greet-time" id="greet-time">Bonjour</div>
+                <div class="greet-name">Bonjour, <span id="user-name">—</span> 👋</div>
+                <div class="greet-sub">Voici votre tableau de bord santé</div>
+            </div>
+
+            <!-- NO PROFILE BANNER -->
+            <div class="banner" id="no-profile">
+                <div style="font-size:3rem;margin-bottom:10px">🏥</div>
+                <h3 style="font-family:var(--ff);font-size:1.25rem;margin-bottom:8px">Complétez votre bilan de santé
+                </h3>
+                <p style="color:var(--txt2);margin-bottom:20px;font-size:.875rem">Renseignez vos informations médicales
+                    pour profiter de VitaCore</p>
+                <a href="health-form.html" class="btn btn-primary" style="display:inline-flex">Remplir mon bilan →</a>
+            </div>
+
+            <!-- QUICK ACTIONS -->
+            <div class="qa-grid">
+                <a class="qa" href="health-form.html">
+                    <div class="qa-icon">📋</div>
+                    <div class="qa-label">Mettre à jour<br>mon bilan</div>
+                </a>
+                <a class="qa" href="analytics.html">
+                    <div class="qa-icon">📊</div>
+                    <div class="qa-label">Voir mes<br>analyses</div>
+                </a>
+                <a class="qa" href="health-form.html">
+                    <div class="qa-icon">💊</div>
+                    <div class="qa-label">Mes<br>médicaments</div>
+                </a>
+                <a class="qa" href="analytics.html">
+                    <div class="qa-icon">📅</div>
+                    <div class="qa-label">Historique<br>santé</div>
+                </a>
+            </div>
+
+            <!-- STATS -->
+            <div class="stats-grid">
+                <div class="stat">
+                    <div class="stat-lbl">IMC</div>
+                    <div class="stat-val" id="s-bmi">—</div>
+                    <div class="stat-sub" id="s-bmi-label">—</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-lbl">Pathologies</div>
+                    <div class="stat-val acc" id="s-dis">—</div>
+                    <div class="stat-sub">enregistrées</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-lbl">Médicaments</div>
+                    <div class="stat-val" id="s-med">—</div>
+                    <div class="stat-sub">en cours</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-lbl">Dernière MAJ</div>
+                    <div class="stat-val" id="s-upd" style="font-size:1rem;padding-top:6px">—</div>
+                </div>
+            </div>
+
+            <!-- MAIN GRID -->
+            <div class="dash-grid">
+                <!-- LEFT -->
+                <div class="col">
+                    <!-- SCORE -->
+                    <div class="score-hero card-acc">
+                        <div class="score-ring">
+                            <canvas id="scoreChart"></canvas>
+                            <div class="score-mid">
+                                <div class="score-num" id="score-num">—</div>
+                                <div class="score-denom">/100</div>
+                            </div>
+                        </div>
+                        <div class="score-info">
+                            <h3>Score de Santé Global</h3>
+                            <p id="score-desc">Basé sur votre IMC, constantes vitales, pathologies et mode de vie.</p>
+                            <div class="score-tags" id="score-tags"></div>
+                        </div>
+                    </div>
+
+                    <!-- VITALS -->
+                    <div class="card">
+                        <div class="sh"><span class="sh-title">Paramètres Vitaux</span><a href="health-form.html"
+                                class="btn btn-secondary btn-sm">Modifier</a></div>
+                        <div class="vital-grid" id="vitals"></div>
+                    </div>
+
+                    <!-- TREND CHART -->
+                    <div class="card">
+                        <div class="sh"><span class="sh-title">Évolution du score</span><span
+                                style="font-size:.75rem;color:var(--txt2)">6 derniers enregistrements</span></div>
+                        <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+                    </div>
+                </div>
+
+                <!-- RIGHT -->
+                <div class="col">
+                    <!-- DISEASES -->
+                    <div class="card">
+                        <div class="sh"><span class="sh-title">Pathologies</span><a href="health-form.html"
+                                class="btn btn-ghost btn-sm">+ Ajouter</a></div>
+                        <div id="diseases-list">
+                            <div class="empty">Aucune pathologie enregistrée</div>
+                        </div>
+                    </div>
+
+                    <!-- MEDS -->
+                    <div class="card">
+                        <div class="sh"><span class="sh-title">Médicaments actifs</span></div>
+                        <div id="meds-list">
+                            <div class="empty">Aucun médicament enregistré</div>
+                        </div>
+                    </div>
+
+                    <!-- ALERTS -->
+                    <div class="card">
+                        <div class="sh-title" style="margin-bottom:12px">Alertes Santé</div>
+                        <div id="alerts">
+                            <div class="health-alert ha-info"><span>ℹ</span><span>Complétez votre bilan pour des alertes
+                                    personnalisées.</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const API = 'http://localhost:8040/api/v1';
+
+        /* ── Auth ── */
+        const token = () => localStorage.getItem('vc_token');
+        const user = () => { try { return JSON.parse(localStorage.getItem('vc_user')); } catch { return null; } };
+        if (!token()) location.href = 'index.html';
+
+        /* ── Init ── */
+        const u = user();
+        if (u) {
+            document.getElementById('user-name').textContent = u.first_name || u.email;
+            document.getElementById('nav-avatar').textContent = (u.first_name?.[0] || u.email?.[0] || 'U').toUpperCase();
+        }
+        const h = new Date().getHours();
+        document.getElementById('greet-time').textContent = h < 12 ? '🌤 Bonjour' : h < 18 ? '☀️ Bon après-midi' : '🌙 Bonsoir';
+
+        document.getElementById('logout-btn').addEventListener('click', e => {
+            e.preventDefault();
+            localStorage.removeItem('vc_token');
+            localStorage.removeItem('vc_user');
+            location.href = 'index.html';
+        });
+
+        /* ── Helpers ── */
+        const fmtDate = d => new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+        const fmtBMI = (w, h) => (w / ((h / 100) ** 2)).toFixed(1);
+        function bmiStatus(b) {
+            b = parseFloat(b);
+            if (b < 18.5) return { l: 'Insuffisance pondérale', c: 'badge-warning' };
+            if (b < 25) return { l: 'Poids normal', c: 'badge-success' };
+            if (b < 30) return { l: 'Surpoids', c: 'badge-warning' };
+            return { l: 'Obésité', c: 'badge-danger' };
+        }
+
+        const MEDcolors = ['#c8ff00', '#0095ff', '#ff4d4d', '#ffaa00', '#00d68f', '#cc66ff'];
+        const VIT = [
+            { k: 'weight', l: 'Poids', u: 'kg', ico: '⚖️', bg: 'rgba(200,255,0,.1)' },
+            { k: 'height', l: 'Taille', u: 'cm', ico: '📏', bg: 'rgba(0,149,255,.1)' },
+            { k: 'blood_pressure_systolic', l: 'TA Systolique', u: 'mmHg', ico: '💓', bg: 'rgba(255,77,77,.1)' },
+            { k: 'blood_pressure_diastolic', l: 'TA Diastolique', u: 'mmHg', ico: '💗', bg: 'rgba(255,170,0,.1)' },
+            { k: 'heart_rate', l: 'Fréq. cardiaque', u: 'bpm', ico: '❤️', bg: 'rgba(255,77,77,.1)' },
+            { k: 'blood_sugar', l: 'Glycémie', u: 'mg/dL', ico: '🩸', bg: 'rgba(0,214,143,.1)' },
+        ];
+
+        /* ── Score chart ── */
+        let scoreChartInst = null;
+        function renderScore(score) {
+            const ctx = document.getElementById('scoreChart').getContext('2d');
+            const col = score >= 70 ? '#c8ff00' : score >= 50 ? '#ffaa00' : '#ff4d4d';
+            if (scoreChartInst) scoreChartInst.destroy();
+            scoreChartInst = new Chart(ctx, {
+                type: 'doughnut',
+                data: { datasets: [{ data: [score, 100 - score], backgroundColor: [col, '#1e1e1e'], borderWidth: 0, borderRadius: 6 }] },
+                options: { cutout: '76%', responsive: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+            });
+            const el = document.getElementById('score-num');
+            el.textContent = score;
+            el.style.color = col;
+        }
+
+        /* ── Trend chart ── */
+        function renderTrend(data) {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            const labels = data?.labels || ['—', '—', '—', '—', '—', '—'];
+            const values = data?.values || [0, 0, 0, 0, 0, 0];
+            new Chart(ctx, {
+                type: 'line',
+                data: { labels, datasets: [{ data: values, borderColor: '#c8ff00', backgroundColor: 'rgba(200,255,0,.07)', fill: true, tension: .4, pointBackgroundColor: '#c8ff00', pointRadius: 4 }] },
+                options: {
+                    responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+                    scales: { x: { grid: { color: '#1a1a1a' }, ticks: { color: '#555' } }, y: { grid: { color: '#1a1a1a' }, ticks: { color: '#555' }, min: 0, max: 100 } }
+                }
+            });
+        }
+
+        function renderVitals(p) {
+            document.getElementById('vitals').innerHTML = VIT.map(v => `
+    <div class="vital">
+      <div class="vital-ico" style="background:${v.bg}">${v.ico}</div>
+      <div>
+        <div class="vital-lbl">${v.l}</div>
+        <div class="vital-val">${p?.[v.k] ?? '—'} <span class="vital-unit">${p?.[v.k] ? v.u : ''}</span></div>
+      </div>
+    </div>`).join('');
+        }
+
+        function renderDiseases(diseases) {
+            if (!diseases?.length) return;
+            const sm = { mild: { l: 'Légère', c: 'badge-info' }, moderate: { l: 'Modérée', c: 'badge-warning' }, severe: { l: 'Sévère', c: 'badge-danger' }, chronic: { l: 'Chronique', c: 'badge-warning' } };
+            document.getElementById('diseases-list').innerHTML = diseases.slice(0, 5).map(d => `
+    <div class="disease-item">
+      <div><div class="dis-name">${d.name}</div><div class="dis-date">Depuis ${d.diagnosed_year || '—'}</div></div>
+      <span class="badge ${sm[d.severity]?.c || 'badge-info'}">${sm[d.severity]?.l || d.severity}</span>
+    </div>`).join('');
+        }
+
+        function renderMeds(meds) {
+            if (!meds?.length) return;
+            document.getElementById('meds-list').innerHTML = meds.slice(0, 4).map((m, i) => `
+    <div class="med-item">
+      <div class="med-dot" style="background:${MEDcolors[i % MEDcolors.length]}"></div>
+      <div><div class="med-name">${m.name}</div><div class="med-dose">${m.dosage || ''}</div></div>
+      <div class="med-freq">${m.frequency || ''}</div>
+    </div>`).join('');
+        }
+
+        function renderAlerts(profile) {
+            if (!profile) return;
+            const as = [];
+            if (profile.weight && profile.height) {
+                const bmi = parseFloat(fmtBMI(profile.weight, profile.height));
+                if (bmi >= 30) as.push({ t: 'ha-danger', m: '⚠️ IMC élevé — Obésité détectée' });
+                else if (bmi >= 25) as.push({ t: 'ha-warn', m: '⚠️ IMC modéré — Surpoids' });
+            }
+            if ((profile.blood_sugar || 0) > 126) as.push({ t: 'ha-danger', m: '🩸 Glycémie élevée — Consultez votre médecin' });
+            if ((profile.blood_pressure_systolic || 0) >= 140) as.push({ t: 'ha-warn', m: '💓 Tension artérielle élevée' });
+            if (!as.length) as.push({ t: 'ha-success', m: '✓ Aucune alerte critique détectée' });
+            document.getElementById('alerts').innerHTML = as.map(a => `<div class="health-alert ${a.t}"><span>${a.m}</span></div>`).join('');
+        }
+
+        /* ── Load ── */
+        async function load() {
+            try {
+                const r = await fetch(`${API}/health/dashboard`, { headers: { Authorization: `Bearer ${token()}` } });
+                if (r.status === 401) { location.href = 'index.html'; return; }
+                const d = await r.json();
+                const { profile, diseases, medications, health_score, score_trend } = d;
+
+                if (!profile) {
+                    document.getElementById('no-profile').style.display = 'block';
+                    renderScore(0); renderTrend(null); renderVitals(null);
+                    return;
+                }
+
+                if (profile.weight && profile.height) {
+                    const bmi = fmtBMI(profile.weight, profile.height);
+                    const s = bmiStatus(bmi);
+                    document.getElementById('s-bmi').textContent = bmi;
+                    document.getElementById('s-bmi-label').innerHTML = `<span class="badge ${s.c}" style="font-size:.7rem">${s.l}</span>`;
+                }
+                document.getElementById('s-dis').textContent = diseases?.length ?? 0;
+                document.getElementById('s-med').textContent = medications?.length ?? 0;
+                document.getElementById('s-upd').textContent = profile.updated_at ? fmtDate(profile.updated_at) : '—';
+
+                renderScore(health_score || 0);
+                renderTrend(score_trend);
+                renderVitals(profile);
+                renderDiseases(diseases);
+                renderMeds(medications);
+                renderAlerts(profile);
+
+                const score = health_score || 0;
+                const tagCls = score >= 70 ? 'badge-success' : score >= 50 ? 'badge-warning' : 'badge-danger';
+                const tagLbl = score >= 70 ? 'Bon état de santé' : score >= 50 ? 'État modéré' : 'À améliorer';
+                document.getElementById('score-tags').innerHTML = `<span class="badge ${tagCls}">${tagLbl}</span>`;
+                document.getElementById('score-desc').textContent = `Score basé sur votre IMC, ${diseases?.length || 0} pathologie(s) et vos constantes vitales.`;
+
+            } catch (e) {
+                // Mode démo si backend indisponible
+                renderScore(72);
+                renderTrend({ labels: ['Sep', 'Oct', 'Nov', 'Déc', 'Jan', 'Fév'], values: [65, 68, 70, 67, 71, 72] });
+                renderVitals({ weight: 78, height: 178, blood_pressure_systolic: 125, blood_pressure_diastolic: 80, heart_rate: 72, blood_sugar: 98 });
+                document.getElementById('s-bmi').textContent = '24.6';
+                document.getElementById('s-bmi-label').innerHTML = '<span class="badge badge-success" style="font-size:.7rem">Poids normal</span>';
+                document.getElementById('s-dis').textContent = '2';
+                document.getElementById('s-med').textContent = '3';
+                document.getElementById('s-upd').textContent = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
+                document.getElementById('score-tags').innerHTML = '<span class="badge badge-success">Bon état de santé</span>';
+                document.getElementById('alerts').innerHTML = '<div class="health-alert ha-info"><span>ℹ Mode démo — Connectez le backend pour vos vraies données</span></div>';
+            }
+        }
+
+        load();
+
+        /* ══════════════════════════
+           MOBILE SIDEBAR TOGGLE
+        ══════════════════════════ */
+        function toggleSidebar() {
+            const sb = document.querySelector('.sidebar');
+            const btn = document.getElementById('hamburger-btn');
+            const ovl = document.getElementById('sidebar-overlay');
+            const isOpen = sb.classList.contains('open');
+            if (isOpen) { closeSidebar(); }
+            else {
+                sb.classList.add('open');
+                btn.classList.add('open');
+                ovl.classList.add('visible');
+                document.body.style.overflow = 'hidden'; // empêche scroll fond
+            }
+        }
+
+        function closeSidebar() {
+            document.querySelector('.sidebar')?.classList.remove('open');
+            document.getElementById('hamburger-btn')?.classList.remove('open');
+            document.getElementById('sidebar-overlay')?.classList.remove('visible');
+            document.body.style.overflow = '';
+        }
+
+        // Ferme la sidebar au clic sur un lien (navigation mobile)
+        document.querySelectorAll('.sb-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 900) closeSidebar();
+            });
+        });
+
+        // Ferme si on redimensionne vers desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 900) closeSidebar();
+        });
+
+        document.getElementById('hamburger-btn').addEventListener('click', () => {
+            const menu = document.getElementById('mobile-menu');
+            const btn = document.getElementById('hamburger-btn');
+            menu.classList.toggle('open');
+            btn.classList.toggle('open');
+        });
+
+        // Ferme au clic sur un lien
+        document.querySelectorAll('#mobile-menu .sb-link').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('mobile-menu').classList.remove('open');
+                document.getElementById('hamburger-btn').classList.remove('open');
+            });
+        });
+
+        document.getElementById('logout-btn-mobile')?.addEventListener('click', e => {
+            e.preventDefault();
+            localStorage.clear();
+            location.href = 'index.html';
+        });
+    </script>
+</body>
+
+</html>

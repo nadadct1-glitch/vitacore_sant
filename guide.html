@@ -1,0 +1,2819 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Guide Oracle IA — VitaCore</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Space+Mono:wght@400;700&display=swap"
+        rel="stylesheet" />
+    <style>
+        /* ═══════════════════ RESET ═══════════════════ */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        :root {
+            --bg: #03040a;
+            --bg2: #060810;
+            --bgc: #0a0c18;
+            --bgch: #0f1220;
+            --b1: #0062ff;
+            --b2: #0099ff;
+            --b3: #00cfff;
+            --acc: #00b4ff;
+            --acc-dim: rgba(0, 180, 255, .09);
+            --acc-brd: rgba(0, 180, 255, .22);
+            --acc-glow: rgba(0, 180, 255, .4);
+            --em: #00ff9d;
+            --em-dim: rgba(0, 255, 157, .08);
+            --em-brd: rgba(0, 255, 157, .22);
+            --red: #ff4060;
+            --orange: #ff8040;
+            --yellow: #ffd060;
+            --green: #00ff9d;
+            --txt: #e0eeff;
+            --txt2: #4a6080;
+            --txt3: #1a2030;
+            --brd: #0d1525;
+            --brd2: #142030;
+            --mono: 'Space Mono', monospace;
+            --ff: 'Syne', sans-serif;
+            --fb: 'DM Sans', sans-serif;
+            --tr: .2s cubic-bezier(.4, 0, .2, 1);
+            --r-sm: 6px;
+            --r-md: 12px;
+            --r-lg: 18px;
+            --r-xl: 26px;
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            font-family: var(--fb);
+            background: var(--bg);
+            color: var(--txt);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden
+        }
+
+        ::-webkit-scrollbar {
+            width: 3px
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--brd2)
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--acc)
+        }
+
+        /* AMBIENT */
+        .ambient {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(160px);
+            animation: drift 22s ease-in-out infinite
+        }
+
+        .orb1 {
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(0, 98, 255, .1), transparent 70%);
+            top: -300px;
+            left: -200px
+        }
+
+        .orb2 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(0, 255, 157, .06), transparent 70%);
+            bottom: -200px;
+            right: -150px;
+            animation-delay: -11s
+        }
+
+        .orb3 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(0, 180, 255, .08), transparent 70%);
+            top: 40%;
+            right: 15%;
+            animation-delay: -6s
+        }
+
+        @keyframes drift {
+
+            0%,
+            100% {
+                transform: translate(0, 0)
+            }
+
+            50% {
+                transform: translate(25px, -18px)
+            }
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background-image: linear-gradient(rgba(0, 180, 255, .015) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 180, 255, .015) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none
+        }
+
+        /* Scan line */
+        .scan {
+            position: fixed;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--acc), transparent);
+            opacity: 0;
+            animation: scanAnim 8s ease-in-out infinite;
+            z-index: 0;
+            pointer-events: none
+        }
+
+        @keyframes scanAnim {
+            0% {
+                top: -5%;
+                opacity: 0
+            }
+
+            5% {
+                opacity: .25
+            }
+
+            90% {
+                opacity: .2
+            }
+
+            100% {
+                top: 105%;
+                opacity: 0
+            }
+        }
+
+        /* NAV */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 300;
+            height: 58px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            background: rgba(3, 4, 10, .95);
+            backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--brd)
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-family: var(--ff);
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--txt);
+            text-decoration: none
+        }
+
+        .brand-dot {
+            width: 7px;
+            height: 7px;
+            background: #c8ff00;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(200, 255, 0, .8)
+        }
+
+        .nav-badge {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            background: var(--acc-dim);
+            border: 1px solid var(--acc-brd);
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: .72rem;
+            font-weight: 600;
+            color: var(--acc);
+            font-family: var(--mono)
+        }
+
+        .npd {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--acc);
+            animation: bp 1.5s ease infinite
+        }
+
+        @keyframes bp {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 var(--acc-glow)
+            }
+
+            50% {
+                box-shadow: 0 0 0 7px transparent
+            }
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: var(--r-md);
+            border: 1px solid var(--brd2);
+            cursor: pointer;
+            font-family: var(--fb);
+            font-weight: 600;
+            font-size: .82rem;
+            text-decoration: none;
+            transition: var(--tr);
+            background: transparent;
+            color: var(--txt2)
+        }
+
+        .btn:hover {
+            border-color: var(--acc-brd);
+            color: var(--acc);
+            background: var(--acc-dim)
+        }
+
+        .btn-sm {
+            padding: 5px 11px;
+            font-size: .76rem
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--b1), var(--b2));
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 4px 18px rgba(0, 98, 255, .3)
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 28px rgba(0, 98, 255, .45)
+        }
+
+        .btn-primary:disabled {
+            opacity: .4;
+            cursor: not-allowed;
+            transform: none
+        }
+
+        .btn-em {
+            background: linear-gradient(135deg, #006640, var(--em));
+            color: #000;
+            border-color: transparent
+        }
+
+        .btn-em:hover {
+            transform: translateY(-1px)
+        }
+
+        /* ── LAYOUT ── */
+        .layout {
+            display: flex;
+            min-height: 100vh;
+            padding-top: 58px;
+            position: relative;
+            z-index: 1
+        }
+
+        .sidebar {
+            width: 236px;
+            min-height: calc(100vh - 58px);
+            background: var(--bg2);
+            border-right: 1px solid var(--brd);
+            padding: 18px 12px;
+            position: fixed;
+            top: 58px;
+            left: 0;
+            bottom: 0;
+            overflow-y: auto
+        }
+
+        .sb-sec {
+            margin-bottom: 22px
+        }
+
+        .sb-tt {
+            font-size: .62rem;
+            font-weight: 700;
+            color: var(--txt3);
+            text-transform: uppercase;
+            letter-spacing: .14em;
+            margin-bottom: 7px;
+            padding: 0 8px;
+            font-family: var(--mono)
+        }
+
+        .sb-link {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 8px 11px;
+            border-radius: var(--r-sm);
+            color: var(--txt2);
+            text-decoration: none;
+            font-size: .845rem;
+            font-weight: 500;
+            transition: var(--tr);
+            margin-bottom: 2px
+        }
+
+        .sb-link:hover {
+            color: var(--txt);
+            background: var(--bgc)
+        }
+
+        .sb-link.active {
+            color: var(--acc);
+            background: var(--acc-dim);
+            border: 1px solid var(--acc-brd)
+        }
+
+        .main {
+            margin-left: 236px;
+            flex: 1;
+            padding: 0;
+            display: flex;
+            flex-direction: column
+        }
+
+        /* ═══════════════════════════════════════════
+   HERO ORACLE
+═══════════════════════════════════════════ */
+        .oracle-hero {
+            padding: 36px 32px 24px;
+            position: relative
+        }
+
+        .hero-eyebrow {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px
+        }
+
+        .eyebrow-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, var(--acc-brd), transparent)
+        }
+
+        .eyebrow-txt {
+            font-family: var(--mono);
+            font-size: .7rem;
+            color: var(--acc);
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            white-space: nowrap
+        }
+
+        .hero-title {
+            font-family: var(--ff);
+            font-size: 2.6rem;
+            font-weight: 800;
+            letter-spacing: -.04em;
+            line-height: 1;
+            margin-bottom: 8px
+        }
+
+        .hero-title .hl {
+            background: linear-gradient(90deg, var(--acc), var(--em));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text
+        }
+
+        .hero-sub {
+            color: var(--txt2);
+            font-size: .9rem;
+            line-height: 1.7;
+            max-width: 580px
+        }
+
+        /* ── ORACLE SEARCH ── */
+        .oracle-search {
+            padding: 0 32px 24px
+        }
+
+        .search-box {
+            background: var(--bgc);
+            border: 1px solid var(--acc-brd);
+            border-radius: var(--r-xl);
+            padding: 18px 20px;
+            box-shadow: 0 0 40px rgba(0, 180, 255, .08);
+            transition: var(--tr)
+        }
+
+        .search-box:focus-within {
+            border-color: var(--acc);
+            box-shadow: 0 0 60px rgba(0, 180, 255, .14)
+        }
+
+        .search-row {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+            margin-bottom: 16px
+        }
+
+        .search-textarea {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--txt);
+            font-family: var(--fb);
+            font-size: 1rem;
+            resize: none;
+            line-height: 1.6;
+            min-height: 48px;
+            max-height: 120px
+        }
+
+        .search-textarea::placeholder {
+            color: var(--txt3)
+        }
+
+        .search-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-shrink: 0
+        }
+
+        .analyze-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 22px;
+            border-radius: var(--r-lg);
+            background: linear-gradient(135deg, var(--b1), var(--b2));
+            border: none;
+            cursor: pointer;
+            font-family: var(--ff);
+            font-size: .88rem;
+            font-weight: 700;
+            color: #fff;
+            transition: var(--tr);
+            box-shadow: 0 4px 18px rgba(0, 98, 255, .3);
+            white-space: nowrap
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(0, 98, 255, .5)
+        }
+
+        .analyze-btn:disabled {
+            opacity: .4;
+            cursor: not-allowed;
+            transform: none
+        }
+
+        .search-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px
+        }
+
+        /* CATEGORIES */
+        .cats {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap
+        }
+
+        .cat-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--brd2);
+            background: var(--bgch);
+            color: var(--txt2);
+            font-size: .77rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--tr);
+            font-family: var(--fb)
+        }
+
+        .cat-btn:hover {
+            border-color: var(--acc-brd);
+            color: var(--acc)
+        }
+
+        .cat-btn.active {
+            border-color: var(--acc);
+            background: var(--acc-dim);
+            color: var(--acc)
+        }
+
+        /* DEPTH */
+        .depth-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: .75rem;
+            color: var(--txt2);
+            font-family: var(--mono)
+        }
+
+        .depth-opt {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer
+        }
+
+        .depth-opt input[type=radio] {
+            accent-color: var(--acc);
+            cursor: pointer
+        }
+
+        /* ── QUICK PROMPTS ── */
+        .quick-prompts {
+            padding: 0 32px 20px
+        }
+
+        .qp-title {
+            font-size: .68rem;
+            color: var(--txt3);
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            font-family: var(--mono);
+            margin-bottom: 10px
+        }
+
+        .qp-grid {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap
+        }
+
+        .qp-card {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 14px;
+            background: var(--bgc);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-lg);
+            font-size: .8rem;
+            color: var(--txt2);
+            cursor: pointer;
+            transition: var(--tr);
+            font-family: var(--fb)
+        }
+
+        .qp-card:hover {
+            border-color: var(--acc-brd);
+            color: var(--acc);
+            background: var(--acc-dim);
+            transform: translateY(-1px)
+        }
+
+        .qp-icon {
+            font-size: 1rem;
+            flex-shrink: 0
+        }
+
+        /* ═══════════════════════════════════════════
+   HISTORY & MAIN AREA
+═══════════════════════════════════════════ */
+        .content-area {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 0;
+            flex: 1;
+            border-top: 1px solid var(--brd);
+            min-height: 0
+        }
+
+        .analysis-area {
+            padding: 28px 32px;
+            overflow-y: auto;
+            max-height: calc(100vh - 340px)
+        }
+
+        .history-panel {
+            border-left: 1px solid var(--brd);
+            padding: 18px 16px;
+            overflow-y: auto;
+            max-height: calc(100vh - 340px);
+            background: var(--bg2)
+        }
+
+        /* ── IDLE STATE ── */
+        .idle-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            text-align: center;
+            gap: 18px;
+            min-height: 300px
+        }
+
+        .idle-orb {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(0, 98, 255, .15), rgba(0, 180, 255, .08));
+            border: 1px solid var(--acc-brd);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            position: relative;
+            box-shadow: 0 0 60px rgba(0, 180, 255, .1)
+        }
+
+        .idle-orb::before,
+        .idle-orb::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid var(--acc-brd);
+            animation: ripple 3s ease-out infinite
+        }
+
+        .idle-orb::before {
+            width: 130px;
+            height: 130px;
+            animation-delay: .8s
+        }
+
+        .idle-orb::after {
+            width: 170px;
+            height: 170px;
+            animation-delay: 1.6s
+        }
+
+        @keyframes ripple {
+            0% {
+                opacity: .3;
+                transform: scale(.85)
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(1.2)
+            }
+        }
+
+        .idle-title {
+            font-family: var(--ff);
+            font-size: 1.3rem;
+            font-weight: 700
+        }
+
+        .idle-desc {
+            color: var(--txt2);
+            font-size: .85rem;
+            line-height: 1.7;
+            max-width: 340px
+        }
+
+        /* ── LOADING STATE ── */
+        .loading-state {
+            padding: 28px;
+            display: none
+        }
+
+        .loading-state.show {
+            display: block
+        }
+
+        .load-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 14px
+        }
+
+        .ls-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 16px;
+            border-radius: var(--r-lg);
+            border: 1px solid var(--brd2);
+            background: var(--bgc);
+            transition: all .4s ease
+        }
+
+        .ls-item.active {
+            border-color: var(--acc-brd);
+            background: var(--acc-dim)
+        }
+
+        .ls-item.done {
+            border-color: var(--em-brd);
+            background: var(--em-dim)
+        }
+
+        .ls-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: var(--r-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .9rem;
+            flex-shrink: 0;
+            background: var(--bgch);
+            border: 1px solid var(--brd2);
+            transition: all .4s
+        }
+
+        .ls-item.active .ls-icon {
+            background: var(--acc-dim);
+            border-color: var(--acc-brd)
+        }
+
+        .ls-item.done .ls-icon {
+            background: var(--em-dim);
+            border-color: var(--em-brd)
+        }
+
+        .ls-label {
+            font-size: .84rem;
+            font-weight: 600;
+            color: var(--txt2);
+            flex: 1
+        }
+
+        .ls-item.active .ls-label {
+            color: var(--txt)
+        }
+
+        .ls-status {
+            font-family: var(--mono);
+            font-size: .7rem
+        }
+
+        .ls-item.active .ls-status {
+            color: var(--acc)
+        }
+
+        .ls-item.done .ls-status {
+            color: var(--em)
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(0, 180, 255, .3);
+            border-top-color: var(--acc);
+            border-radius: 50%;
+            animation: spin .7s linear infinite
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        /* ═══════════════════════════════════════════
+   ANALYSIS RESULT
+═══════════════════════════════════════════ */
+        .result-wrap {
+            display: none
+        }
+
+        .result-wrap.show {
+            display: block;
+            animation: fadeUp .4s ease
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(12px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        /* ── RESULT HEADER ── */
+        .result-hdr {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 22px;
+            gap: 16px;
+            flex-wrap: wrap
+        }
+
+        .result-item-name {
+            font-family: var(--ff);
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -.03em;
+            line-height: 1.05
+        }
+
+        .result-item-cat {
+            font-size: .75rem;
+            color: var(--acc);
+            font-family: var(--mono);
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            margin-top: 4px
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0
+        }
+
+        /* ── IMPACT SCORE HERO ── */
+        .impact-hero {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 20px;
+            background: var(--bgc);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-xl);
+            padding: 20px;
+            margin-bottom: 20px;
+            align-items: center
+        }
+
+        .impact-ring {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            flex-shrink: 0
+        }
+
+        .impact-ring canvas {
+            width: 100px !important;
+            height: 100px !important
+        }
+
+        .impact-center {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center
+        }
+
+        .impact-score {
+            font-family: var(--ff);
+            font-size: 1.8rem;
+            font-weight: 800;
+            line-height: 1
+        }
+
+        .impact-lbl {
+            font-size: .58rem;
+            color: var(--txt2);
+            font-family: var(--mono);
+            text-transform: uppercase;
+            letter-spacing: .1em
+        }
+
+        .impact-info h3 {
+            font-family: var(--ff);
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 5px
+        }
+
+        .impact-verdict {
+            font-size: .84rem;
+            color: var(--txt2);
+            line-height: 1.6;
+            margin-bottom: 10px
+        }
+
+        .impact-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap
+        }
+
+        .itag {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: .7rem;
+            font-weight: 700;
+            font-family: var(--mono)
+        }
+
+        /* ── COMPOSITION TABLE ── */
+        .comp-section {
+            margin-bottom: 20px
+        }
+
+        .sec-title {
+            font-family: var(--ff);
+            font-size: .88rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--brd2)
+        }
+
+        .sec-title .sec-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--acc)
+        }
+
+        .comp-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px
+        }
+
+        .comp-item {
+            background: var(--bgch);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-md);
+            padding: 11px;
+            transition: var(--tr)
+        }
+
+        .comp-item:hover {
+            border-color: var(--acc-brd)
+        }
+
+        .comp-name {
+            font-size: .68rem;
+            color: var(--txt2);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            font-family: var(--mono);
+            margin-bottom: 3px
+        }
+
+        .comp-val {
+            font-family: var(--ff);
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 3px
+        }
+
+        .comp-bar {
+            height: 2px;
+            background: var(--brd2);
+            border-radius: 1px;
+            overflow: hidden
+        }
+
+        .comp-fill {
+            height: 100%;
+            border-radius: 1px
+        }
+
+        .comp-status {
+            font-size: .62rem;
+            font-family: var(--mono);
+            margin-top: 3px
+        }
+
+        /* ── RISK/BENEFIT CARDS ── */
+        .rb-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 20px
+        }
+
+        .rb-card {
+            border-radius: var(--r-xl);
+            padding: 18px;
+            border: 1px solid
+        }
+
+        .rb-card-risk {
+            background: rgba(255, 64, 96, .05);
+            border-color: rgba(255, 64, 96, .2)
+        }
+
+        .rb-card-benefit {
+            background: rgba(0, 255, 157, .05);
+            border-color: rgba(0, 255, 157, .2)
+        }
+
+        .rb-title {
+            font-family: var(--ff);
+            font-size: .88rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 7px
+        }
+
+        .rb-risk-title {
+            color: var(--red)
+        }
+
+        .rb-benefit-title {
+            color: var(--em)
+        }
+
+        .rb-items {
+            display: flex;
+            flex-direction: column;
+            gap: 0
+        }
+
+        .rb-item {
+            padding: 9px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, .04)
+        }
+
+        .rb-item:last-child {
+            border-bottom: none
+        }
+
+        .rb-item-hdr {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 3px
+        }
+
+        .rb-item-name {
+            font-size: .82rem;
+            font-weight: 600;
+            color: var(--txt)
+        }
+
+        .rb-horizon {
+            font-size: .65rem;
+            font-family: var(--mono);
+            padding: 2px 7px;
+            border-radius: 4px
+        }
+
+        .rb-ct {
+            background: rgba(255, 208, 96, .1);
+            color: var(--yellow);
+            border: 1px solid rgba(255, 208, 96, .25)
+        }
+
+        .rb-lt {
+            background: rgba(255, 128, 64, .1);
+            color: var(--orange);
+            border: 1px solid rgba(255, 128, 64, .25)
+        }
+
+        .rb-item-desc {
+            font-size: .78rem;
+            color: var(--txt2);
+            line-height: 1.55
+        }
+
+        .rb-level {
+            display: flex;
+            gap: 2px;
+            margin-top: 5px
+        }
+
+        .rb-level-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 1px
+        }
+
+        /* ── INTERACTION CHECKER ── */
+        .interact-card {
+            background: var(--bgc);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-xl);
+            padding: 18px;
+            margin-bottom: 20px
+        }
+
+        .interact-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px
+        }
+
+        .int-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 11px;
+            border-radius: var(--r-md);
+            border: 1px solid
+        }
+
+        .int-ok {
+            background: rgba(0, 255, 157, .05);
+            border-color: rgba(0, 255, 157, .2)
+        }
+
+        .int-warn {
+            background: rgba(255, 208, 96, .05);
+            border-color: rgba(255, 208, 96, .2)
+        }
+
+        .int-bad {
+            background: rgba(255, 64, 96, .06);
+            border-color: rgba(255, 64, 96, .2)
+        }
+
+        .int-icon {
+            font-size: 1.1rem;
+            flex-shrink: 0
+        }
+
+        .int-name {
+            font-size: .82rem;
+            font-weight: 600;
+            color: var(--txt);
+            margin-bottom: 2px
+        }
+
+        .int-desc {
+            font-size: .77rem;
+            color: var(--txt2);
+            line-height: 1.5
+        }
+
+        .int-level {
+            margin-left: auto;
+            font-size: .67rem;
+            font-family: var(--mono);
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 4px;
+            flex-shrink: 0
+        }
+
+        .il-ok {
+            background: rgba(0, 255, 157, .15);
+            color: var(--em)
+        }
+
+        .il-warn {
+            background: rgba(255, 208, 96, .15);
+            color: var(--yellow)
+        }
+
+        .il-bad {
+            background: rgba(255, 64, 96, .15);
+            color: var(--red)
+        }
+
+        /* ── AI FULL ANALYSIS ── */
+        .full-analysis {
+            background: var(--bgc);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-xl);
+            padding: 20px;
+            margin-bottom: 20px
+        }
+
+        .fa-content {
+            font-size: .855rem;
+            line-height: 1.75;
+            color: var(--txt2)
+        }
+
+        .fa-content strong {
+            color: var(--txt)
+        }
+
+        .fa-content h3 {
+            font-family: var(--ff);
+            font-size: .95rem;
+            font-weight: 700;
+            color: var(--txt);
+            margin: 16px 0 7px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid var(--brd2)
+        }
+
+        .fa-content h3:first-child {
+            margin-top: 0
+        }
+
+        .fa-content ul {
+            padding-left: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            margin: 7px 0
+        }
+
+        .fa-content li {
+            line-height: 1.65
+        }
+
+        .fa-content li::marker {
+            color: var(--acc)
+        }
+
+        .fa-content code {
+            background: var(--bgch);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: var(--mono);
+            font-size: .8em;
+            color: var(--acc)
+        }
+
+        .fa-content p {
+            margin-bottom: .5em
+        }
+
+        .fa-content p:last-child {
+            margin-bottom: 0
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 14px;
+            background: var(--acc);
+            border-radius: 1px;
+            animation: cblink .65s ease infinite;
+            margin-left: 1px;
+            vertical-align: middle
+        }
+
+        @keyframes cblink {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: 0
+            }
+        }
+
+        /* ── ADVICE CARDS ── */
+        .advice-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px
+        }
+
+        .adv-card {
+            background: var(--bgch);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-lg);
+            padding: 15px;
+            transition: var(--tr)
+        }
+
+        .adv-card:hover {
+            border-color: var(--acc-brd);
+            transform: translateY(-1px)
+        }
+
+        .adv-ico {
+            font-size: 1.3rem;
+            margin-bottom: 7px
+        }
+
+        .adv-title {
+            font-family: var(--ff);
+            font-size: .82rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--txt)
+        }
+
+        .adv-text {
+            font-size: .77rem;
+            color: var(--txt2);
+            line-height: 1.55
+        }
+
+        .adv-verdict {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 8px;
+            font-size: .72rem;
+            font-family: var(--mono);
+            font-weight: 700
+        }
+
+        /* ── ALTERNATIVE SUGGESTIONS ── */
+        .alts {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            margin-bottom: 20px
+        }
+
+        .alt-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            background: var(--bgch);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-lg);
+            cursor: pointer;
+            transition: var(--tr)
+        }
+
+        .alt-item:hover {
+            border-color: var(--em-brd);
+            background: var(--em-dim);
+            transform: translateX(3px)
+        }
+
+        .alt-icon {
+            font-size: 1.2rem;
+            flex-shrink: 0
+        }
+
+        .alt-name {
+            font-size: .84rem;
+            font-weight: 600;
+            color: var(--txt)
+        }
+
+        .alt-why {
+            font-size: .75rem;
+            color: var(--txt2);
+            margin-top: 1px
+        }
+
+        .alt-score {
+            margin-left: auto;
+            font-family: var(--mono);
+            font-size: .8rem;
+            font-weight: 700;
+            color: var(--em)
+        }
+
+        /* ═══════════════════════════════════════════
+   HISTORY PANEL
+═══════════════════════════════════════════ */
+        .hp-title {
+            font-family: var(--mono);
+            font-size: .68rem;
+            color: var(--txt3);
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .hp-title::before {
+            content: '';
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--acc)
+        }
+
+        .hist-item {
+            padding: 11px 13px;
+            background: var(--bgc);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-md);
+            margin-bottom: 7px;
+            cursor: pointer;
+            transition: var(--tr)
+        }
+
+        .hist-item:hover {
+            border-color: var(--acc-brd);
+            background: var(--acc-dim)
+        }
+
+        .hi-query {
+            font-size: .82rem;
+            font-weight: 600;
+            color: var(--txt);
+            margin-bottom: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden
+        }
+
+        .hi-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: .67rem;
+            font-family: var(--mono)
+        }
+
+        .hi-cat {
+            color: var(--acc)
+        }
+
+        .hi-time {
+            color: var(--txt3)
+        }
+
+        .hi-impact {
+            font-weight: 700
+        }
+
+        .hist-empty {
+            text-align: center;
+            padding: 24px 12px;
+            color: var(--txt3);
+            font-size: .8rem;
+            font-family: var(--mono)
+        }
+
+        .clear-hist {
+            width: 100%;
+            padding: 7px;
+            border-radius: var(--r-sm);
+            border: 1px solid var(--brd2);
+            background: transparent;
+            color: var(--txt3);
+            font-size: .73rem;
+            cursor: pointer;
+            transition: var(--tr);
+            font-family: var(--mono);
+            margin-top: 8px
+        }
+
+        .clear-hist:hover {
+            border-color: rgba(255, 64, 96, .3);
+            color: var(--red)
+        }
+
+        /* ── HEALTH CONTEXT PANEL ── */
+        .hcp {
+            margin-bottom: 18px;
+            padding: 12px 14px;
+            background: var(--acc-dim);
+            border: 1px solid var(--acc-brd);
+            border-radius: var(--r-lg)
+        }
+
+        .hcp-title {
+            font-size: .67rem;
+            font-family: var(--mono);
+            color: var(--acc);
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px
+        }
+
+        .hcp-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 4px
+        }
+
+        .hcp-stat {
+            display: flex;
+            justify-content: space-between;
+            font-size: .74rem
+        }
+
+        .hcp-stat-lbl {
+            color: var(--txt2)
+        }
+
+        .hcp-stat-val {
+            font-weight: 600;
+            color: var(--txt);
+            font-family: var(--mono)
+        }
+
+        /* TOAST */
+        #toasts {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 7px
+        }
+
+        .toast {
+            background: var(--bgc);
+            border: 1px solid var(--brd2);
+            border-left: 2px solid var(--acc);
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: .8rem;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, .6);
+            min-width: 220px;
+            animation: fadeUp .25s ease;
+            font-family: var(--fb)
+        }
+
+        /* PRINT */
+        @media print {
+
+            .nav,
+            .sidebar,
+            .oracle-search,
+            .quick-prompts,
+            .history-panel,
+            .idle-state,
+            .loading-state {
+                display: none !important
+            }
+
+            .main {
+                margin: 0
+            }
+
+            .analysis-area {
+                max-height: none;
+                overflow: visible
+            }
+
+            .result-wrap {
+                display: block !important
+            }
+        }
+
+        /* RESPONSIVE */
+        @media(max-width:1100px) {
+            .content-area {
+                grid-template-columns: 1fr
+            }
+
+            .history-panel {
+                display: none
+            }
+
+            .rb-grid {
+                grid-template-columns: 1fr
+            }
+
+            .comp-grid {
+                grid-template-columns: 1fr 1fr
+            }
+
+            .advice-grid {
+                grid-template-columns: 1fr
+            }
+        }
+
+        @media(max-width:860px) {
+            .sidebar {
+                display: none
+            }
+
+            .main {
+                margin-left: 0
+            }
+
+            .oracle-hero,
+            .oracle-search,
+            .quick-prompts {
+                padding-left: 16px;
+                padding-right: 16px
+            }
+
+            .analysis-area {
+                padding: 16px
+            }
+
+            .hero-title {
+                font-size: 1.8rem
+            }
+
+            .comp-grid {
+                grid-template-columns: 1fr 1fr
+            }
+        }
+
+        /* ══════════════════════════════════════
+   HAMBURGER BUTTON
+══════════════════════════════════════ */
+        .hamburger {
+            display: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--bgc);
+            border: 1px solid var(--brd2);
+            cursor: pointer;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            flex-shrink: 0;
+            transition: var(--tr);
+            z-index: 400;
+        }
+
+        .hamburger:hover {
+            border-color: var(--rose-brd, var(--skin-brd, rgba(255, 255, 255, .2)));
+        }
+
+        .hamburger span {
+            display: block;
+            width: 18px;
+            height: 2px;
+            background: var(--txt);
+            border-radius: 2px;
+            transition: var(--tr);
+        }
+
+        .hamburger.open span:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+
+        .hamburger.open span:nth-child(2) {
+            opacity: 0;
+            transform: scaleX(0);
+        }
+
+        .hamburger.open span:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+
+        /* ══════════════════════════════════════
+   SIDEBAR OVERLAY (mobile)
+══════════════════════════════════════ */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .6);
+            backdrop-filter: blur(4px);
+            z-index: 198;
+            animation: fadeIn .2s ease;
+        }
+
+        .sidebar-overlay.visible {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* ══════════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+══════════════════════════════════════ */
+        @media (max-width: 900px) {
+
+            /* Show hamburger in nav */
+            .hamburger {
+                display: flex;
+            }
+
+            /* Sidebar: slide in from left */
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform .28s cubic-bezier(.4, 0, .2, 1);
+                z-index: 199;
+                box-shadow: 8px 0 40px rgba(0, 0, 0, .5);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            /* Main content fills full width */
+            .main {
+                margin-left: 0 !important;
+                padding: 14px 14px 80px;
+            }
+
+            /* Grids: 1 column on mobile */
+            .grid-2,
+            .grid-3,
+            .grid-4,
+            .dashboard-grid,
+            .diag-layout,
+            .evolution-layout,
+            .derm-chat-layout,
+            .midwife-layout,
+            .profile-skin-layout,
+            .nutri-grid,
+            .week-detail-layout,
+            .prep-categories {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* Products grid: 2 cols on mobile */
+            .products-grid {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            /* Advice/prep cards: 1 col */
+            .advice-cards,
+            .prep-cards {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* Tabs: scrollable horizontally */
+            .tabs {
+                width: 100% !important;
+                overflow-x: auto;
+                flex-wrap: nowrap !important;
+                scrollbar-width: none;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .tabs::-webkit-scrollbar {
+                display: none;
+            }
+
+            .tab {
+                white-space: nowrap;
+                font-size: .78rem;
+                padding: 7px 12px;
+            }
+
+            /* Nav: compress */
+            .nav {
+                padding: 0 14px;
+                gap: 8px;
+            }
+
+            .nav-badge {
+                display: none;
+            }
+
+            /* Page title smaller */
+            .page-title {
+                font-size: 1.5rem !important;
+            }
+
+            /* Chat layouts: full height */
+            .derm-chat-layout,
+            .midwife-layout {
+                height: auto !important;
+            }
+
+            .chat-col {
+                min-height: 500px;
+            }
+
+            /* Hide side tools on mobile */
+            .derm-tools,
+            .midwife-tools {
+                display: none;
+            }
+
+            /* Concern/forbidden grids: 2 cols */
+            .concern-grid,
+            .forbidden-grid {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            /* Food cats: 3 cols */
+            .food-cats {
+                grid-template-columns: 1fr 1fr 1fr !important;
+            }
+
+            /* Bag list: 2 cols */
+            .bag-list {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            /* Quick stats: wrap */
+            .quick-stats {
+                flex-wrap: wrap;
+            }
+
+            .qs {
+                min-width: 80px !important;
+            }
+
+            /* Skin type grid: 3 cols */
+            .skin-type-grid {
+                grid-template-columns: repeat(3, 1fr) !important;
+            }
+
+            /* Hero week counter */
+            .week-counter {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main {
+                padding: 10px 10px 70px;
+            }
+
+            .page-title {
+                font-size: 1.25rem !important;
+            }
+
+            .products-grid,
+            .advice-cards {
+                grid-template-columns: 1fr !important;
+            }
+
+            .food-cats {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            .bag-list {
+                grid-template-columns: 1fr !important;
+            }
+
+            .card {
+                padding: 14px;
+            }
+
+            .tab {
+                font-size: .72rem;
+                padding: 6px 10px;
+            }
+
+            .prep-categories {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            .advice-categories {
+                grid-template-columns: 1fr 1fr !important;
+            }
+        }
+
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 58px;
+            left: 0;
+            right: 0;
+            background: rgba(8, 4, 16, .98);
+            backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--brd);
+            padding: 10px 14px 18px;
+            z-index: 299;
+            flex-direction: column;
+            gap: 2px;
+            max-height: calc(100vh - 58px);
+            overflow-y: auto;
+        }
+
+        .mobile-menu.open {
+            display: flex;
+        }
+
+        .hamburger {
+            display: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--bgc);
+            border: 1px solid var(--brd2);
+            cursor: pointer;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: var(--tr);
+        }
+
+        .hamburger span {
+            display: block;
+            width: 18px;
+            height: 2px;
+            background: var(--txt);
+            border-radius: 2px;
+            transition: var(--tr);
+        }
+
+        .hamburger.open span:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+
+        .hamburger.open span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.open span:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+
+        @media (max-width: 900px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0 !important;
+                padding: 14px 14px 80px;
+            }
+
+            .nav-badge {
+                display: none;
+            }
+
+            /* vos autres règles responsive ici */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="ambient">
+        <div class="orb orb1"></div>
+        <div class="orb orb2"></div>
+        <div class="orb orb3"></div>
+    </div>
+    <div class="scan"></div>
+
+    <!-- NAV -->
+    <nav class="nav">
+        <a class="brand" href="dashboard.html"><span class="brand-dot"></span>VitaCore</a>
+        <button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+        <div class="mobile-menu" id="mobile-menu">
+            <a class="sb-link" href="dashboard.html">🏠 Dashboard</a>
+            <a class="sb-link" href="health-form.html">📋 Bilan Santé</a>
+            <a class="sb-link" href="analytics.html">📊 Analyses</a>
+            <a class="sb-link" href="ai-bilan.html">🩺 Bilan IA</a>
+            <a class="sb-link" href="consultation.html">🏥 Consultation IA</a>
+            <a class="sb-link" href="evolution.html">📈 Évolution</a>
+            <a class="sb-link" href="nutri.html">🥦 Nutri</a>
+            <a class="sb-link" href="lifestyle.html">✨ Style de Vie</a>
+            <a class="sb-link" href="derma.html">💆 Derma</a>
+            <a class="sb-link" href="maternite.html">🌸 Maternité</a>
+            <a class="sb-link" href="guide.html">🔮 Guide Oracle</a>
+            <a class="sb-link" href="psyche.html">🧠 Psyché</a>
+            <a class="sb-link" href="nexus_ia.html">🌐 Nexus</a>
+
+            <!-- SÉPARATEUR -->
+            <div style="height:1px;background:var(--brd);margin:8px 0"></div>
+
+            <!-- URGENCES -->
+            <div
+                style="font-size:.61rem;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.14em;margin-bottom:7px;padding:0 8px">
+                Urgences</div>
+            <div
+                style="padding:8px 11px;background:rgba(255,90,122,.05);border:1px solid rgba(255,90,122,.2);border-radius:var(--r-sm);font-size:.74rem;color:var(--danger);line-height:1.6;margin-bottom:12px">
+                ⚠️ Secours Abalo: <strong>88 80</strong><br>Urgences: <strong>88 80</strong><br>Maternité 24h:
+                <strong>voir rubrique</strong>
+            </div>
+            <!-- COMPTE -->
+            <div
+                style="font-size:.61rem;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.14em;margin-bottom:7px;padding:0 8px">
+                Compte</div>
+            <a class="sb-link" href="#" id="logout-btn-mobile">🚪 &nbsp;Déconnexion</a>
+        </div>
+        <div class="nav-badge"><span class="npd"></span>Oracle IA · Analyse en temps réel</div>
+        <div style="display:flex;gap:8px">
+            <button class="btn btn-sm" id="clear-result-btn" style="display:none">✕ Effacer</button>
+            <a href="dashboard.html" class="btn btn-sm">← Dashboard</a>
+        </div>
+    </nav>
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+    <!-- LAYOUT -->
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sb-sec">
+                <div class="sb-tt">Navigation</div>
+                <a class="sb-link" href="dashboard.html">🏠 &nbsp;Dashboard</a>
+                <a class="sb-link" href="health-form.html">📋 &nbsp;Bilan Santé</a>
+                <a class="sb-link" href="analytics.html">📊 &nbsp;Analyses</a>
+                <a class="sb-link" href="ai-bilan.html">🩺 &nbsp;Bilan IA</a>
+                <a class="sb-link" href="consultation.html">🏥 &nbsp;Consultation IA</a>
+                <a class="sb-link" href="evolution.html">📈 &nbsp;Évolution</a>
+                <a class="sb-link" href="nutri.html">🥦 &nbsp;Nutri · Nutrition IA</a>
+                <a class="sb-link" href="lifestyle.html">✨ &nbsp;Style de Vie</a>
+                <a class="sb-link" href="derma.html">💆 &nbsp;Derma · Beauté IA</a>
+                <a class="sb-link" href="maternite.html">🌸 &nbsp;Maternité · Grossesse IA</a>
+                <a class="sb-link active" href="guide.html">🔮 &nbsp;Guide Oracle</a>
+                <a class="sb-link" href="psyche.html">🧠 &nbsp;Psyché</a>
+                <a class="sb-link" href="nexus_ia.html">🌐 &nbsp;Nexus · Analyse</a>
+            </div>
+            <div class="sb-sec">
+                <div class="sb-tt">Urgences</div>
+                <div
+                    style="padding:8px 11px;background:rgba(255,90,122,.05);border:1px solid rgba(255,90,122,.2);border-radius:var(--r-sm);font-size:.74rem;color:var(--danger);line-height:1.6">
+                    ⚠️ Secours Abalo: <strong>88 80</strong><br>Urgences: <strong>88 80</strong><br>Maternité 24h:
+                    <strong>voir rubrique</strong>
+                </div>
+            </div>
+            <div class="sb-sec">
+                <div class="sb-tt">Compte</div>
+                <a class="sb-link" href="#" id="logout-btn">🚪 &nbsp;Déconnexion</a>
+            </div>
+        </aside>
+
+        <div class="main">
+            <!-- HERO -->
+            <div class="oracle-hero">
+                <div class="hero-eyebrow">
+                    <div class="eyebrow-line"></div>
+                    <div class="eyebrow-txt">Oracle IA · Guide Santé Personnalisé</div>
+                    <div class="eyebrow-line"></div>
+                </div>
+                <div class="hero-title">Demandez tout à <span class="hl">l'Oracle</span></div>
+                <div class="hero-sub">Aliment, boisson, médicament, activité, voyage, supplément, cosmétique… L'Oracle
+                    analyse la composition, la compare à votre profil santé et vous donne les conséquences, risques et
+                    avantages à court et long terme.</div>
+            </div>
+
+            <!-- SEARCH -->
+            <div class="oracle-search">
+                <div class="search-box">
+                    <div class="search-row">
+                        <textarea id="oracle-input" class="search-textarea"
+                            placeholder="Ex: Puis-je boire du café avec mon hypertension ? · Est-ce que le paracétamol 1g est sûr pour moi ? · J'envisage un voyage au Maroc, quels risques ? · Que se passe-t-il si je mange du saumon tous les jours ?…"
+                            rows="2"></textarea>
+                        <div class="search-actions">
+                            <button class="analyze-btn" id="analyze-btn">
+                                <span id="analyze-icon">🔮</span>
+                                <span id="analyze-label">Analyser</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="search-meta">
+                        <div class="cats" id="categories">
+                            <button class="cat-btn active" data-cat="auto">🎯 Auto</button>
+                            <button class="cat-btn" data-cat="aliment">🥗 Aliment</button>
+                            <button class="cat-btn" data-cat="boisson">💧 Boisson</button>
+                            <button class="cat-btn" data-cat="medicament">💊 Médicament</button>
+                            <button class="cat-btn" data-cat="activite">🏃 Activité</button>
+                            <button class="cat-btn" data-cat="voyage">✈️ Voyage</button>
+                            <button class="cat-btn" data-cat="supplement">🧪 Supplément</button>
+                            <button class="cat-btn" data-cat="produit">🧴 Produit</button>
+                        </div>
+                        <div class="depth-row">
+                            <span>Profondeur :</span>
+                            <label class="depth-opt"><input type="radio" name="depth" value="rapide" id="d-rapide">
+                                Rapide</label>
+                            <label class="depth-opt"><input type="radio" name="depth" value="complet" id="d-complet"
+                                    checked> Complet</label>
+                            <label class="depth-opt"><input type="radio" name="depth" value="expert" id="d-expert">
+                                Expert</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QUICK PROMPTS -->
+            <div class="quick-prompts">
+                <div class="qp-title">Exemples de questions</div>
+                <div class="qp-grid" id="qp-grid"></div>
+            </div>
+
+            <!-- CONTENT AREA -->
+            <div class="content-area">
+                <!-- ANALYSIS -->
+                <div class="analysis-area" id="analysis-area">
+                    <!-- IDLE -->
+                    <div class="idle-state" id="idle-state">
+                        <div class="idle-orb">🔮</div>
+                        <div class="idle-title">L'Oracle est prêt</div>
+                        <div class="idle-desc">Posez n'importe quelle question sur un aliment, boisson, médicament,
+                            activité ou voyage. L'Oracle analysera la composition et l'impact sur votre santé
+                            personnelle.</div>
+                    </div>
+                    <!-- LOADING -->
+                    <div class="loading-state" id="loading-state">
+                        <div class="load-steps" id="load-steps"></div>
+                    </div>
+                    <!-- RESULT -->
+                    <div class="result-wrap" id="result-wrap">
+                        <div class="result-hdr">
+                            <div>
+                                <div class="result-item-name" id="res-name">—</div>
+                                <div class="result-item-cat" id="res-cat">—</div>
+                            </div>
+                            <div class="result-actions">
+                                <button class="btn btn-sm btn-em" id="save-btn">💾 Sauvegarder</button>
+                                <button class="btn btn-sm" onclick="window.print()">🖨 Imprimer</button>
+                            </div>
+                        </div>
+                        <!-- IMPACT RING -->
+                        <div class="impact-hero" id="impact-hero">
+                            <div class="impact-ring">
+                                <canvas id="impactCanvas"></canvas>
+                                <div class="impact-center">
+                                    <div class="impact-score" id="impact-score-num">—</div>
+                                    <div class="impact-lbl">IMPACT</div>
+                                </div>
+                            </div>
+                            <div class="impact-info">
+                                <h3 id="impact-verdict-title">—</h3>
+                                <div class="impact-verdict" id="impact-verdict-text">—</div>
+                                <div class="impact-tags" id="impact-tags"></div>
+                            </div>
+                        </div>
+                        <!-- COMPOSITION -->
+                        <div class="comp-section" id="comp-section" style="display:none">
+                            <div class="sec-title"><span class="sec-dot"></span>Composition & Valeurs Nutritionnelles
+                            </div>
+                            <div class="comp-grid" id="comp-grid"></div>
+                        </div>
+                        <!-- RISKS & BENEFITS -->
+                        <div class="rb-grid" id="rb-grid"></div>
+                        <!-- INTERACTIONS WITH PROFILE -->
+                        <div class="interact-card" id="interact-card" style="display:none">
+                            <div class="sec-title"><span class="sec-dot"
+                                    style="background:var(--yellow)"></span>Interactions avec votre Profil Santé</div>
+                            <div class="interact-items" id="interact-items"></div>
+                        </div>
+                        <!-- FULL AI ANALYSIS (streaming) -->
+                        <div class="full-analysis">
+                            <div class="sec-title"><span class="sec-dot" style="background:var(--em)"></span>Analyse
+                                Complète par l'Oracle IA</div>
+                            <div class="fa-content" id="ai-full-content"></div>
+                        </div>
+                        <!-- ADVICE -->
+                        <div id="advice-section" style="display:none">
+                            <div class="sec-title" style="margin-bottom:12px"><span class="sec-dot"
+                                    style="background:var(--yellow)"></span>Recommandations Personnalisées</div>
+                            <div class="advice-grid" id="advice-grid"></div>
+                        </div>
+                        <!-- ALTERNATIVES -->
+                        <div id="alts-section" style="display:none">
+                            <div class="sec-title" style="margin-bottom:12px"><span class="sec-dot"
+                                    style="background:var(--em)"></span>Alternatives Plus Adaptées</div>
+                            <div class="alts" id="alts-list"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HISTORY -->
+                <div class="history-panel">
+                    <!-- USER HEALTH CONTEXT -->
+                    <div class="hcp">
+                        <div class="hcp-title">⚕ Votre profil santé</div>
+                        <div class="hcp-stats" id="hcp-stats"></div>
+                    </div>
+                    <div class="hp-title">Historique des analyses</div>
+                    <div id="hist-list"></div>
+                    <button class="clear-hist" id="clear-hist-btn">🗑 Effacer l'historique</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toasts"></div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        /* ═══════════════════════════════════════════
+           CONFIG
+        ═══════════════════════════════════════════ */
+        const API = 'http://localhost:8040/api/v1';
+        const ANTHROPIC_API = `${API}/ai/chat`;
+        const MODEL = 'claude-sonnet-4-20250514';
+        const tk = () => localStorage.getItem('vc_token');
+        const UO = () => { try { return JSON.parse(localStorage.getItem('vc_user')); } catch { return null; } };
+        if (!tk()) location.href = 'index.html';
+        const U = UO();
+        document.getElementById('logout-btn').addEventListener('click', e => { e.preventDefault(); localStorage.clear(); location.href = 'index.html'; });
+
+        /* ═══════════════════════════════════════════
+           HEALTH DATA
+        ═══════════════════════════════════════════ */
+        function getMs() {
+            const s = localStorage.getItem('vc_measurements');
+            if (s) return JSON.parse(s);
+            return [
+                { date: 'Sep 2024', weight: 84.2, bps: 135, bpd: 88, hr: 78, glucose: 108, waist: 92, score: 58, wellbeing: 5 },
+                { date: 'Oct 2024', weight: 83.0, bps: 132, bpd: 86, hr: 76, glucose: 104, waist: 90, score: 62, wellbeing: 6 },
+                { date: 'Nov 2024', weight: 81.5, bps: 128, bpd: 84, hr: 74, glucose: 101, waist: 88, score: 66, wellbeing: 6 },
+                { date: 'Déc 2024', weight: 80.8, bps: 126, bpd: 82, hr: 73, glucose: 99, waist: 86, score: 69, wellbeing: 7 },
+                { date: 'Jan 2025', weight: 79.5, bps: 124, bpd: 81, hr: 72, glucose: 97, waist: 84, score: 72, wellbeing: 7 },
+                { date: 'Fév 2025', weight: 78.2, bps: 122, bpd: 80, hr: 70, glucose: 95, waist: 82, score: 76, wellbeing: 8 },
+            ];
+        }
+        const ms = getMs();
+        const L = ms[ms.length - 1];
+        const bmi = +(L.weight / (1.75 ** 2)).toFixed(1);
+
+        function hCtx() {
+            return `PROFIL SANTÉ DU PATIENT (${U?.first_name || ''} ${U?.last_name || ''}):
+- Âge estimé : 35 ans | Taille : 1m75
+- Poids : ${L.weight} kg | IMC : ${bmi} (${bmi < 18.5 ? 'insuffisant' : bmi < 25 ? 'normal' : bmi < 30 ? 'surpoids' : 'obésité'})
+- Tension artérielle : ${L.bps}/${L.bpd} mmHg (${L.bps >= 140 ? 'HTA' : L.bps >= 130 ? 'élevée' : 'normale'})
+- Fréquence cardiaque repos : ${L.hr} bpm
+- Glycémie : ${L.glucose} mg/dL (${L.glucose >= 126 ? 'diabète' : L.glucose >= 100 ? 'pré-diabète' : 'normale'})
+- Tour de taille : ${L.waist || 82} cm
+- Score de santé global : ${L.score}/100
+- Bien-être subjectif : ${L.wellbeing || 7}/10
+- Tendance : amélioration progressive sur ${ms.length} mois`;
+        }
+
+        /* ═══════════════════════════════════════════
+           HEALTH CONTEXT PANEL
+        ═══════════════════════════════════════════ */
+        document.getElementById('hcp-stats').innerHTML = [
+            { l: 'Poids', v: `${L.weight} kg` },
+            { l: 'IMC', v: bmi },
+            { l: 'Tension', v: `${L.bps}/${L.bpd}` },
+            { l: 'Glycémie', v: `${L.glucose} mg/dL` },
+            { l: 'FC repos', v: `${L.hr} bpm` },
+            { l: 'Score santé', v: `${L.score}/100` },
+        ].map(s => `<div class="hcp-stat"><span class="hcp-stat-lbl">${s.l}</span><span class="hcp-stat-val">${s.v}</span></div>`).join('');
+
+        /* ═══════════════════════════════════════════
+           QUICK PROMPTS
+        ═══════════════════════════════════════════ */
+        const QPS = [
+            { icon: '☕', text: 'Le café est-il bon ou mauvais pour moi ?' },
+            { icon: '🍷', text: 'Un verre de vin rouge par soir, quels risques ?' },
+            { icon: '💊', text: 'L\'ibuprofène 400mg avec mon hypertension ?' },
+            { icon: '🏊', text: 'La natation 3x/semaine : bénéfices pour moi ?' },
+            { icon: '✈️', text: 'Voyage en altitude (ski) avec ma tension ?' },
+            { icon: '🥩', text: 'Manger de la viande rouge quotidiennement ?' },
+            { icon: '🧃', text: 'Jus d\'orange industriel tous les matins ?' },
+            { icon: '🧴', text: 'Créatine monohydrate : compatible avec mon profil ?' },
+            { icon: '🫚', text: 'L\'huile de palme dans les aliments transformés ?' },
+            { icon: '🌿', text: 'Prendre de la mélatonine 1mg pour dormir ?' },
+            { icon: '🍫', text: 'Chocolat noir 70% chaque jour : bon ou mauvais ?' },
+            { icon: '🏋️', text: 'HIIT intense 5x/semaine avec ma fréquence cardiaque ?' },
+        ];
+
+        document.getElementById('qp-grid').innerHTML = QPS.map(q =>
+            `<div class="qp-card" onclick="launchQuery('${q.text.replace(/'/g, "\\'")}')"><span class="qp-icon">${q.icon}</span>${q.text}</div>`
+        ).join('');
+
+        /* ═══════════════════════════════════════════
+           CATEGORIES
+        ═══════════════════════════════════════════ */
+        let activeCategory = 'auto';
+        document.querySelectorAll('.cat-btn').forEach(b => b.addEventListener('click', () => {
+            document.querySelectorAll('.cat-btn').forEach(x => x.classList.remove('active'));
+            b.classList.add('active');
+            activeCategory = b.dataset.cat;
+        }));
+
+        /* ═══════════════════════════════════════════
+           HISTORY
+        ═══════════════════════════════════════════ */
+        function loadHistory() { try { return JSON.parse(localStorage.getItem('vc_oracle_hist') || '[]'); } catch { return []; } }
+        function saveHistory(h) { localStorage.setItem('vc_oracle_hist', JSON.stringify(h.slice(0, 20))); }
+        function renderHistory() {
+            const h = loadHistory();
+            const el = document.getElementById('hist-list');
+            if (!h.length) { el.innerHTML = '<div class="hist-empty">Aucune analyse pour l\'instant</div>'; return; }
+            el.innerHTML = h.map((item, i) => `
+    <div class="hist-item" onclick="reloadQuery(${i})">
+      <div class="hi-query">${esc(item.query)}</div>
+      <div class="hi-meta">
+        <span class="hi-cat">${item.cat || '—'}</span>
+        <span class="hi-impact" style="color:${impactColor(item.score || 50)}">${item.score ? `${item.score}/100` : '—'}</span>
+        <span class="hi-time">${item.time || ''}</span>
+      </div>
+    </div>`).join('');
+        }
+        function impactColor(s) { return s >= 70 ? 'var(--green)' : s >= 40 ? 'var(--yellow)' : 'var(--red)'; }
+        function reloadQuery(i) { const h = loadHistory(); if (h[i]) launchQuery(h[i].query); }
+        document.getElementById('clear-hist-btn').addEventListener('click', () => { localStorage.removeItem('vc_oracle_hist'); renderHistory(); toast('Historique effacé', 'info'); });
+        renderHistory();
+
+        /* ═══════════════════════════════════════════
+           INPUT HANDLING
+        ═══════════════════════════════════════════ */
+        const inp = document.getElementById('oracle-input');
+        inp.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); startAnalysis(); } });
+        inp.addEventListener('input', () => { inp.style.height = 'auto'; inp.style.height = Math.min(inp.scrollHeight, 120) + 'px'; });
+        document.getElementById('analyze-btn').addEventListener('click', startAnalysis);
+        document.getElementById('clear-result-btn').addEventListener('click', resetToIdle);
+
+        function launchQuery(text) {
+            inp.value = text;
+            inp.style.height = 'auto';
+            inp.style.height = Math.min(inp.scrollHeight, 120) + 'px';
+            startAnalysis();
+        }
+
+        /* ═══════════════════════════════════════════
+           ANALYSIS SYSTEM PROMPT
+        ═══════════════════════════════════════════ */
+        function buildSystem(depth) {
+            const depthInstr = depth === 'rapide'
+                ? 'Réponse concise (6-10 phrases par section).'
+                : depth === 'expert'
+                    ? 'Analyse très détaillée avec références scientifiques, études cliniques, mécanismes biochimiques.'
+                    : 'Analyse complète et équilibrée (8-15 phrases par section).';
+
+            return `Tu es l'Oracle VitaCore, un système d'intelligence artificielle médical et nutritionnel de niveau expert. Tu analyses TOUT ce qu'un utilisateur te demande (aliments, boissons, médicaments, activités, voyages, suppléments, cosmétiques, substances) et tu l'évalues en profondeur par rapport à son profil de santé personnel.
+
+${depthInstr}
+
+PROFIL DU PATIENT :
+${hCtx()}
+
+STRUCTURE DE TA RÉPONSE :
+Tu dois répondre en JSON valide PUIS en texte libre après le JSON. Voici la structure JSON :
+
+<ORACLE_JSON>
+{
+  "item_name": "Nom de l'élément analysé",
+  "category": "aliment|boisson|medicament|activite|voyage|supplement|produit",
+  "impact_score": 65,
+  "impact_label": "Modéré",
+  "impact_verdict": "Résumé en 1-2 phrases",
+  "impact_color": "#ffd060",
+  "tags": ["tag1","tag2","tag3"],
+  "composition": [
+    {"name":"Composant","value":"100mg","pct":60,"color":"#00b4ff","status":"ok|warn|bad","note":"explication courte"}
+  ],
+  "risks": [
+    {"name":"Risque court terme","horizon":"court","level":2,"desc":"description détaillée","max_level":5},
+    {"name":"Risque long terme","horizon":"long","level":3,"desc":"description","max_level":5}
+  ],
+  "benefits": [
+    {"name":"Bénéfice court terme","horizon":"court","level":4,"desc":"description","max_level":5},
+    {"name":"Bénéfice long terme","horizon":"long","level":3,"desc":"description","max_level":5}
+  ],
+  "profile_interactions": [
+    {"name":"Tension artérielle","status":"ok|warn|bad","desc":"impact spécifique sur la tension de ce patient","icon":"🩸"}
+  ],
+  "advice": [
+    {"icon":"✅","title":"Conseil principal","text":"texte du conseil","verdict":"ok|warn|bad"}
+  ],
+  "alternatives": [
+    {"icon":"🥦","name":"Alternative","why":"pourquoi meilleure","score":85}
+  ]
+}
+</ORACLE_JSON>
+
+Après le JSON, rédige une ANALYSE COMPLÈTE structurée avec les sections :
+### 🔬 Composition & Mécanismes
+### ⚠️ Risques à Court Terme
+### 📅 Risques à Long Terme  
+### ✅ Bénéfices à Court Terme
+### 🌱 Bénéfices à Long Terme
+### 👤 Impact Personnalisé sur Votre Profil
+### 💡 Recommandations & Conseils
+
+Adapte TOUJOURS l'analyse au profil de santé du patient (IMC, tension, glycémie, score de santé). Sois précis, scientifiquement rigoureux, bienveillant. Réponds en FRANÇAIS.`;
+        }
+
+        /* ═══════════════════════════════════════════
+           LOADING STEPS
+        ═══════════════════════════════════════════ */
+        const LOAD_STEPS = [
+            { icon: '🔍', label: 'Identification & classification' },
+            { icon: '🧬', label: 'Analyse de la composition' },
+            { icon: '👤', label: 'Comparaison avec votre profil' },
+            { icon: '⚠️', label: 'Évaluation des risques CT & LT' },
+            { icon: '✅', label: 'Calcul des bénéfices' },
+            { icon: '💡', label: 'Génération des recommandations' },
+        ];
+
+        function showLoadingStep(idx) {
+            const els = document.querySelectorAll('.ls-item');
+            els.forEach((el, i) => {
+                if (i < idx) el.classList.add('done'), el.classList.remove('active');
+                else if (i === idx) el.classList.add('active'), el.classList.remove('done');
+                else el.classList.remove('active', 'done');
+            });
+            if (idx < els.length) {
+                const st = els[idx]?.querySelector('.ls-status');
+                if (st) st.innerHTML = '<div class="spinner"></div>';
+            }
+            if (idx > 0) {
+                const prev = els[idx - 1]?.querySelector('.ls-status');
+                if (prev) prev.textContent = '✓';
+            }
+        }
+
+        /* ═══════════════════════════════════════════
+           IMPACT CHART
+        ═══════════════════════════════════════════ */
+        let impactChart = null;
+        function renderImpactRing(score, color) {
+            const ctx = document.getElementById('impactCanvas').getContext('2d');
+            if (impactChart) impactChart.destroy();
+            const inv = 100 - score;
+            impactChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: { datasets: [{ data: [score, inv], backgroundColor: [color, 'rgba(255,255,255,.04)'], borderWidth: 0, borderRadius: 5 }] },
+                options: { cutout: '76%', plugins: { legend: { display: false }, tooltip: { enabled: false } }, animation: { duration: 1000 } }
+            });
+            document.getElementById('impact-score-num').textContent = score;
+            document.getElementById('impact-score-num').style.color = color;
+        }
+
+        /* ═══════════════════════════════════════════
+           PARSE & RENDER ORACLE JSON
+        ═══════════════════════════════════════════ */
+        function parseOracleJSON(text) {
+            const m = text.match(/<ORACLE_JSON>([\s\S]*?)<\/ORACLE_JSON>/);
+            if (!m) return null;
+            try { return JSON.parse(m[1]); } catch { return null; }
+        }
+
+        function renderResult(data, fullText) {
+            document.getElementById('idle-state').style.display = 'none';
+            document.getElementById('loading-state').classList.remove('show');
+            document.getElementById('clear-result-btn').style.display = 'flex';
+            const wrap = document.getElementById('result-wrap');
+            wrap.classList.add('show');
+
+            // Header
+            document.getElementById('res-name').textContent = data.item_name || '—';
+            document.getElementById('res-cat').textContent = `⬡ ${(data.category || '').toUpperCase()} · Analyse Oracle VitaCore`;
+
+            // Impact ring
+            const col = data.impact_color || '#ffd060';
+            renderImpactRing(data.impact_score || 50, col);
+            document.getElementById('impact-verdict-title').textContent = `Impact ${data.impact_label || '—'}`;
+            document.getElementById('impact-verdict-text').textContent = data.impact_verdict || '—';
+            document.getElementById('impact-tags').innerHTML = (data.tags || []).map(t =>
+                `<span class="itag" style="background:${col}22;color:${col};border:1px solid ${col}44">${t}</span>`).join('');
+
+            // Composition
+            if (data.composition?.length) {
+                document.getElementById('comp-section').style.display = 'block';
+                const statusColors = { ok: 'var(--green)', warn: 'var(--yellow)', bad: 'var(--red)' };
+                document.getElementById('comp-grid').innerHTML = data.composition.map(c => `
+      <div class="comp-item">
+        <div class="comp-name">${c.name}</div>
+        <div class="comp-val" style="color:${c.color || 'var(--acc)'}">${c.value}</div>
+        <div class="comp-bar"><div class="comp-fill" style="width:${c.pct || 50}%;background:${c.color || 'var(--acc)'}"></div></div>
+        <div class="comp-status" style="color:${statusColors[c.status] || 'var(--txt2)'}">${c.status === 'ok' ? '✓ OK' : c.status === 'warn' ? '⚠ Attention' : c.status === 'bad' ? '✕ Élevé' : ''} ${c.note || ''}</div>
+      </div>`).join('');
+            }
+
+            // Risks & Benefits
+            const levelDots = (l, max, color) => Array.from({ length: max || 5 }, (_, i) =>
+                `<div class="rb-level-dot" style="background:${i < l ? color : 'var(--brd2)'}"></div>`).join('');
+            const risks = data.risks || [];
+            const benefits = data.benefits || [];
+            document.getElementById('rb-grid').innerHTML = `
+    <div class="rb-card rb-card-risk">
+      <div class="rb-title rb-risk-title">⚠️ Risques</div>
+      <div class="rb-items">${risks.map(r => `
+        <div class="rb-item">
+          <div class="rb-item-hdr">
+            <span class="rb-item-name">${r.name}</span>
+            <span class="rb-horizon ${r.horizon === 'court' ? 'rb-ct' : 'rb-lt'}">${r.horizon === 'court' ? 'Court terme' : 'Long terme'}</span>
+          </div>
+          <div class="rb-item-desc">${r.desc}</div>
+          <div class="rb-level">${levelDots(r.level || 0, r.max_level || 5, 'var(--red)')}</div>
+        </div>`).join('') || '<div style="color:var(--txt3);font-size:.8rem;padding:8px 0">Aucun risque identifié</div>'}</div>
+    </div>
+    <div class="rb-card rb-card-benefit">
+      <div class="rb-title rb-benefit-title">✅ Bénéfices</div>
+      <div class="rb-items">${benefits.map(b => `
+        <div class="rb-item">
+          <div class="rb-item-hdr">
+            <span class="rb-item-name">${b.name}</span>
+            <span class="rb-horizon ${b.horizon === 'court' ? 'rb-ct' : 'rb-lt'}">${b.horizon === 'court' ? 'Court terme' : 'Long terme'}</span>
+          </div>
+          <div class="rb-item-desc">${b.desc}</div>
+          <div class="rb-level">${levelDots(b.level || 0, b.max_level || 5, 'var(--green)')}</div>
+        </div>`).join('') || '<div style="color:var(--txt3);font-size:.8rem;padding:8px 0">Aucun bénéfice notable</div>'}</div>
+    </div>`;
+
+            // Profile interactions
+            if (data.profile_interactions?.length) {
+                document.getElementById('interact-card').style.display = 'block';
+                const stMap = { ok: 'int-ok il-ok ✓', warn: 'int-warn il-warn ⚠', bad: 'int-bad il-bad ✕' };
+                document.getElementById('interact-items').innerHTML = data.profile_interactions.map(pi => {
+                    const [cardCls, badgeCls, ico] = (stMap[pi.status] || stMap.warn).split(' ');
+                    return `<div class="int-item ${cardCls}">
+        <span class="int-icon">${pi.icon || '🩺'}</span>
+        <div style="flex:1"><div class="int-name">${pi.name}</div><div class="int-desc">${pi.desc}</div></div>
+        <span class="int-level ${badgeCls}">${ico}</span>
+      </div>`;
+                }).join('');
+            }
+
+            // Full AI text (clean JSON block)
+            const cleanText = fullText.replace(/<ORACLE_JSON>[\s\S]*?<\/ORACLE_JSON>/g, '').trim();
+            document.getElementById('ai-full-content').innerHTML = mdFull(cleanText);
+
+            // Advice
+            if (data.advice?.length) {
+                document.getElementById('advice-section').style.display = 'block';
+                const vcMap = { ok: 'var(--green)', warn: 'var(--yellow)', bad: 'var(--red)' };
+                document.getElementById('advice-grid').innerHTML = data.advice.map(a => `
+      <div class="adv-card">
+        <div class="adv-ico">${a.icon}</div>
+        <div class="adv-title">${a.title}</div>
+        <div class="adv-text">${a.text}</div>
+        <div class="adv-verdict" style="color:${vcMap[a.verdict] || 'var(--acc)'}">
+          ${a.verdict === 'ok' ? '✓ Recommandé' : a.verdict === 'warn' ? '⚠ Avec modération' : '✕ Déconseillé'}
+        </div>
+      </div>`).join('');
+            }
+
+            // Alternatives
+            if (data.alternatives?.length) {
+                document.getElementById('alts-section').style.display = 'block';
+                document.getElementById('alts-list').innerHTML = data.alternatives.map(a => `
+      <div class="alt-item" onclick="launchQuery('${a.name.replace(/'/g, "\\'")} : analyse pour mon profil')">
+        <span class="alt-icon">${a.icon}</span>
+        <div><div class="alt-name">${a.name}</div><div class="alt-why">${a.why}</div></div>
+        <span class="alt-score">+${a.score}%</span>
+      </div>`).join('');
+            }
+
+            // Save to history
+            const h = loadHistory();
+            h.unshift({ query: inp.value, cat: data.category, score: data.impact_score, time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) });
+            saveHistory(h);
+            renderHistory();
+        }
+
+        /* ═══════════════════════════════════════════
+           MARKDOWN
+        ═══════════════════════════════════════════ */
+        function mdFull(t) {
+            t = t.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            t = t.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+            t = t.replace(/^## (.+)$/gm, '<h3>$1</h3>');
+            t = t.replace(/^- (.+)$/gm, '<li>$1</li>');
+            t = t.replace(/(<li>[\s\S]+?<\/li>\n?)+/g, m => `<ul>${m}</ul>`);
+            t = t.replace(/`([^`]+)`/g, '<code>$1</code>');
+            t = t.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>');
+            t = `<p>${t}</p>`;
+            t = t.replace(/<p><h3>/g, '<h3>').replace(/<\/h3><\/p>/g, '</h3>');
+            t = t.replace(/<p><ul>/g, '<ul>').replace(/<\/ul><\/p>/g, '</ul>');
+            return t;
+        }
+        function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+        /* ═══════════════════════════════════════════
+           RESET
+        ═══════════════════════════════════════════ */
+        function resetToIdle() {
+            document.getElementById('result-wrap').classList.remove('show');
+            document.getElementById('loading-state').classList.remove('show');
+            document.getElementById('idle-state').style.display = 'flex';
+            document.getElementById('clear-result-btn').style.display = 'none';
+            document.getElementById('comp-section').style.display = 'none';
+            document.getElementById('interact-card').style.display = 'none';
+            document.getElementById('advice-section').style.display = 'none';
+            document.getElementById('alts-section').style.display = 'none';
+            if (impactChart) { impactChart.destroy(); impactChart = null; }
+        }
+
+        /* ═══════════════════════════════════════════
+           MAIN ANALYSIS
+        ═══════════════════════════════════════════ */
+        async function startAnalysis() {
+            const query = inp.value.trim();
+            if (!query) { inp.focus(); toast('Entrez une question', 'warn'); return; }
+            const depth = document.querySelector('input[name="depth"]:checked')?.value || 'complet';
+
+            // UI reset
+            document.getElementById('idle-state').style.display = 'none';
+            document.getElementById('result-wrap').classList.remove('show');
+            document.getElementById('clear-result-btn').style.display = 'none';
+
+            // Show loading
+            const loadEl = document.getElementById('loading-state');
+            loadEl.classList.add('show');
+            document.getElementById('load-steps').innerHTML = LOAD_STEPS.map(s => `
+    <div class="ls-item">
+      <div class="ls-icon">${s.icon}</div>
+      <div class="ls-label">${s.label}</div>
+      <div class="ls-status"></div>
+    </div>`).join('');
+
+            // Disable input
+            const btn = document.getElementById('analyze-btn');
+            btn.disabled = true;
+            document.getElementById('analyze-icon').innerHTML = '<div class="spinner"></div>';
+            document.getElementById('analyze-label').textContent = 'Analyse…';
+            inp.disabled = true;
+
+            // Progress steps
+            let stepIdx = 0;
+            showLoadingStep(0);
+            const stepTimer = setInterval(() => {
+                stepIdx = Math.min(stepIdx + 1, LOAD_STEPS.length - 1);
+                showLoadingStep(stepIdx);
+            }, 900);
+
+            let fullText = '';
+            let oracleData = null;
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('vc_token')}`  
+                    },
+                    body: JSON.stringify({
+                        model: MODEL,
+                        max_tokens: 3500,
+                        system: buildSystem(depth),
+                        messages: [{ role: 'user', content: `Analyse cette demande et réponds avec le JSON puis l'analyse complète : "${query}"\n\nCatégorie sélectionnée : ${activeCategory === 'auto' ? 'détecte automatiquement' : activeCategory}` }],
+                        stream: true
+                    })
+                });
+
+                if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message || 'Erreur API'); }
+
+                // Stream
+                const reader = res.body.getReader(), dec = new TextDecoder();
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+                    for (const line of dec.decode(value).split('\n')) {
+                        if (!line.startsWith('data: ')) continue;
+                        const d = line.slice(6); if (d === '[DONE]') continue;
+                        try {
+                            const p = JSON.parse(d);
+                            const delta = p.delta?.text || '';
+                            if (delta) {
+                                fullText += delta;
+                                // Try live parse
+                                const liveData = parseOracleJSON(fullText);
+                                if (liveData && !oracleData) {
+                                    oracleData = liveData;
+                                    clearInterval(stepTimer);
+                                    showLoadingStep(LOAD_STEPS.length);
+                                    LOAD_STEPS.forEach((_, i) => {
+                                        const el = document.querySelectorAll('.ls-item')[i];
+                                        if (el) { el.classList.add('done'); el.classList.remove('active'); el.querySelector('.ls-status').textContent = '✓'; }
+                                    });
+                                }
+                            }
+                        } catch (_) { }
+                    }
+                }
+
+                clearInterval(stepTimer);
+                oracleData = parseOracleJSON(fullText) || { item_name: query, category: activeCategory, impact_score: 50, impact_label: 'Analysé', impact_verdict: 'Analyse disponible ci-dessous.', impact_color: '#00b4ff', tags: [] };
+                loadEl.classList.remove('show');
+                renderResult(oracleData, fullText);
+
+            } catch (err) {
+                clearInterval(stepTimer);
+                loadEl.classList.remove('show');
+                document.getElementById('idle-state').style.display = 'flex';
+                toast(`Erreur : ${err.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+                document.getElementById('analyze-icon').textContent = '🔮';
+                document.getElementById('analyze-label').textContent = 'Analyser';
+                inp.disabled = false;
+            }
+        }
+
+        /* ═══════════════════════════════════════════
+           SAVE RESULT
+        ═══════════════════════════════════════════ */
+        document.getElementById('save-btn').addEventListener('click', () => {
+            toast('Analyse sauvegardée dans l\'historique ✓', 'success');
+        });
+
+        /* ═══════════════════════════════════════════
+           TOAST
+        ═══════════════════════════════════════════ */
+        function toast(msg, type = 'success') {
+            const c = { success: 'var(--green)', error: 'var(--red)', warn: 'var(--yellow)', info: 'var(--acc)' };
+            const el = document.createElement('div');
+            el.className = 'toast';
+            el.style.borderLeftColor = c[type] || c.success;
+            el.innerHTML = `<span style="color:${c[type]};font-weight:700">${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'}</span>${msg}`;
+            document.getElementById('toasts').appendChild(el);
+            setTimeout(() => el.remove(), 4000);
+        }
+
+        // fix keyframe
+        const sk = document.createElement('style');
+        sk.textContent = '@keyframes spin{to{transform:rotate(360deg)}} @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}';
+        document.head.appendChild(sk);
+
+
+        /* ══════════════════════════
+           MOBILE SIDEBAR TOGGLE
+        ══════════════════════════ */
+        function toggleSidebar() {
+            const sb = document.querySelector('.sidebar');
+            const btn = document.getElementById('hamburger-btn');
+            const ovl = document.getElementById('sidebar-overlay');
+            const isOpen = sb.classList.contains('open');
+            if (isOpen) { closeSidebar(); }
+            else {
+                sb.classList.add('open');
+                btn.classList.add('open');
+                ovl.classList.add('visible');
+                document.body.style.overflow = 'hidden'; // empêche scroll fond
+            }
+        }
+
+        function closeSidebar() {
+            document.querySelector('.sidebar')?.classList.remove('open');
+            document.getElementById('hamburger-btn')?.classList.remove('open');
+            document.getElementById('sidebar-overlay')?.classList.remove('visible');
+            document.body.style.overflow = '';
+        }
+
+        // Ferme la sidebar au clic sur un lien (navigation mobile)
+        document.querySelectorAll('.sb-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 900) closeSidebar();
+            });
+        });
+
+        // Ferme si on redimensionne vers desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 900) closeSidebar();
+        });
+
+        document.getElementById('hamburger-btn').addEventListener('click', () => {
+            const menu = document.getElementById('mobile-menu');
+            const btn = document.getElementById('hamburger-btn');
+            menu.classList.toggle('open');
+            btn.classList.toggle('open');
+        });
+
+        // Ferme au clic sur un lien
+        document.querySelectorAll('#mobile-menu .sb-link').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('mobile-menu').classList.remove('open');
+                document.getElementById('hamburger-btn').classList.remove('open');
+            });
+        });
+
+        document.getElementById('logout-btn-mobile')?.addEventListener('click', e => {
+            e.preventDefault();
+            localStorage.clear();
+            location.href = 'index.html';
+        });
+    </script>
+</body>
+
+</html>

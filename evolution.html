@@ -1,0 +1,2897 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Évolution & Suivi — VitaCore</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* ═══════════════ RESET & VARS ══════════════ */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        :root {
+            --bg: #09080a;
+            --bg2: #0f0d10;
+            --bgc: #151318;
+            --bgch: #1c1820;
+            --acc: #f0a500;
+            --acc2: #d48c00;
+            --acc-dim: rgba(240, 165, 0, .1);
+            --acc-brd: rgba(240, 165, 0, .25);
+            --acc-glow: rgba(240, 165, 0, .4);
+            --gold2: #ffe066;
+            --teal: #00d4aa;
+            --txt: #f0ece8;
+            --txt2: #7a7068;
+            --txt3: #342e2a;
+            --brd: #1e1a1a;
+            --brd2: #2a2320;
+            --danger: #ff4d4d;
+            --warning: #ff8c00;
+            --success: #00d4aa;
+            --info: #6ea8fe;
+            --up: #00d4aa;
+            --down: #ff4d4d;
+            --ff: 'Syne', sans-serif;
+            --fb: 'DM Sans', sans-serif;
+            --mono: 'IBM Plex Mono', monospace;
+            --tr: .2s cubic-bezier(.4, 0, .2, 1);
+            --r-sm: 8px;
+            --r-md: 14px;
+            --r-lg: 20px;
+            --r-xl: 28px;
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            font-family: var(--fb);
+            background: var(--bg);
+            color: var(--txt);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--brd2)
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--acc)
+        }
+
+        /* ── AMBIENT ── */
+        .ambient {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(130px);
+            opacity: .4;
+            animation: drift 18s ease-in-out infinite
+        }
+
+        .orb1 {
+            width: 550px;
+            height: 550px;
+            background: radial-gradient(circle, rgba(240, 165, 0, .1), transparent 70%);
+            top: -200px;
+            right: -100px
+        }
+
+        .orb2 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(0, 212, 170, .07), transparent 70%);
+            bottom: -100px;
+            left: -80px;
+            animation-delay: -9s
+        }
+
+        @keyframes drift {
+
+            0%,
+            100% {
+                transform: translate(0, 0)
+            }
+
+            50% {
+                transform: translate(30px, -20px)
+            }
+        }
+
+        /* ── GRID BG ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background-image: linear-gradient(rgba(240, 165, 0, .02) 1px, transparent 1px), linear-gradient(90deg, rgba(240, 165, 0, .02) 1px, transparent 1px);
+            background-size: 56px 56px;
+            pointer-events: none
+        }
+
+        /* ── NAV ── */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 200;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            background: rgba(9, 8, 10, .92);
+            backdrop-filter: blur(22px);
+            border-bottom: 1px solid var(--brd)
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-family: var(--ff);
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--txt);
+            text-decoration: none
+        }
+
+        .brand-dot {
+            width: 7px;
+            height: 7px;
+            background: rgba(200, 255, 0, 1);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(200, 255, 0, .8)
+        }
+
+        .nav-center {
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .nav-pill {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            background: var(--acc-dim);
+            border: 1px solid var(--acc-brd);
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: .73rem;
+            font-weight: 600;
+            color: var(--acc);
+            font-family: var(--mono)
+        }
+
+        .npd {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--acc);
+            animation: glow 2s ease infinite
+        }
+
+        @keyframes glow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 var(--acc-glow)
+            }
+
+            50% {
+                box-shadow: 0 0 0 6px transparent
+            }
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: var(--r-md);
+            border: 1px solid var(--brd2);
+            cursor: pointer;
+            font-family: var(--fb);
+            font-weight: 600;
+            font-size: .82rem;
+            text-decoration: none;
+            transition: var(--tr);
+            background: transparent;
+            color: var(--txt2)
+        }
+
+        .btn:hover {
+            border-color: var(--acc-brd);
+            color: var(--acc);
+            background: var(--acc-dim)
+        }
+
+        .btn-primary {
+            background: var(--acc);
+            color: #000;
+            border-color: var(--acc);
+            box-shadow: 0 4px 20px rgba(240, 165, 0, .25)
+        }
+
+        .btn-primary:hover {
+            background: #ffb82e;
+            color: #000;
+            border-color: #ffb82e;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 28px rgba(240, 165, 0, .35)
+        }
+
+        .btn-primary:disabled {
+            opacity: .4;
+            cursor: not-allowed;
+            transform: none
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: .78rem
+        }
+
+        .btn-teal {
+            background: var(--teal);
+            color: #000;
+            border-color: var(--teal)
+        }
+
+        .btn-teal:hover {
+            background: #00eabb;
+            color: #000;
+            border-color: #00eabb
+        }
+
+        /* ── LAYOUT ── */
+        .layout {
+            display: flex;
+            min-height: 100vh;
+            padding-top: 60px;
+            position: relative;
+            z-index: 1
+        }
+
+        .sidebar {
+            width: 240px;
+            min-height: calc(100vh - 60px);
+            background: var(--bg2);
+            border-right: 1px solid var(--brd);
+            padding: 20px 12px;
+            position: fixed;
+            top: 60px;
+            left: 0;
+            bottom: 0;
+            overflow-y: auto;
+            flex-shrink: 0
+        }
+
+        .sb-sec {
+            margin-bottom: 24px
+        }
+
+        .sb-tt {
+            font-size: .63rem;
+            font-weight: 700;
+            color: var(--txt3);
+            text-transform: uppercase;
+            letter-spacing: .14em;
+            margin-bottom: 8px;
+            padding: 0 8px
+        }
+
+        .sb-link {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 9px 11px;
+            border-radius: var(--r-sm);
+            color: var(--txt2);
+            text-decoration: none;
+            font-size: .855rem;
+            font-weight: 500;
+            transition: var(--tr);
+            margin-bottom: 2px
+        }
+
+        .sb-link:hover {
+            color: var(--txt);
+            background: var(--bgc)
+        }
+
+        .sb-link.active {
+            color: var(--acc);
+            background: var(--acc-dim);
+            border: 1px solid var(--acc-brd)
+        }
+
+        .main {
+            margin-left: 240px;
+            flex: 1;
+            padding: 28px 28px 60px
+        }
+
+        /* ── PAGE HEADER ── */
+        .page-header {
+            margin-bottom: 28px
+        }
+
+        .page-title {
+            font-family: var(--ff);
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -.03em;
+            line-height: 1.05
+        }
+
+        .page-title em {
+            color: var(--acc);
+            font-style: normal
+        }
+
+        .page-sub {
+            color: var(--txt2);
+            font-size: .875rem;
+            margin-top: 5px
+        }
+
+        /* ── TABS ── */
+        .tabs {
+            display: flex;
+            gap: 3px;
+            background: var(--bgc);
+            border: 1px solid var(--brd);
+            border-radius: var(--r-lg);
+            padding: 4px;
+            margin-bottom: 28px;
+            width: fit-content
+        }
+
+        .tab {
+            padding: 9px 20px;
+            border-radius: var(--r-md);
+            border: none;
+            cursor: pointer;
+            font-family: var(--fb);
+            font-weight: 600;
+            font-size: .855rem;
+            background: transparent;
+            color: var(--txt2);
+            transition: var(--tr);
+            display: flex;
+            align-items: center;
+            gap: 7px
+        }
+
+        .tab:hover {
+            color: var(--txt)
+        }
+
+        .tab.active {
+            background: var(--acc);
+            color: #000;
+            box-shadow: 0 3px 14px rgba(240, 165, 0, .3)
+        }
+
+        .tab-pane {
+            display: none;
+            animation: fadeIn .3s ease
+        }
+
+        .tab-pane.active {
+            display: block
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        /* ── CARDS ── */
+        .card {
+            background: var(--bgc);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-lg);
+            padding: 20px;
+            transition: var(--tr)
+        }
+
+        .card:hover {
+            border-color: var(--acc-brd)
+        }
+
+        .card-glow {
+            border-color: var(--acc-brd);
+            box-shadow: 0 0 24px rgba(240, 165, 0, .07)
+        }
+
+        .card-teal {
+            border-color: rgba(0, 212, 170, .25);
+            box-shadow: 0 0 20px rgba(0, 212, 170, .06)
+        }
+
+        /* ── BADGES ── */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: .7rem;
+            font-weight: 700
+        }
+
+        .b-ok {
+            background: rgba(0, 212, 170, .12);
+            color: var(--teal);
+            border: 1px solid rgba(0, 212, 170, .3)
+        }
+
+        .b-warn {
+            background: rgba(255, 140, 0, .12);
+            color: var(--warning);
+            border: 1px solid rgba(255, 140, 0, .3)
+        }
+
+        .b-bad {
+            background: rgba(255, 77, 77, .12);
+            color: var(--danger);
+            border: 1px solid rgba(255, 77, 77, .3)
+        }
+
+        .b-gold {
+            background: rgba(240, 165, 0, .12);
+            color: var(--acc);
+            border: 1px solid var(--acc-brd)
+        }
+
+        .b-info {
+            background: rgba(110, 168, 254, .12);
+            color: var(--info);
+            border: 1px solid rgba(110, 168, 254, .3)
+        }
+
+        /* ── TREND ARROW ── */
+        .trend {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            font-size: .72rem;
+            font-weight: 700;
+            font-family: var(--mono)
+        }
+
+        .trend-up {
+            color: var(--up)
+        }
+
+        .trend-down {
+            color: var(--down)
+        }
+
+        .trend-flat {
+            color: var(--txt2)
+        }
+
+        /* ── SECTION HEADER ── */
+        .sh {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px
+        }
+
+        .sh-title {
+            font-family: var(--ff);
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .sh-title .ico {
+            font-size: 1.1rem
+        }
+
+        /* ═══════════════ TAB 1 — ÉVOLUTION ════════════════ */
+
+        /* ── KPI STRIP ── */
+        .kpi-strip {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin-bottom: 22px
+        }
+
+        .kpi-card {
+            background: var(--bgc);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-lg);
+            padding: 16px;
+            transition: var(--tr);
+            cursor: default
+        }
+
+        .kpi-card:hover {
+            border-color: var(--acc-brd);
+            transform: translateY(-2px)
+        }
+
+        .kpi-lbl {
+            font-size: .68rem;
+            color: var(--txt3);
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            margin-bottom: 4px;
+            font-family: var(--mono)
+        }
+
+        .kpi-val {
+            font-family: var(--ff);
+            font-size: 1.75rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 3px
+        }
+
+        .kpi-sub {
+            font-size: .73rem;
+            color: var(--txt2)
+        }
+
+        /* ── EVOLUTION GRID ── */
+        .evo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 22px
+        }
+
+        .evo-grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 22px
+        }
+
+        .chart-wrap {
+            position: relative
+        }
+
+        .ch-h160 {
+            height: 160px
+        }
+
+        .ch-h200 {
+            height: 200px
+        }
+
+        .ch-h240 {
+            height: 240px
+        }
+
+        .ch-h280 {
+            height: 280px
+        }
+
+        /* ── TIMELINE ── */
+        .timeline {
+            position: relative;
+            padding-left: 22px
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 6px;
+            top: 6px;
+            bottom: 6px;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--acc), var(--teal));
+            border-radius: 2px;
+            opacity: .4
+        }
+
+        .tl-item {
+            position: relative;
+            padding: 0 0 22px 18px
+        }
+
+        .tl-item::before {
+            content: '';
+            position: absolute;
+            left: -16px;
+            top: 6px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--acc);
+            border: 2px solid var(--bg2);
+            box-shadow: 0 0 10px var(--acc-glow)
+        }
+
+        .tl-date {
+            font-family: var(--mono);
+            font-size: .65rem;
+            color: var(--txt3);
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            margin-bottom: 4px
+        }
+
+        .tl-card {
+            background: var(--bgch);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-md);
+            padding: 13px 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            transition: var(--tr)
+        }
+
+        .tl-card:hover {
+            border-color: var(--acc-brd)
+        }
+
+        .tl-stat {
+            display: flex;
+            flex-direction: column
+        }
+
+        .tl-stat-lbl {
+            font-size: .63rem;
+            color: var(--txt3);
+            font-family: var(--mono);
+            text-transform: uppercase;
+            letter-spacing: .08em
+        }
+
+        .tl-stat-val {
+            font-family: var(--ff);
+            font-size: .95rem;
+            font-weight: 700;
+            margin-top: 1px
+        }
+
+        .tl-score {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: auto
+        }
+
+        .tl-score-num {
+            font-family: var(--ff);
+            font-size: 1.4rem;
+            font-weight: 800
+        }
+
+        /* ── ADD MEASUREMENT ── */
+        .measure-form {
+            background: var(--bgch);
+            border: 1px solid var(--acc-brd);
+            border-radius: var(--r-xl);
+            padding: 22px;
+            margin-bottom: 22px;
+            display: none
+        }
+
+        .measure-form.open {
+            display: block;
+            animation: fadeIn .3s ease
+        }
+
+        .mf-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 14px
+        }
+
+        .mf-col3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 14px
+        }
+
+        .fg {
+            margin-bottom: 0
+        }
+
+        .lbl {
+            display: block;
+            margin-bottom: 5px;
+            font-size: .72rem;
+            font-weight: 600;
+            color: var(--txt2);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            font-family: var(--mono)
+        }
+
+        .inp {
+            width: 100%;
+            padding: 10px 13px;
+            border-radius: var(--r-md);
+            background: var(--bg2);
+            border: 1px solid var(--brd2);
+            color: var(--txt);
+            font-family: var(--fb);
+            font-size: .875rem;
+            transition: var(--tr);
+            outline: none
+        }
+
+        .inp:focus {
+            border-color: var(--acc-brd);
+            box-shadow: 0 0 0 3px var(--acc-dim)
+        }
+
+        .inp::placeholder {
+            color: var(--txt3)
+        }
+
+        /* ── MORPHO SECTION ── */
+        .morpho-grid {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            gap: 18px;
+            margin-bottom: 22px
+        }
+
+        .body-card {
+            background: var(--bgc);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-lg);
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center
+        }
+
+        .body-silhouette {
+            width: 100px;
+            height: 200px;
+            position: relative;
+            margin: 16px auto
+        }
+
+        .bs-segment {
+            fill: rgba(240, 165, 0, .1);
+            stroke: rgba(240, 165, 0, .3);
+            stroke-width: 1;
+            transition: all .4s
+        }
+
+        .bs-segment.highlight {
+            fill: rgba(240, 165, 0, .25);
+            stroke: var(--acc);
+            filter: drop-shadow(0 0 6px rgba(240, 165, 0, .4))
+        }
+
+        .morpho-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            margin-top: 12px
+        }
+
+        .ms-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: var(--bgch);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-sm)
+        }
+
+        .ms-lbl {
+            font-size: .75rem;
+            color: var(--txt2)
+        }
+
+        .ms-val {
+            font-family: var(--mono);
+            font-size: .82rem;
+            font-weight: 600;
+            color: var(--acc)
+        }
+
+        /* ══════════════ TAB 2 — ORDONNANCE IA ══════════════ */
+        .rx-layout {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 20px;
+            align-items: start
+        }
+
+        .rx-config {
+            background: var(--bgc);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-xl);
+            padding: 22px
+        }
+
+        .rx-config-title {
+            font-family: var(--ff);
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .config-section {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--brd)
+        }
+
+        .config-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0
+        }
+
+        .config-lbl {
+            font-size: .75rem;
+            font-weight: 600;
+            color: var(--txt2);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            font-family: var(--mono);
+            margin-bottom: 10px
+        }
+
+        .check-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px
+        }
+
+        .check-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            cursor: pointer
+        }
+
+        .check-item input[type=checkbox] {
+            width: 15px;
+            height: 15px;
+            margin-top: 2px;
+            accent-color: var(--acc);
+            flex-shrink: 0;
+            cursor: pointer
+        }
+
+        .check-item label {
+            font-size: .83rem;
+            color: var(--txt2);
+            cursor: pointer;
+            line-height: 1.5
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap
+        }
+
+        .rbtn {
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--brd2);
+            background: var(--bgch);
+            color: var(--txt2);
+            font-size: .8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--tr);
+            font-family: var(--fb)
+        }
+
+        .rbtn:hover {
+            border-color: var(--acc-brd);
+            color: var(--acc)
+        }
+
+        .rbtn.sel {
+            border-color: var(--acc);
+            background: var(--acc-dim);
+            color: var(--acc)
+        }
+
+        .rx-preview {
+            position: sticky;
+            top: 80px
+        }
+
+        .rx-doc {
+            background: var(--bgc);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-xl);
+            overflow: hidden
+        }
+
+        .rx-doc-header {
+            background: linear-gradient(135deg, rgba(240, 165, 0, .12), rgba(240, 165, 0, .04));
+            border-bottom: 1px solid var(--acc-brd);
+            padding: 18px 20px
+        }
+
+        .rx-doc-body {
+            padding: 20px;
+            min-height: 300px
+        }
+
+        .rx-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--txt3)
+        }
+
+        .rx-placeholder-icon {
+            font-size: 2.5rem;
+            opacity: .4
+        }
+
+        .rx-content {
+            font-size: .855rem;
+            line-height: 1.75;
+            color: var(--txt2)
+        }
+
+        .rx-content h3 {
+            font-family: var(--ff);
+            font-size: .9rem;
+            font-weight: 700;
+            color: var(--txt);
+            margin: 14px 0 6px;
+            border-bottom: 1px solid var(--brd);
+            padding-bottom: 5px
+        }
+
+        .rx-content .rx-item {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            padding: 9px;
+            background: var(--bgch);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-sm);
+            margin-bottom: 6px
+        }
+
+        .rx-content .rx-ico {
+            font-size: 1.1rem;
+            flex-shrink: 0
+        }
+
+        .rx-content .rx-name {
+            font-weight: 600;
+            color: var(--txt);
+            font-size: .83rem
+        }
+
+        .rx-content .rx-detail {
+            font-size: .77rem;
+            color: var(--txt2);
+            margin-top: 1px
+        }
+
+        .rx-disclaimer {
+            background: rgba(110, 168, 254, .06);
+            border: 1px solid rgba(110, 168, 254, .2);
+            border-radius: var(--r-sm);
+            padding: 11px;
+            font-size: .73rem;
+            color: var(--txt2);
+            margin-top: 14px;
+            line-height: 1.6;
+            font-family: var(--mono)
+        }
+
+        .rx-stamp {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 14px;
+            padding: 10px 14px;
+            background: var(--acc-dim);
+            border: 1px solid var(--acc-brd);
+            border-radius: var(--r-md)
+        }
+
+        .rx-stamp-txt {
+            font-family: var(--mono);
+            font-size: .68rem;
+            color: var(--acc)
+        }
+
+        /* ══════════════ TAB 3 — COACHING IA ══════════════ */
+        .coaching-layout {
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 20px;
+            align-items: start
+        }
+
+        .coach-chat {
+            background: var(--bgc);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-xl);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column
+        }
+
+        .coach-hdr {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--brd);
+            background: var(--bgch);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0
+        }
+
+        .coach-ava {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #4a2800, #7a4800);
+            border: 1px solid var(--acc-brd);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem
+        }
+
+        .coach-name {
+            font-family: var(--ff);
+            font-size: .88rem;
+            font-weight: 700
+        }
+
+        .coach-sub {
+            font-size: .7rem;
+            color: var(--txt2);
+            font-family: var(--mono);
+            margin-top: 1px
+        }
+
+        .coach-msgs {
+            height: 420px;
+            overflow-y: auto;
+            padding: 16px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 11px
+        }
+
+        .coach-msg {
+            display: flex;
+            gap: 9px;
+            animation: fadeIn .28s ease
+        }
+
+        .cm-ai {
+            flex-direction: row
+        }
+
+        .cm-user {
+            flex-direction: row-reverse
+        }
+
+        .cm-ava {
+            width: 28px;
+            height: 28px;
+            border-radius: 7px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .75rem
+        }
+
+        .cm-ava.ai {
+            background: linear-gradient(135deg, #4a2800, #7a4800);
+            border: 1px solid var(--acc-brd)
+        }
+
+        .cm-ava.user {
+            background: var(--bgch);
+            border: 1px solid var(--brd2)
+        }
+
+        .cm-bbl {
+            max-width: 85%;
+            padding: 10px 14px;
+            border-radius: var(--r-lg);
+            font-size: .84rem;
+            line-height: 1.65
+        }
+
+        .cm-ai .cm-bbl {
+            background: var(--bgch);
+            border: 1px solid var(--brd2);
+            border-top-left-radius: 3px
+        }
+
+        .cm-user .cm-bbl {
+            background: var(--acc-dim);
+            border: 1px solid var(--acc-brd);
+            border-top-right-radius: 3px
+        }
+
+        .coach-qr {
+            padding: 10px 18px;
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            border-top: 1px solid var(--brd);
+            background: var(--bg2)
+        }
+
+        .cqr {
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--brd2);
+            background: var(--bgch);
+            color: var(--txt2);
+            font-size: .77rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--tr)
+        }
+
+        .cqr:hover {
+            border-color: var(--acc-brd);
+            color: var(--acc);
+            background: var(--acc-dim)
+        }
+
+        .coach-inp {
+            padding: 12px 18px;
+            border-top: 1px solid var(--brd);
+            background: var(--bg2);
+            display: flex;
+            gap: 9px;
+            align-items: flex-end
+        }
+
+        .coach-inp textarea {
+            flex: 1;
+            background: var(--bgch);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-xl);
+            padding: 9px 13px;
+            color: var(--txt);
+            font-family: var(--fb);
+            font-size: .84rem;
+            resize: none;
+            max-height: 80px;
+            outline: none;
+            transition: var(--tr);
+            line-height: 1.5
+        }
+
+        .coach-inp textarea:focus {
+            border-color: var(--acc-brd);
+            box-shadow: 0 0 0 3px var(--acc-dim)
+        }
+
+        .coach-inp textarea::placeholder {
+            color: var(--txt3)
+        }
+
+        .send-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--acc);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .9rem;
+            color: #000;
+            transition: var(--tr);
+            flex-shrink: 0
+        }
+
+        .send-btn:hover {
+            background: #ffb82e;
+            transform: scale(1.07)
+        }
+
+        .send-btn:disabled {
+            opacity: .3;
+            cursor: not-allowed;
+            transform: none
+        }
+
+        /* PROGRAM CARDS */
+        .program-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px
+        }
+
+        .prog-card {
+            background: var(--bgc);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-lg);
+            padding: 16px;
+            transition: var(--tr)
+        }
+
+        .prog-card:hover {
+            border-color: var(--acc-brd);
+            transform: translateY(-1px)
+        }
+
+        .prog-header {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            margin-bottom: 10px
+        }
+
+        .prog-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: var(--r-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0
+        }
+
+        .prog-title {
+            font-family: var(--ff);
+            font-size: .88rem;
+            font-weight: 700
+        }
+
+        .prog-sub {
+            font-size: .73rem;
+            color: var(--txt2)
+        }
+
+        .prog-items {
+            display: flex;
+            flex-direction: column;
+            gap: 5px
+        }
+
+        .prog-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 7px;
+            font-size: .79rem;
+            color: var(--txt2);
+            line-height: 1.5
+        }
+
+        .prog-item::before {
+            content: '→';
+            color: var(--acc);
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 1px
+        }
+
+        .prog-progress {
+            margin-top: 10px
+        }
+
+        .prog-prog-bar {
+            height: 3px;
+            background: var(--brd2);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 5px
+        }
+
+        .prog-prog-fill {
+            height: 100%;
+            border-radius: 2px;
+            background: var(--acc);
+            transition: width .6s ease
+        }
+
+        .prog-prog-lbl {
+            display: flex;
+            justify-content: space-between;
+            font-size: .67rem;
+            color: var(--txt3);
+            font-family: var(--mono);
+            margin-top: 3px
+        }
+
+        /* ── TYPING ── */
+        .t-dots {
+            display: flex;
+            gap: 4px;
+            padding: 9px 13px;
+            background: var(--bgch);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-lg);
+            border-top-left-radius: 3px;
+            width: fit-content
+        }
+
+        .t-dots span {
+            width: 6px;
+            height: 6px;
+            background: var(--acc);
+            border-radius: 50%;
+            animation: td .7s ease infinite
+        }
+
+        .t-dots span:nth-child(2) {
+            animation-delay: .15s
+        }
+
+        .t-dots span:nth-child(3) {
+            animation-delay: .3s
+        }
+
+        @keyframes td {
+
+            0%,
+            60%,
+            100% {
+                transform: translateY(0);
+                opacity: .4
+            }
+
+            30% {
+                transform: translateY(-5px);
+                opacity: 1
+            }
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 13px;
+            background: var(--acc);
+            border-radius: 1px;
+            animation: cb .65s ease infinite;
+            margin-left: 1px;
+            vertical-align: middle
+        }
+
+        @keyframes cb {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: 0
+            }
+        }
+
+        /* ── TOAST ── */
+        #toasts {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 7px
+        }
+
+        .toast {
+            background: var(--bgc);
+            border-left: 2px solid var(--acc);
+            padding: 11px 16px;
+            border-radius: 10px;
+            font-size: .8rem;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .5);
+            min-width: 230px;
+            animation: fadeIn .25s ease;
+            font-family: var(--fb)
+        }
+
+        /* ── PRINT ── */
+        @media print {
+
+            .nav,
+            .sidebar,
+            .tabs,
+            .btn {
+                display: none !important
+            }
+
+            .main {
+                margin: 0;
+                padding: 0
+            }
+
+            .rx-preview {
+                position: static
+            }
+
+            .rx-doc {
+                border: 1px solid #ddd;
+                box-shadow: none
+            }
+        }
+
+        /* ── RESPONSIVE ── */
+        @media(max-width:1200px) {
+            .kpi-strip {
+                grid-template-columns: repeat(3, 1fr)
+            }
+
+            .evo-grid-3 {
+                grid-template-columns: 1fr 1fr
+            }
+
+            .morpho-grid {
+                grid-template-columns: 1fr
+            }
+
+            .rx-layout,
+            .coaching-layout {
+                grid-template-columns: 1fr
+            }
+        }
+
+        @media(max-width:900px) {
+            .sidebar {
+                display: none
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 16px
+            }
+
+            .kpi-strip {
+                grid-template-columns: 1fr 1fr
+            }
+
+            .evo-grid,
+            .evo-grid-3 {
+                grid-template-columns: 1fr
+            }
+
+            .mf-grid,
+            .mf-col3 {
+                grid-template-columns: 1fr 1fr
+            }
+        }
+
+        /* ── MD ── */
+        .md strong {
+            color: var(--txt);
+            font-weight: 600
+        }
+
+        .md ul {
+            padding-left: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px
+        }
+
+        .md li {
+            line-height: 1.65;
+            color: var(--txt2);
+            font-size: .84rem
+        }
+
+        .md li::marker {
+            color: var(--acc)
+        }
+
+        .md h3 {
+            font-family: var(--ff);
+            font-size: .9rem;
+            font-weight: 700;
+            color: var(--txt);
+            margin: 10px 0 5px
+        }
+
+        .md p {
+            margin-bottom: .4em
+        }
+
+        .md p:last-child {
+            margin-bottom: 0
+        }
+
+        .md code {
+            background: var(--bgch);
+            padding: 1px 5px;
+            border-radius: 4px;
+            font-family: var(--mono);
+            font-size: .8em;
+            color: var(--acc)
+        }
+
+
+        /* ══════════════════════════════════════
+   HAMBURGER BUTTON
+══════════════════════════════════════ */
+        .hamburger {
+            display: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--bgc);
+            border: 1px solid var(--brd2);
+            cursor: pointer;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            flex-shrink: 0;
+            transition: var(--tr);
+            z-index: 400;
+        }
+
+        .hamburger:hover {
+            border-color: var(--rose-brd, var(--skin-brd, rgba(255, 255, 255, .2)));
+        }
+
+        .hamburger span {
+            display: block;
+            width: 18px;
+            height: 2px;
+            background: var(--txt);
+            border-radius: 2px;
+            transition: var(--tr);
+        }
+
+        .hamburger.open span:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+
+        .hamburger.open span:nth-child(2) {
+            opacity: 0;
+            transform: scaleX(0);
+        }
+
+        .hamburger.open span:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+
+        /* ══════════════════════════════════════
+   SIDEBAR OVERLAY (mobile)
+══════════════════════════════════════ */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .6);
+            backdrop-filter: blur(4px);
+            z-index: 198;
+            animation: fadeIn .2s ease;
+        }
+
+        .sidebar-overlay.visible {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* ══════════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+══════════════════════════════════════ */
+        @media (max-width: 900px) {
+
+            /* Show hamburger in nav */
+            .hamburger {
+                display: flex;
+            }
+
+            /* Sidebar: slide in from left */
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform .28s cubic-bezier(.4, 0, .2, 1);
+                z-index: 199;
+                box-shadow: 8px 0 40px rgba(0, 0, 0, .5);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            /* Main content fills full width */
+            .main {
+                margin-left: 0 !important;
+                padding: 14px 14px 80px;
+            }
+
+            /* Grids: 1 column on mobile */
+            .grid-2,
+            .grid-3,
+            .grid-4,
+            .dashboard-grid,
+            .diag-layout,
+            .evolution-layout,
+            .derm-chat-layout,
+            .midwife-layout,
+            .profile-skin-layout,
+            .nutri-grid,
+            .week-detail-layout,
+            .prep-categories {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* Products grid: 2 cols on mobile */
+            .products-grid {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            /* Advice/prep cards: 1 col */
+            .advice-cards,
+            .prep-cards {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* Tabs: scrollable horizontally */
+            .tabs {
+                width: 100% !important;
+                overflow-x: auto;
+                flex-wrap: nowrap !important;
+                scrollbar-width: none;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .tabs::-webkit-scrollbar {
+                display: none;
+            }
+
+            .tab {
+                white-space: nowrap;
+                font-size: .78rem;
+                padding: 7px 12px;
+            }
+
+            /* Nav: compress */
+            .nav {
+                padding: 0 14px;
+                gap: 8px;
+            }
+
+            .nav-badge {
+                display: none;
+            }
+
+            /* Page title smaller */
+            .page-title {
+                font-size: 1.5rem !important;
+            }
+
+            /* Chat layouts: full height */
+            .derm-chat-layout,
+            .midwife-layout {
+                height: auto !important;
+            }
+
+            .chat-col {
+                min-height: 500px;
+            }
+
+            /* Hide side tools on mobile */
+            .derm-tools,
+            .midwife-tools {
+                display: none;
+            }
+
+            /* Concern/forbidden grids: 2 cols */
+            .concern-grid,
+            .forbidden-grid {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            /* Food cats: 3 cols */
+            .food-cats {
+                grid-template-columns: 1fr 1fr 1fr !important;
+            }
+
+            /* Bag list: 2 cols */
+            .bag-list {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            /* Quick stats: wrap */
+            .quick-stats {
+                flex-wrap: wrap;
+            }
+
+            .qs {
+                min-width: 80px !important;
+            }
+
+            /* Skin type grid: 3 cols */
+            .skin-type-grid {
+                grid-template-columns: repeat(3, 1fr) !important;
+            }
+
+            /* Hero week counter */
+            .week-counter {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main {
+                padding: 10px 10px 70px;
+            }
+
+            .page-title {
+                font-size: 1.25rem !important;
+            }
+
+            .products-grid,
+            .advice-cards {
+                grid-template-columns: 1fr !important;
+            }
+
+            .food-cats {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            .bag-list {
+                grid-template-columns: 1fr !important;
+            }
+
+            .card {
+                padding: 14px;
+            }
+
+            .tab {
+                font-size: .72rem;
+                padding: 6px 10px;
+            }
+
+            .prep-categories {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            .advice-categories {
+                grid-template-columns: 1fr 1fr !important;
+            }
+        }
+
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 58px;
+            left: 0;
+            right: 0;
+            background: rgba(8, 4, 16, .98);
+            backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--brd);
+            padding: 10px 14px 18px;
+            z-index: 299;
+            flex-direction: column;
+            gap: 2px;
+            max-height: calc(100vh - 58px);
+            overflow-y: auto;
+        }
+
+        .mobile-menu.open {
+            display: flex;
+        }
+
+        .hamburger {
+            display: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--bgc);
+            border: 1px solid var(--brd2);
+            cursor: pointer;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: var(--tr);
+        }
+
+        .hamburger span {
+            display: block;
+            width: 18px;
+            height: 2px;
+            background: var(--txt);
+            border-radius: 2px;
+            transition: var(--tr);
+        }
+
+        .hamburger.open span:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+
+        .hamburger.open span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.open span:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+
+        @media (max-width: 900px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0 !important;
+                padding: 14px 14px 80px;
+            }
+
+            .nav-badge {
+                display: none;
+            }
+
+            /* vos autres règles responsive ici */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="ambient">
+        <div class="orb orb1"></div>
+        <div class="orb orb2"></div>
+    </div>
+
+    <!-- NAV -->
+    <nav class="nav">
+        <a class="brand" href="dashboard.html"><span class="brand-dot"></span>VitaCore</a>
+        <button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+        <div class="mobile-menu" id="mobile-menu">
+            <a class="sb-link" href="dashboard.html">🏠 Dashboard</a>
+            <a class="sb-link" href="health-form.html">📋 Bilan Santé</a>
+            <a class="sb-link" href="analytics.html">📊 Analyses</a>
+            <a class="sb-link" href="ai-bilan.html">🩺 Bilan IA</a>
+            <a class="sb-link" href="consultation.html">🏥 Consultation IA</a>
+            <a class="sb-link" href="evolution.html">📈 Évolution</a>
+            <a class="sb-link" href="nutri.html">🥦 Nutri</a>
+            <a class="sb-link" href="lifestyle.html">✨ Style de Vie</a>
+            <a class="sb-link" href="derma.html">💆 Derma</a>
+            <a class="sb-link" href="maternite.html">🌸 Maternité</a>
+            <a class="sb-link" href="guide.html">🔮 Guide Oracle</a>
+            <a class="sb-link" href="psyche.html">🧠 Psyché</a>
+            <a class="sb-link" href="nexus_ia.html">🌐 Nexus</a>
+
+            <!-- SÉPARATEUR -->
+            <div style="height:1px;background:var(--brd);margin:8px 0"></div>
+
+            <!-- URGENCES -->
+            <div
+                style="font-size:.61rem;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.14em;margin-bottom:7px;padding:0 8px">
+                Urgences</div>
+            <div
+                style="padding:8px 11px;background:rgba(255,90,122,.05);border:1px solid rgba(255,90,122,.2);border-radius:var(--r-sm);font-size:.74rem;color:var(--danger);line-height:1.6;margin-bottom:12px">
+                ⚠️ Secours Abalo: <strong>88 80</strong><br>Urgences: <strong>88 80</strong><br>Maternité 24h:
+                <strong>voir rubrique</strong>
+            </div>
+            <!-- COMPTE -->
+            <div
+                style="font-size:.61rem;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.14em;margin-bottom:7px;padding:0 8px">
+                Compte</div>
+            <a class="sb-link" href="#" id="logout-btn-mobile">🚪 &nbsp;Déconnexion</a>
+        </div>
+        <div class="nav-center">
+            <div class="nav-pill"><span class="npd"></span>Suivi · Évolution · IA</div>
+        </div>
+        <div style="display:flex;gap:8px">
+            <button class="btn btn-sm" id="add-measure-nav">+ Mesure</button>
+            <a href="dashboard.html" class="btn btn-sm">← Dashboard</a>
+        </div>
+    </nav>
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+    <!-- LAYOUT -->
+    <div class="layout">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sb-sec">
+                <div class="sb-tt">Navigation</div>
+                <a class="sb-link" href="dashboard.html">🏠 &nbsp;Dashboard</a>
+                <a class="sb-link" href="health-form.html">📋 &nbsp;Bilan Santé</a>
+                <a class="sb-link" href="analytics.html">📊 &nbsp;Analyses</a>
+                <a class="sb-link" href="ai-bilan.html">🩺 &nbsp;Bilan IA</a>
+                <a class="sb-link" href="consultation.html">🏥 &nbsp;Consultation IA</a>
+                <a class="sb-link active" href="evolution.html">📈 &nbsp;Évolution</a>
+                <a class="sb-link" href="nutri.html">🥦 &nbsp;Nutri · Nutrition IA</a>
+                <a class="sb-link" href="lifestyle.html">✨ &nbsp;Style de Vie</a>
+                <a class="sb-link" href="derma.html">💆 &nbsp;Derma · Beauté IA</a>
+                <a class="sb-link" href="maternite.html">🌸 &nbsp;Maternité · Grossesse IA</a>
+                <a class="sb-link" href="guide.html">🔮 &nbsp;Guide Oracle</a>
+                <a class="sb-link" href="psyche.html">🧠 &nbsp;Psyché</a>
+                <a class="sb-link" href="nexus_ia.html">🌐 &nbsp;Nexus · Analyse</a>
+            </div>
+            <div class="sb-sec">
+                <div class="sb-tt">Urgences</div>
+                <div
+                    style="padding:8px 11px;background:rgba(255,90,122,.05);border:1px solid rgba(255,90,122,.2);border-radius:var(--r-sm);font-size:.74rem;color:var(--danger);line-height:1.6">
+                    ⚠️ Secours Abalo: <strong>88 80</strong><br>Urgences: <strong>88 80</strong><br>Maternité 24h:
+                    <strong>voir rubrique</strong>
+                </div>
+            </div>
+            <div class="sb-sec">
+                <div class="sb-tt">Compte</div>
+                <a class="sb-link" href="#" id="logout-btn">🚪 &nbsp;Déconnexion</a>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="main">
+            <div class="page-header">
+                <div class="page-title">📈 Évolution &amp; <em>Suivi</em></div>
+                <div class="page-sub">Morphologie · Physiologie · Ordonnances IA · Coaching personnalisé</div>
+            </div>
+
+            <!-- TABS -->
+            <div class="tabs">
+                <button class="tab active" data-tab="evolution">📊 Évolution</button>
+                <button class="tab" data-tab="ordonnance">📋 Ordonnance IA</button>
+                <button class="tab" data-tab="coaching">🤖 Coaching IA</button>
+            </div>
+
+            <!-- ═══════ TAB 1 — ÉVOLUTION ═══════ -->
+            <div class="tab-pane active" id="tab-evolution">
+
+                <!-- ADD MEASUREMENT FORM -->
+                <div class="measure-form" id="measure-form">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+                        <div
+                            style="font-family:var(--ff);font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:8px">
+                            ➕ Nouvelle Mesure</div>
+                        <button class="btn btn-sm" id="close-form-btn">✕ Fermer</button>
+                    </div>
+                    <div class="mf-grid">
+                        <div class="fg"><label class="lbl">Poids (kg)</label><input type="number" class="inp"
+                                id="mf-weight" placeholder="70.5" step=".1" /></div>
+                        <div class="fg"><label class="lbl">TA Systolique</label><input type="number" class="inp"
+                                id="mf-bps" placeholder="120" /></div>
+                        <div class="fg"><label class="lbl">TA Diastolique</label><input type="number" class="inp"
+                                id="mf-bpd" placeholder="80" /></div>
+                        <div class="fg"><label class="lbl">Fréq. Cardiaque</label><input type="number" class="inp"
+                                id="mf-hr" placeholder="72" /></div>
+                    </div>
+                    <div class="mf-col3">
+                        <div class="fg"><label class="lbl">Glycémie (mg/dL)</label><input type="number" class="inp"
+                                id="mf-gly" placeholder="95" /></div>
+                        <div class="fg"><label class="lbl">Tour de taille (cm)</label><input type="number" class="inp"
+                                id="mf-waist" placeholder="82" /></div>
+                        <div class="fg"><label class="lbl">Score bien-être (1-10)</label><input type="number"
+                                class="inp" id="mf-wellbeing" placeholder="7" min="1" max="10" /></div>
+                    </div>
+                    <div style="display:flex;gap:10px">
+                        <button class="btn btn-primary" id="save-measure-btn">💾 Enregistrer cette mesure</button>
+                        <button class="btn" id="cancel-measure-btn">Annuler</button>
+                    </div>
+                </div>
+
+                <!-- KPIs -->
+                <div class="kpi-strip" id="kpi-strip"></div>
+
+                <!-- CHARTS ROW 1 -->
+                <div class="evo-grid">
+                    <div class="card card-glow">
+                        <div class="sh"><span class="sh-title"><span class="ico">⚖️</span>Poids & IMC</span><span
+                                id="weight-trend" class="trend"></span></div>
+                        <div class="chart-wrap ch-h200"><canvas id="weightChart"></canvas></div>
+                    </div>
+                    <div class="card">
+                        <div class="sh"><span class="sh-title"><span class="ico">💓</span>Tension Artérielle</span><span
+                                id="bp-trend" class="trend"></span></div>
+                        <div class="chart-wrap ch-h200"><canvas id="bpChart"></canvas></div>
+                    </div>
+                </div>
+
+                <!-- CHARTS ROW 2 -->
+                <div class="evo-grid-3">
+                    <div class="card">
+                        <div class="sh"><span class="sh-title"><span class="ico">🩸</span>Glycémie</span><span
+                                id="gly-trend" class="trend"></span></div>
+                        <div class="chart-wrap ch-h160"><canvas id="glyChart"></canvas></div>
+                    </div>
+                    <div class="card">
+                        <div class="sh"><span class="sh-title"><span class="ico">❤️</span>Fréq. Cardiaque</span><span
+                                id="hr-trend" class="trend"></span></div>
+                        <div class="chart-wrap ch-h160"><canvas id="hrChart"></canvas></div>
+                    </div>
+                    <div class="card">
+                        <div class="sh"><span class="sh-title"><span class="ico">🌟</span>Score Santé</span><span
+                                id="score-trend" class="trend"></span></div>
+                        <div class="chart-wrap ch-h160"><canvas id="scoreChart"></canvas></div>
+                    </div>
+                </div>
+
+                <!-- MORPHO & LIFESTYLE -->
+                <div class="evo-grid">
+                    <!-- MORPHO -->
+                    <div class="card">
+                        <div class="sh"><span class="sh-title"><span class="ico">📐</span>Évolution Morphologique</span>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px"
+                            id="morpho-stats-row"></div>
+                        <div class="chart-wrap ch-h160"><canvas id="morphoChart"></canvas></div>
+                    </div>
+                    <!-- LIFESTYLE RADAR -->
+                    <div class="card">
+                        <div class="sh"><span class="sh-title"><span class="ico">🌿</span>Mode de Vie</span><span
+                                class="badge b-gold" id="lifestyle-score-badge">—</span></div>
+                        <div class="chart-wrap ch-h200"><canvas id="lifestyleChart"></canvas></div>
+                    </div>
+                </div>
+
+                <!-- TIMELINE -->
+                <div class="card" style="margin-bottom:22px">
+                    <div class="sh">
+                        <span class="sh-title"><span class="ico">🗓️</span>Historique des Mesures</span>
+                        <button class="btn btn-sm btn-primary" id="add-measure-inline">+ Nouvelle mesure</button>
+                    </div>
+                    <div class="timeline" id="timeline"></div>
+                </div>
+            </div>
+
+            <!-- ═══════ TAB 2 — ORDONNANCE IA ═══════ -->
+            <div class="tab-pane" id="tab-ordonnance">
+                <div class="rx-layout">
+
+                    <!-- CONFIG -->
+                    <div class="rx-config">
+                        <div class="rx-config-title">⚙️ Configurer l'ordonnance IA</div>
+
+                        <div class="config-section">
+                            <div class="config-lbl">Type d'ordonnance</div>
+                            <div class="radio-group" id="rx-type">
+                                <button class="rbtn sel" data-v="global">Bilan global</button>
+                                <button class="rbtn" data-v="cardio">Cardiovasculaire</button>
+                                <button class="rbtn" data-v="metabolic">Métabolique</button>
+                                <button class="rbtn" data-v="lifestyle">Mode de vie</button>
+                                <button class="rbtn" data-v="mental">Mental/Stress</button>
+                            </div>
+                        </div>
+
+                        <div class="config-section">
+                            <div class="config-lbl">Inclure dans l'ordonnance</div>
+                            <div class="check-group">
+                                <div class="check-item"><input type="checkbox" id="rx-meds" checked /><label
+                                        for="rx-meds">💊 Suggestions médicamenteuses / compléments</label></div>
+                                <div class="check-item"><input type="checkbox" id="rx-exams" checked /><label
+                                        for="rx-exams">🔬 Examens biologiques & imagerie recommandés</label></div>
+                                <div class="check-item"><input type="checkbox" id="rx-diet" checked /><label
+                                        for="rx-diet">🥗 Prescriptions nutritionnelles détaillées</label></div>
+                                <div class="check-item"><input type="checkbox" id="rx-activity" checked /><label
+                                        for="rx-activity">🏃 Programme d'activité physique adapté</label></div>
+                                <div class="check-item"><input type="checkbox" id="rx-lifestyle" /><label
+                                        for="rx-lifestyle">🧘 Hygiène de vie & gestion du stress</label></div>
+                                <div class="check-item"><input type="checkbox" id="rx-followup" /><label
+                                        for="rx-followup">📅 Calendrier de suivi & consultations</label></div>
+                            </div>
+                        </div>
+
+                        <div class="config-section">
+                            <div class="config-lbl">Durée du plan</div>
+                            <div class="radio-group" id="rx-duration">
+                                <button class="rbtn sel" data-v="1mois">1 mois</button>
+                                <button class="rbtn" data-v="3mois">3 mois</button>
+                                <button class="rbtn" data-v="6mois">6 mois</button>
+                                <button class="rbtn" data-v="1an">1 an</button>
+                            </div>
+                        </div>
+
+                        <div class="config-section">
+                            <div class="config-lbl">Contexte supplémentaire <span
+                                    style="font-weight:400;text-transform:none;font-size:.78rem;color:var(--txt3)">(optionnel)</span>
+                            </div>
+                            <textarea class="inp" id="rx-context" rows="3"
+                                placeholder="Objectifs particuliers, contraintes, préférences…"
+                                style="resize:none"></textarea>
+                        </div>
+
+                        <button class="btn btn-primary" id="gen-rx-btn"
+                            style="width:100%;padding:13px;font-size:.9rem;margin-top:4px">
+                            ✨ Générer mon ordonnance IA
+                        </button>
+                    </div>
+
+                    <!-- PREVIEW -->
+                    <div class="rx-preview">
+                        <div class="rx-doc">
+                            <div class="rx-doc-header">
+                                <div style="display:flex;align-items:center;gap:12px">
+                                    <div style="font-size:1.8rem">📋</div>
+                                    <div>
+                                        <div style="font-family:var(--ff);font-size:.9rem;font-weight:700">Ordonnance
+                                            Médicale IA</div>
+                                        <div style="font-size:.72rem;color:var(--txt2);font-family:var(--mono);margin-top:2px"
+                                            id="rx-date-lbl">—</div>
+                                    </div>
+                                </div>
+                                <div style="display:flex;gap:8px;margin-top:14px">
+                                    <button class="btn btn-sm btn-primary" id="rx-print-btn" disabled>🖨
+                                        Imprimer</button>
+                                    <button class="btn btn-sm btn-teal" id="rx-share-btn" disabled>📤 Partager</button>
+                                </div>
+                            </div>
+                            <div class="rx-doc-body" id="rx-doc-body">
+                                <div class="rx-placeholder">
+                                    <div class="rx-placeholder-icon">📋</div>
+                                    <div style="font-size:.83rem;color:var(--txt3);line-height:1.6">Configurez et
+                                        générez votre ordonnance IA personnalisée</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════ TAB 3 — COACHING IA ═══════ -->
+            <div class="tab-pane" id="tab-coaching">
+                <div class="coaching-layout">
+
+                    <!-- CHAT COACH -->
+                    <div class="coach-chat">
+                        <div class="coach-hdr">
+                            <div class="coach-ava">🏋️</div>
+                            <div>
+                                <div class="coach-name">Coach Sana — IA Bien-être</div>
+                                <div class="coach-sub">Nutrition · Sport · Psychologie · Sommeil</div>
+                            </div>
+                            <div style="margin-left:auto">
+                                <span
+                                    style="display:inline-flex;align-items:center;gap:5px;font-size:.7rem;color:var(--teal);font-family:var(--mono);background:rgba(0,212,170,.08);border:1px solid rgba(0,212,170,.2);padding:4px 10px;border-radius:20px">
+                                    <span
+                                        style="width:5px;height:5px;border-radius:50%;background:var(--teal);animation:glow 2s ease infinite"></span>En
+                                    ligne
+                                </span>
+                            </div>
+                        </div>
+                        <div class="coach-msgs" id="coach-msgs">
+                            <!-- populated by JS -->
+                        </div>
+                        <div class="coach-qr" id="coach-qr"></div>
+                        <div class="coach-inp">
+                            <textarea id="coach-input" placeholder="Posez une question à Coach Sana…" rows="1"
+                                disabled></textarea>
+                            <button class="send-btn" id="coach-send" disabled>➤</button>
+                        </div>
+                    </div>
+
+                    <!-- PROGRAMS SIDE -->
+                    <div>
+                        <div
+                            style="font-family:var(--ff);font-size:.88rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:7px">
+                            🎯 Programmes Personnalisés</div>
+                        <div class="program-list" id="programs-list">
+                            <!-- populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <div id="toasts"></div>
+
+    
+    <script>
+        /* ══════════════════════════════════════════
+           CONFIG
+        ══════════════════════════════════════════ */
+        const API = 'http://localhost:8040/api/v1';
+        const ANTHROPIC_API = `${API}/ai/chat`;
+        const MODEL = 'claude-sonnet-4-20250514';
+        const token = () => localStorage.getItem('vc_token');
+        const userObj = () => { try { return JSON.parse(localStorage.getItem('vc_user')); } catch { return null; } };
+        if (!token()) location.href = 'index.html';
+        const U = userObj();
+        document.getElementById('logout-btn').addEventListener('click', e => { e.preventDefault(); localStorage.clear(); location.href = 'index.html'; });
+
+        /* ══════════════════════════════════════════
+           DEMO DATA — 6 months of measurements
+        ══════════════════════════════════════════ */
+        const MONTHS = ['Sep', 'Oct', 'Nov', 'Déc', 'Jan', 'Fév'];
+        const DATES_FULL = ['2024-09-01', '2024-10-01', '2024-11-01', '2024-12-01', '2025-01-01', '2025-02-15'];
+
+        function loadMeasurements() {
+            const stored = localStorage.getItem('vc_measurements');
+            if (stored) return JSON.parse(stored);
+            // Demo data
+            return [
+                { date: 'Sep 2024', weight: 84.2, bps: 135, bpd: 88, hr: 78, glucose: 108, waist: 92, score: 58, wellbeing: 5 },
+                { date: 'Oct 2024', weight: 83.0, bps: 132, bpd: 86, hr: 76, glucose: 104, waist: 90, score: 62, wellbeing: 6 },
+                { date: 'Nov 2024', weight: 81.5, bps: 128, bpd: 84, hr: 74, glucose: 101, waist: 88, score: 66, wellbeing: 6 },
+                { date: 'Déc 2024', weight: 80.8, bps: 126, bpd: 82, hr: 73, glucose: 99, waist: 86, score: 69, wellbeing: 7 },
+                { date: 'Jan 2025', weight: 79.5, bps: 124, bpd: 81, hr: 72, glucose: 97, waist: 84, score: 72, wellbeing: 7 },
+                { date: 'Fév 2025', weight: 78.2, bps: 122, bpd: 80, hr: 70, glucose: 95, waist: 82, score: 76, wellbeing: 8 },
+            ];
+        }
+
+        let measurements = loadMeasurements();
+
+        function saveMeasurements() { localStorage.setItem('vc_measurements', JSON.stringify(measurements)); }
+
+        function trendArrow(vals) {
+            const diff = vals[vals.length - 1] - vals[vals.length - 2];
+            if (Math.abs(diff) < 0.5) return { html: `<span class="trend trend-flat">→ stable</span>`, dir: 0 };
+            const up = diff > 0;
+            return { html: `<span class="trend ${up ? 'trend-up' : 'trend-down'}">${up ? '↑' : '↓'} ${Math.abs(diff).toFixed(1)}</span>`, dir: up ? 1 : -1 };
+        }
+
+        /* ══════════════════════════════════════════
+           CHARTS
+        ══════════════════════════════════════════ */
+        const gridColor = 'rgba(255,255,255,.04)', tickColor = '#3a3028';
+        const defaultScales = {
+            x: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 10 } } },
+            y: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 10 } } }
+        };
+        const defOpts = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { backgroundColor: '#1c1820', borderColor: 'rgba(240,165,0,.3)', borderWidth: 1, titleColor: '#f0ece8', bodyColor: '#7a7068' } }, scales: defaultScales };
+
+        let charts = {};
+        function destroyChart(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
+
+        function buildLabels() { return measurements.map(m => m.date.split(' ')[0]); }
+
+        function renderWeightChart() {
+            destroyChart('weight');
+            const labels = buildLabels();
+            const weights = measurements.map(m => m.weight);
+            const bmis = measurements.map(m => +(m.weight / ((1.75) ** 2)).toFixed(1));
+            document.getElementById('weight-trend').innerHTML = trendArrow(weights).html;
+            const ctx = document.getElementById('weightChart').getContext('2d');
+            charts.weight = new Chart(ctx, {
+                type: 'line', data: {
+                    labels, datasets: [
+                        { label: 'Poids (kg)', data: weights, borderColor: '#f0a500', backgroundColor: 'rgba(240,165,0,.08)', fill: true, tension: .4, pointBackgroundColor: '#f0a500', pointRadius: 4, yAxisID: 'y' },
+                        { label: 'IMC', data: bmis, borderColor: 'rgba(0,212,170,.7)', backgroundColor: 'transparent', borderDash: [4, 4], tension: .4, pointRadius: 3, yAxisID: 'y2' }
+                    ]
+                }, options: { ...defOpts, plugins: { ...defOpts.plugins, legend: { display: true, labels: { color: '#7a7068', font: { size: 10 }, boxWidth: 12 } } }, scales: { ...defaultScales, y2: { position: 'right', grid: { display: false }, ticks: { color: tickColor, font: { size: 10 } } } } }
+            });
+        }
+
+        function renderBPChart() {
+            destroyChart('bp');
+            const labels = buildLabels();
+            const bps = measurements.map(m => m.bps);
+            const bpd = measurements.map(m => m.bpd);
+            document.getElementById('bp-trend').innerHTML = trendArrow(bps).html;
+            const ctx = document.getElementById('bpChart').getContext('2d');
+            charts.bp = new Chart(ctx, {
+                type: 'line', data: {
+                    labels, datasets: [
+                        { label: 'Systolique', data: bps, borderColor: '#ff6b6b', backgroundColor: 'rgba(255,107,107,.06)', fill: true, tension: .4, pointBackgroundColor: '#ff6b6b', pointRadius: 4 },
+                        { label: 'Diastolique', data: bpd, borderColor: 'rgba(255,140,0,.8)', backgroundColor: 'rgba(255,140,0,.04)', fill: true, tension: .4, pointRadius: 3 }
+                    ]
+                }, options: { ...defOpts, plugins: { ...defOpts.plugins, legend: { display: true, labels: { color: '#7a7068', font: { size: 10 }, boxWidth: 12 } } } }
+            });
+        }
+
+        function renderGlyChart() {
+            destroyChart('gly');
+            const labels = buildLabels();
+            const gly = measurements.map(m => m.glucose);
+            document.getElementById('gly-trend').innerHTML = trendArrow(gly).html;
+            const ctx = document.getElementById('glyChart').getContext('2d');
+            const last = gly[gly.length - 1];
+            const col = last < 100 ? '#00d4aa' : last < 126 ? '#ff8c00' : '#ff4d4d';
+            charts.gly = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'Glycémie', data: gly, backgroundColor: gly.map(v => v < 100 ? 'rgba(0,212,170,.3)' : v < 126 ? 'rgba(255,140,0,.3)' : 'rgba(255,77,77,.3)'), borderColor: gly.map(v => v < 100 ? '#00d4aa' : v < 126 ? '#ff8c00' : '#ff4d4d'), borderWidth: 1.5, borderRadius: 4 }] }, options: { ...defOpts } });
+        }
+
+        function renderHRChart() {
+            destroyChart('hr');
+            const labels = buildLabels();
+            const hr = measurements.map(m => m.hr);
+            document.getElementById('hr-trend').innerHTML = trendArrow(hr).html;
+            const ctx = document.getElementById('hrChart').getContext('2d');
+            charts.hr = new Chart(ctx, { type: 'line', data: { labels, datasets: [{ label: 'FC (bpm)', data: hr, borderColor: 'rgba(110,168,254,.9)', backgroundColor: 'rgba(110,168,254,.07)', fill: true, tension: .4, pointBackgroundColor: '#6ea8fe', pointRadius: 4 }] }, options: { ...defOpts } });
+        }
+
+        function renderScoreChart() {
+            destroyChart('scoreC');
+            const labels = buildLabels();
+            const scores = measurements.map(m => m.score);
+            document.getElementById('score-trend').innerHTML = trendArrow(scores).html;
+            const ctx = document.getElementById('scoreChart').getContext('2d');
+            charts.scoreC = new Chart(ctx, { type: 'line', data: { labels, datasets: [{ label: 'Score', data: scores, borderColor: '#f0a500', backgroundColor: function (ctx) { const g = ctx.chart.ctx.createLinearGradient(0, 0, 0, 160); g.addColorStop(0, 'rgba(240,165,0,.25)'); g.addColorStop(1, 'rgba(240,165,0,.01)'); return g; }, fill: true, tension: .4, pointBackgroundColor: '#f0a500', pointRadius: 5 }] }, options: { ...defOpts, scales: { ...defaultScales, y: { ...defaultScales.y, min: 40, max: 100 } } } });
+        }
+
+        function renderMorphoChart() {
+            destroyChart('morpho');
+            const labels = buildLabels();
+            const waist = measurements.map(m => m.waist || 0);
+            const ctx = document.getElementById('morphoChart').getContext('2d');
+            charts.morpho = new Chart(ctx, { type: 'line', data: { labels, datasets: [{ label: 'Tour de taille (cm)', data: waist, borderColor: '#ffe066', backgroundColor: 'rgba(255,224,102,.07)', fill: true, tension: .4, pointBackgroundColor: '#ffe066', pointRadius: 4 }] }, options: { ...defOpts } });
+        }
+
+        function renderLifestyleChart() {
+            destroyChart('lifestyle');
+            const ctx = document.getElementById('lifestyleChart').getContext('2d');
+            const wellbeing = measurements.map(m => m.wellbeing || 5);
+            const last = wellbeing[wellbeing.length - 1];
+            const score = Math.round(last * 10);
+            document.getElementById('lifestyle-score-badge').textContent = `${score}/100`;
+            // Simulated lifestyle radar data
+            charts.lifestyle = new Chart(ctx, {
+                type: 'radar', data: {
+                    labels: ['Activité', 'Nutrition', 'Sommeil', 'Stress', 'Hydratation', 'Social'], datasets: [
+                        { label: 'Actuel', data: [last * 9, last * 8, last * 8.5, last * 9, last * 8, last * 7.5], borderColor: '#f0a500', backgroundColor: 'rgba(240,165,0,.1)', pointBackgroundColor: '#f0a500', pointRadius: 4 },
+                        { label: 'Mois préc.', data: [wellbeing[wellbeing.length - 2] * 9, wellbeing[wellbeing.length - 2] * 8, wellbeing[wellbeing.length - 2] * 8.5, wellbeing[wellbeing.length - 2] * 9, wellbeing[wellbeing.length - 2] * 8, wellbeing[wellbeing.length - 2] * 7.5], borderColor: 'rgba(240,165,0,.3)', backgroundColor: 'transparent', borderDash: [3, 3], pointRadius: 2 }
+                    ]
+                }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, labels: { color: '#7a7068', font: { size: 9 }, boxWidth: 10 } } }, scales: { r: { angleLines: { color: '#2a2320' }, grid: { color: '#2a2320' }, pointLabels: { color: '#5a5048', font: { size: 9 } }, ticks: { display: false }, min: 0, max: 100 } } }
+            });
+        }
+
+        /* ══════════════════════════════════════════
+           KPI STRIP
+        ══════════════════════════════════════════ */
+        function renderKPIs() {
+            const last = measurements[measurements.length - 1];
+            const prev = measurements[measurements.length - 2] || last;
+            const bmi = (last.weight / (1.75 ** 2)).toFixed(1);
+            const bmiStatus = bmi < 18.5 ? { l: 'Insuffisant', c: 'b-warn' } : bmi < 25 ? { l: 'Normal', c: 'b-ok' } : bmi < 30 ? { l: 'Surpoids', c: 'b-warn' } : { l: 'Obésité', c: 'b-bad' };
+            const bpStatus = last.bps < 130 ? { l: 'Normal', c: 'b-ok' } : last.bps < 140 ? { l: 'Élevé', c: 'b-warn' } : { l: 'HTA', c: 'b-bad' };
+            const glyStatus = last.glucose < 100 ? { l: 'Normal', c: 'b-ok' } : last.glucose < 126 ? { l: 'Pré-diabète', c: 'b-warn' } : { l: 'Élevé', c: 'b-bad' };
+            const weightDiff = (last.weight - prev.weight).toFixed(1);
+            const scoreDiff = last.score - prev.score;
+
+            document.getElementById('kpi-strip').innerHTML = `
+    <div class="kpi-card">
+      <div class="kpi-lbl">Poids actuel</div>
+      <div class="kpi-val" style="color:var(--acc)">${last.weight}<small style="font-size:.55em;color:var(--txt2)"> kg</small></div>
+      <div class="kpi-sub">IMC ${bmi} · <span class="badge ${bmiStatus.c}" style="font-size:.63rem">${bmiStatus.l}</span></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-lbl">Tension artérielle</div>
+      <div class="kpi-val" style="font-size:1.4rem;color:${last.bps < 130 ? 'var(--teal)' : 'var(--warning)'}">${last.bps}/${last.bpd}</div>
+      <div class="kpi-sub"><span class="badge ${bpStatus.c}" style="font-size:.63rem">${bpStatus.l}</span></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-lbl">Glycémie</div>
+      <div class="kpi-val" style="color:${last.glucose < 100 ? 'var(--teal)' : 'var(--warning)'}">${last.glucose}<small style="font-size:.55em;color:var(--txt2)"> mg/dL</small></div>
+      <div class="kpi-sub"><span class="badge ${glyStatus.c}" style="font-size:.63rem">${glyStatus.l}</span></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-lbl">Score santé</div>
+      <div class="kpi-val" style="color:var(--acc)">${last.score}<small style="font-size:.55em;color:var(--txt2)">/100</small></div>
+      <div class="kpi-sub">${scoreDiff >= 0 ? `<span style="color:var(--teal)">↑ +${scoreDiff}</span>` : `<span style="color:var(--danger)">↓ ${scoreDiff}</span>`} vs mois préc.</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-lbl">Évolution poids</div>
+      <div class="kpi-val" style="color:${weightDiff <= 0 ? 'var(--teal)' : 'var(--danger)'}">${weightDiff > 0 ? '+' : ''}${weightDiff}<small style="font-size:.55em;color:var(--txt2)"> kg</small></div>
+      <div class="kpi-sub">Sur ${measurements.length} mois · ${(measurements[measurements.length - 1].weight - measurements[0].weight).toFixed(1)} kg total</div>
+    </div>`;
+        }
+
+        /* ══════════════════════════════════════════
+           MORPHO STATS ROW
+        ══════════════════════════════════════════ */
+        function renderMorphoStats() {
+            const last = measurements[measurements.length - 1];
+            const prev = measurements[measurements.length - 2] || last;
+            const bmi = (last.weight / (1.75 ** 2)).toFixed(1);
+            const d = (v1, v2, inv = false) => { const d = v1 - v2; if (Math.abs(d) < 0.1) return '<span style="color:var(--txt3)">→</span>'; const good = (d < 0) == inv; return `<span style="color:${good ? 'var(--teal)' : 'var(--danger)'}">${d > 0 ? '↑' : '↓'} ${Math.abs(d).toFixed(1)}</span>`; };
+            document.getElementById('morpho-stats-row').innerHTML = `
+    <div class="card" style="padding:13px;text-align:center">
+      <div style="font-size:.67rem;color:var(--txt3);font-family:var(--mono);text-transform:uppercase;margin-bottom:4px">IMC</div>
+      <div style="font-family:var(--ff);font-size:1.6rem;font-weight:800;color:var(--acc)">${bmi}</div>
+      <div style="font-size:.72rem;color:var(--txt2);margin-top:2px">${d(parseFloat(bmi), (prev.weight / (1.75 ** 2)), true)}</div>
+    </div>
+    <div class="card" style="padding:13px;text-align:center">
+      <div style="font-size:.67rem;color:var(--txt3);font-family:var(--mono);text-transform:uppercase;margin-bottom:4px">Tour taille</div>
+      <div style="font-family:var(--ff);font-size:1.6rem;font-weight:800;color:var(--gold2)">${last.waist || 82}<small style="font-size:.5em;color:var(--txt2)"> cm</small></div>
+      <div style="font-size:.72rem;color:var(--txt2);margin-top:2px">${d(last.waist || 82, prev.waist || 84, true)}</div>
+    </div>
+    <div class="card" style="padding:13px;text-align:center">
+      <div style="font-size:.67rem;color:var(--txt3);font-family:var(--mono);text-transform:uppercase;margin-bottom:4px">Bien-être</div>
+      <div style="font-family:var(--ff);font-size:1.6rem;font-weight:800;color:var(--teal)">${last.wellbeing || 7}<small style="font-size:.5em;color:var(--txt2)">/10</small></div>
+      <div style="font-size:.72rem;color:var(--txt2);margin-top:2px">${d(last.wellbeing || 7, prev.wellbeing || 6, false)}</div>
+    </div>`;
+        }
+
+        /* ══════════════════════════════════════════
+           TIMELINE
+        ══════════════════════════════════════════ */
+        function renderTimeline() {
+            document.getElementById('timeline').innerHTML = [...measurements].reverse().map((m, i) => `
+    <div class="tl-item">
+      <div class="tl-date">${m.date}</div>
+      <div class="tl-card">
+        <div class="tl-stat"><div class="tl-stat-lbl">Poids</div><div class="tl-stat-val">${m.weight} kg</div></div>
+        <div class="tl-stat"><div class="tl-stat-lbl">IMC</div><div class="tl-stat-val">${(m.weight / (1.75 ** 2)).toFixed(1)}</div></div>
+        <div class="tl-stat"><div class="tl-stat-lbl">Tension</div><div class="tl-stat-val">${m.bps}/${m.bpd}</div></div>
+        <div class="tl-stat"><div class="tl-stat-lbl">FC</div><div class="tl-stat-val">${m.hr} bpm</div></div>
+        <div class="tl-stat"><div class="tl-stat-lbl">Glycémie</div><div class="tl-stat-val">${m.glucose} mg/dL</div></div>
+        <div class="tl-score">
+          <div>
+            <div style="font-size:.63rem;color:var(--txt3);font-family:var(--mono);text-transform:uppercase">Score</div>
+            <div class="tl-score-num" style="color:${m.score >= 70 ? 'var(--teal)' : m.score >= 50 ? 'var(--warning)' : 'var(--danger)'}">${m.score}</div>
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+        }
+
+        /* ══════════════════════════════════════════
+           ADD MEASUREMENT
+        ══════════════════════════════════════════ */
+        function openForm() { document.getElementById('measure-form').classList.add('open'); document.getElementById('measure-form').scrollIntoView({ behavior: 'smooth' }); }
+        function closeForm() { document.getElementById('measure-form').classList.remove('open'); }
+        document.getElementById('add-measure-nav').addEventListener('click', openForm);
+        document.getElementById('add-measure-inline').addEventListener('click', openForm);
+        document.getElementById('close-form-btn').addEventListener('click', closeForm);
+        document.getElementById('cancel-measure-btn').addEventListener('click', closeForm);
+        document.getElementById('save-measure-btn').addEventListener('click', () => {
+            const w = parseFloat(document.getElementById('mf-weight').value);
+            const bps = parseInt(document.getElementById('mf-bps').value);
+            const bpd = parseInt(document.getElementById('mf-bpd').value);
+            const hr = parseInt(document.getElementById('mf-hr').value);
+            const gly = parseFloat(document.getElementById('mf-gly').value);
+            const waist = parseFloat(document.getElementById('mf-waist').value);
+            const wb = parseInt(document.getElementById('mf-wellbeing').value);
+            if (!w && !bps) { toast('Entrez au moins le poids ou la tension', 'warning'); return; }
+            const last = measurements[measurements.length - 1];
+            // Simple score calculation
+            let score = 50;
+            if (w && bps) {
+                const bmi = w / (1.75 ** 2);
+                if (bmi >= 18.5 && bmi < 25) score += 15; else if (bmi < 30) score += 8;
+                if (bps < 120) score += 15; else if (bps < 130) score += 10; else if (bps < 140) score += 5;
+                if (gly && gly < 100) score += 10; else if (gly && gly < 126) score += 5;
+                if (hr && hr >= 60 && hr <= 80) score += 10;
+            }
+            const d = new Date();
+            const label = d.toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' });
+            measurements.push({ date: label, weight: w || last.weight, bps: bps || last.bps, bpd: bpd || last.bpd, hr: hr || last.hr, glucose: gly || last.glucose, waist: waist || last.waist, score: Math.min(score, 100), wellbeing: wb || last.wellbeing });
+            saveMeasurements();
+            initEvolution();
+            closeForm();
+            toast('Mesure enregistrée !', 'success');
+            ['mf-weight', 'mf-bps', 'mf-bpd', 'mf-hr', 'mf-gly', 'mf-waist', 'mf-wellbeing'].forEach(id => document.getElementById(id).value = '');
+        });
+
+        /* ══════════════════════════════════════════
+           INIT EVOLUTION
+        ══════════════════════════════════════════ */
+        function initEvolution() {
+            renderKPIs();
+            renderWeightChart();
+            renderBPChart();
+            renderGlyChart();
+            renderHRChart();
+            renderScoreChart();
+            renderMorphoChart();
+            renderLifestyleChart();
+            renderMorphoStats();
+            renderTimeline();
+        }
+        initEvolution();
+
+        /* ══════════════════════════════════════════
+           TABS
+        ══════════════════════════════════════════ */
+        document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+            document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+            document.querySelectorAll('.tab-pane').forEach(x => x.classList.remove('active'));
+            t.classList.add('active');
+            document.getElementById(`tab-${t.dataset.tab}`).classList.add('active');
+            if (t.dataset.tab === 'coaching' && !coachStarted) initCoach();
+        }));
+
+        /* ══════════════════════════════════════════
+           RADIO GROUPS
+        ══════════════════════════════════════════ */
+        document.querySelectorAll('.radio-group').forEach(g => {
+            g.querySelectorAll('.rbtn').forEach(b => b.addEventListener('click', () => {
+                g.querySelectorAll('.rbtn').forEach(x => x.classList.remove('sel'));
+                b.classList.add('sel');
+            }));
+        });
+
+        /* ══════════════════════════════════════════
+           AI HELPERS
+        ══════════════════════════════════════════ */
+        function getHealthContext() {
+            const last = measurements[measurements.length - 1];
+            const first = measurements[0];
+            const bmi = (last.weight / (1.75 ** 2)).toFixed(1);
+            return `Données patient (${U?.first_name || 'Patient'} ${U?.last_name || ''}) :
+- Période suivie : ${measurements.length} mois (${first.date} → ${last.date})
+- Poids actuel : ${last.weight} kg (initial: ${first.weight} kg, variation: ${(last.weight - first.weight).toFixed(1)} kg)
+- IMC actuel : ${bmi}
+- Tension artérielle : ${last.bps}/${last.bpd} mmHg
+- Fréquence cardiaque : ${last.hr} bpm
+- Glycémie : ${last.glucose} mg/dL
+- Tour de taille : ${last.waist || 82} cm
+- Score de santé : ${last.score}/100 (initial: ${first.score}/100, gain: +${last.score - first.score} pts)
+- Bien-être subjectif : ${last.wellbeing || 7}/10`;
+        }
+
+        async function streamAI(messages, system, targetEl, onDone) {
+            let full = '';
+            try {
+                const res = await fetch(ANTHROPIC_API, { method: 'POST', headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('vc_token')}`  
+                    }, body: JSON.stringify({ model: MODEL, max_tokens: 1800, system, messages, stream: true }) });
+                if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message || 'API error'); }
+                const reader = res.body.getReader(), dec = new TextDecoder();
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+                    for (const line of dec.decode(value).split('\n')) {
+                        if (!line.startsWith('data: ')) continue;
+                        const d = line.slice(6); if (d === '[DONE]') continue;
+                        try { const p = JSON.parse(d); const delta = p.delta?.text || ''; if (delta) { full += delta; targetEl.innerHTML = mdRx(full) + '<span class="cursor"></span>'; } } catch (_) { }
+                    }
+                }
+                targetEl.innerHTML = mdRx(full);
+                if (onDone) onDone(full);
+            } catch (err) { targetEl.innerHTML = `<span style="color:var(--danger)">⚠ ${esc(err.message)}</span>`; }
+            return full;
+        }
+
+        function mdRx(t) {
+            t = t.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            t = t.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+            t = t.replace(/^## (.+)$/gm, '<h3>$1</h3>');
+            t = t.replace(/^- (.+)$/gm, '<li>$1</li>');
+            t = t.replace(/(<li>[\s\S]+?<\/li>\n?)+/g, m => `<ul>${m}</ul>`);
+            t = t.replace(/`([^`]+)`/g, '<code>$1</code>');
+            t = t.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>');
+            t = `<p>${t}</p>`;
+            t = t.replace(/<p><h3>/g, '<h3>').replace(/<\/h3><\/p>/g, '</h3>');
+            t = t.replace(/<p><ul>/g, '<ul>').replace(/<\/ul><\/p>/g, '</ul>');
+            return t;
+        }
+        function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+        /* ══════════════════════════════════════════
+           ORDONNANCE IA
+        ══════════════════════════════════════════ */
+        const RX_SYSTEM = `Tu es un médecin IA expert en médecine préventive et curative. Tu génères des ordonnances médicales personnalisées détaillées basées sur les données de santé du patient. 
+
+Tes ordonnances sont :
+- Précises et cliniquement fondées
+- Personnalisées aux données réelles du patient
+- Organisées en sections claires
+- Formulées en langage médical accessible
+- Accompagnées de justifications cliniques
+- Munies d'avertissements appropriés
+
+Tu réponds toujours en français. Tu n'hésites pas à être précis sur les dosages, fréquences et durées. Tu rappelles systématiquement que l'ordonnance doit être validée par un médecin réel avant exécution.`;
+
+        document.getElementById('gen-rx-btn').addEventListener('click', async () => {
+            const rxType = document.querySelector('#rx-type .rbtn.sel')?.dataset.v || 'global';
+            const duration = document.querySelector('#rx-duration .rbtn.sel')?.dataset.v || '3mois';
+            const includeMeds = document.getElementById('rx-meds').checked;
+            const includeExams = document.getElementById('rx-exams').checked;
+            const includeDiet = document.getElementById('rx-diet').checked;
+            const includeActivity = document.getElementById('rx-activity').checked;
+            const includeLifestyle = document.getElementById('rx-lifestyle').checked;
+            const includeFollowup = document.getElementById('rx-followup').checked;
+            const context = document.getElementById('rx-context').value;
+            const includes = [];
+            if (includeMeds) includes.push('suggestions médicamenteuses et compléments');
+            if (includeExams) includes.push('examens biologiques et imagerie');
+            if (includeDiet) includes.push('prescription nutritionnelle détaillée');
+            if (includeActivity) includes.push('programme d\'activité physique');
+            if (includeLifestyle) includes.push('hygiène de vie');
+            if (includeFollowup) includes.push('calendrier de suivi');
+            const typeLabels = { global: 'bilan global', cardio: 'cardiovasculaire', metabolic: 'métabolique', lifestyle: 'mode de vie', mental: 'santé mentale et stress' };
+            const prompt = `${getHealthContext()}\n\nGénère une ordonnance médicale IA de type "${typeLabels[rxType]}" pour une durée de ${duration}.\nInclure : ${includes.join(', ')}.\n${context ? `Contexte supplémentaire : ${context}` : ''}`;
+            const btn = document.getElementById('gen-rx-btn');
+            btn.disabled = true; btn.textContent = '⏳ Génération en cours…';
+            document.getElementById('rx-doc-body').innerHTML = '<div class="rx-content" id="rx-stream"><span class="cursor"></span></div>';
+            document.getElementById('rx-date-lbl').textContent = `Générée le ${new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })} · Plan ${duration}`;
+            const target = document.getElementById('rx-stream');
+            await streamAI([{ role: 'user', content: prompt }], RX_SYSTEM, target, () => {
+                document.getElementById('rx-print-btn').disabled = false;
+                document.getElementById('rx-share-btn').disabled = false;
+                // Add disclaimer and stamp
+                target.innerHTML += `<div class="rx-disclaimer">⚠ Cette ordonnance est générée par une intelligence artificielle à titre indicatif uniquement. Elle doit obligatoirement être validée et signée par un médecin diplômé avant toute mise en application. VitaCore n'assume aucune responsabilité médicale.</div>
+    <div class="rx-stamp"><span style="font-size:1.2rem">🤖</span><div><div class="rx-stamp-txt">Généré par VitaCore IA · Dr. Médi v1.0</div><div class="rx-stamp-txt" style="opacity:.6">${new Date().toISOString()}</div></div></div>`;
+                toast('✓ Ordonnance générée !', 'success');
+            });
+            btn.disabled = false; btn.innerHTML = '✨ Générer mon ordonnance IA';
+        });
+        document.getElementById('rx-print-btn').addEventListener('click', () => window.print());
+
+        /* ══════════════════════════════════════════
+           COACHING IA
+        ══════════════════════════════════════════ */
+        const COACH_SYSTEM = `Tu es Coach Sana, une coach bien-être et santé IA de haut niveau intégrée à VitaCore. Tu combines expertise en nutrition, sport, psychologie positive, gestion du stress et médecine préventive.
+
+Tu connais les données de santé du patient et tu adaptes tous tes conseils à sa situation réelle.
+
+Ta mission :
+- Motiver et accompagner le patient dans son parcours santé
+- Donner des conseils concrets, applicables, personnalisés
+- Célébrer les progrès et encourager la persévérance
+- Proposer des programmes adaptés (nutrition, sport, sommeil, mental)
+- Répondre à toutes les questions santé/bien-être
+
+Style : chaleureux, motivant, bienveillant, scientifiquement fondé.
+Langue : français uniquement.
+Format : concis (4-8 lignes), avec des emojis appropriés, des conseils actionnables.`;
+
+        let coachConv = [];
+        let coachStarted = false;
+
+        const PROGRAMS = [
+            { icon: '🥗', color: 'rgba(0,212,170,.12)', border: 'rgba(0,212,170,.25)', title: 'Nutrition Équilibrée', sub: 'Plan sur 4 semaines', progress: 65, items: ['Réduire sucres ajoutés à < 25g/j', '5 fruits & légumes par jour', 'Hydratation : 2L eau minimum', 'Protéines à chaque repas'] },
+            { icon: '🏃', color: 'rgba(240,165,0,.12)', border: 'rgba(240,165,0,.25)', title: 'Cardio Progressif', sub: '3 séances / semaine', progress: 40, items: ['Marche rapide 30 min · J1-J3-J5', 'HIIT 20 min hebdo', 'Renforcement musculaire doux', 'Étirements quotidiens 10 min'] },
+            { icon: '😴', color: 'rgba(110,168,254,.12)', border: 'rgba(110,168,254,.25)', title: 'Sommeil Réparateur', sub: 'Hygiène de sommeil', progress: 80, items: ['Coucher avant 23h30', 'Chambre à 18–19°C', 'Pas d\'écrans 1h avant dormir', 'Routine relaxation 15 min'] },
+            { icon: '🧠', color: 'rgba(200,150,255,.12)', border: 'rgba(200,150,255,.25)', title: 'Gestion du Stress', sub: 'Techniques validées', progress: 30, items: ['Cohérence cardiaque 3x/jour', 'Méditation 10 min le matin', 'Journal de gratitude', 'Déconnexion digitale 1h/soir'] },
+        ];
+
+        function renderPrograms() {
+            document.getElementById('programs-list').innerHTML = PROGRAMS.map(p => `
+    <div class="prog-card" style="border-color:${p.border}">
+      <div class="prog-header">
+        <div class="prog-icon" style="background:${p.color};border:1px solid ${p.border}">${p.icon}</div>
+        <div><div class="prog-title">${p.title}</div><div class="prog-sub">${p.sub}</div></div>
+      </div>
+      <div class="prog-items">${p.items.map(i => `<div class="prog-item">${i}</div>`).join('')}</div>
+      <div class="prog-progress">
+        <div class="prog-prog-bar"><div class="prog-prog-fill" style="width:${p.progress}%"></div></div>
+        <div class="prog-prog-lbl"><span>Progression</span><span>${p.progress}%</span></div>
+      </div>
+    </div>`).join('');
+        }
+        renderPrograms();
+
+        function addCoachMsg(html, role = 'ai') {
+            const wrap = document.getElementById('coach-msgs');
+            const el = document.createElement('div');
+            el.className = `coach-msg cm-${role}`;
+            const ava = role === 'ai' ? '<div class="cm-ava ai">🏋️</div>' : '<div class="cm-ava user">👤</div>';
+            el.innerHTML = `${ava}<div class="cm-bbl md" ${role === 'ai' ? 'id="coach-last-bbl"' : ''}>${html}</div>`;
+            wrap.appendChild(el);
+            wrap.scrollTo({ top: wrap.scrollHeight, behavior: 'smooth' });
+            return el;
+        }
+
+        function setCoachQR(opts) {
+            const w = document.getElementById('coach-qr');
+            if (!opts?.length) { w.style.display = 'none'; return; }
+            w.style.display = 'flex';
+            w.innerHTML = opts.map(o => `<button class="cqr" onclick="sendCoach('${o.replace(/'/g, "\\'")}')">${o}</button>`).join('');
+        }
+
+        async function sendCoach(text) {
+            if (!text.trim()) return;
+            document.getElementById('coach-input').value = '';
+            setCoachQR([]);
+            addCoachMsg(esc(text), 'user');
+            coachConv.push({ role: 'user', content: text });
+            document.getElementById('coach-send').disabled = true;
+            document.getElementById('coach-input').disabled = true;
+            // Typing
+            const typingEl = document.createElement('div');
+            typingEl.className = 'coach-msg cm-ai'; typingEl.id = 'coach-typing';
+            typingEl.innerHTML = `<div class="cm-ava ai">🏋️</div><div class="t-dots"><span></span><span></span><span></span></div>`;
+            document.getElementById('coach-msgs').appendChild(typingEl);
+            document.getElementById('coach-msgs').scrollTo({ top: document.getElementById('coach-msgs').scrollHeight, behavior: 'smooth' });
+            await new Promise(r => setTimeout(r, 600));
+            typingEl.remove();
+            // Stream response
+            const msgEl = addCoachMsg('<span class="cursor"></span>', 'ai');
+            const bbl = msgEl.querySelector('.cm-bbl');
+            let full = '';
+            try {
+                const systemWithData = COACH_SYSTEM + '\n\n' + getHealthContext();
+                const res = await fetch(ANTHROPIC_API, { method: 'POST', headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('vc_token')}`  
+                    }, body: JSON.stringify({ model: MODEL, max_tokens: 1000, system: systemWithData, messages: coachConv, stream: true }) });
+                if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message || 'API error'); }
+                const reader = res.body.getReader(), dec = new TextDecoder();
+                while (true) {
+                    const { value, done } = await reader.read(); if (done) break;
+                    for (const line of dec.decode(value).split('\n')) {
+                        if (!line.startsWith('data: ')) continue;
+                        const d = line.slice(6); if (d === '[DONE]') continue;
+                        try { const p = JSON.parse(d); const delta = p.delta?.text || ''; if (delta) { full += delta; bbl.innerHTML = mdRx(full) + '<span class="cursor"></span>'; document.getElementById('coach-msgs').scrollTo({ top: document.getElementById('coach-msgs').scrollHeight, behavior: 'smooth' }); } } catch (_) { }
+                    }
+                }
+                bbl.innerHTML = mdRx(full);
+                coachConv.push({ role: 'assistant', content: full });
+                // Contextual QRs
+                const t = full.toLowerCase();
+                if (t.includes('nutrition') || t.includes('aliment') || t.includes('manger')) setCoachQR(['Mon plan nutrition détaillé', 'Recettes healthy', 'Gérer les fringales']);
+                else if (t.includes('sport') || t.includes('exercice') || t.includes('séance')) setCoachQR(['Programme débutant', 'Cardio ou musculation ?', 'Récupération musculaire']);
+                else if (t.includes('sommeil')) setCoachQR(['Insomnie chronique', 'Routine du soir', 'Mélatonine utile ?']);
+                else if (t.includes('stress') || t.includes('anxiété')) setCoachQR(['Techniques de respiration', 'Méditation guidée', 'Burn-out professionnel']);
+                else setCoachQR(['Mon plan nutrition', 'Programme sportif', 'Gérer mon stress', 'Améliorer mon sommeil']);
+            } catch (err) { bbl.innerHTML = `<span style="color:var(--danger)">⚠ ${esc(err.message)}</span>`; }
+            document.getElementById('coach-send').disabled = false;
+            document.getElementById('coach-input').disabled = false;
+        }
+
+        function initCoach() {
+            coachStarted = true;
+            const name = U?.first_name || 'vous';
+            const last = measurements[measurements.length - 1];
+            const gain = last.score - measurements[0].score;
+            document.getElementById('coach-input').disabled = false;
+            document.getElementById('coach-send').disabled = false;
+            // Welcome message
+            const welcome = `Bonjour **${name}** ! 🌟 Je suis **Coach Sana**, votre coach santé & bien-être personnalisé.\n\nJ'ai analysé vos données : en ${measurements.length} mois, votre score de santé est passé de **${measurements[0].score}** à **${last.score}/100** (+${gain} pts). ${gain > 0 ? 'Bravo pour ces progrès ! 🎉' : ''}\n\nJe suis ici pour vous aider à aller encore plus loin. Qu'est-ce qui vous préoccupe le plus en ce moment ?`;
+            addCoachMsg(mdRx(welcome), 'ai');
+            coachConv.push({ role: 'assistant', content: welcome });
+            setCoachQR(['Mon alimentation', 'Ma forme physique', 'Mon niveau de stress', 'Mes objectifs santé']);
+        }
+
+        document.getElementById('coach-send').addEventListener('click', () => {
+            const t = document.getElementById('coach-input').value.trim(); if (t) sendCoach(t);
+        });
+        document.getElementById('coach-input').addEventListener('keydown', e => {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); const t = document.getElementById('coach-input').value.trim(); if (t) sendCoach(t); }
+        });
+        document.getElementById('coach-input').addEventListener('input', () => {
+            const ta = document.getElementById('coach-input'); ta.style.height = 'auto'; ta.style.height = Math.min(ta.scrollHeight, 80) + 'px';
+        });
+
+        /* ══════════════════════════════════════════
+           TOAST
+        ══════════════════════════════════════════ */
+        function toast(msg, type = 'success') {
+            const c = { success: 'var(--teal)', error: 'var(--danger)', warning: 'var(--warning)', info: 'var(--info)' };
+            const el = document.createElement('div');
+            el.className = 'toast';
+            el.style.borderLeftColor = c[type] || c.success;
+            el.innerHTML = `<span style="color:${c[type] || c.success};font-weight:700">${type === 'success' ? '✓' : '⚠'}</span>${msg}`;
+            document.getElementById('toasts').appendChild(el);
+            setTimeout(() => el.remove(), 4000);
+        }
+
+        /* fix keyframes */
+        const sEl = document.createElement('style');
+        sEl.textContent = '@keyframes spin{to{transform:rotate(360deg)}}@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}';
+        document.head.appendChild(sEl);
+
+
+        /* ══════════════════════════
+           MOBILE SIDEBAR TOGGLE
+        ══════════════════════════ */
+        function toggleSidebar() {
+            const sb = document.querySelector('.sidebar');
+            const btn = document.getElementById('hamburger-btn');
+            const ovl = document.getElementById('sidebar-overlay');
+            const isOpen = sb.classList.contains('open');
+            if (isOpen) { closeSidebar(); }
+            else {
+                sb.classList.add('open');
+                btn.classList.add('open');
+                ovl.classList.add('visible');
+                document.body.style.overflow = 'hidden'; // empêche scroll fond
+            }
+        }
+
+        function closeSidebar() {
+            document.querySelector('.sidebar')?.classList.remove('open');
+            document.getElementById('hamburger-btn')?.classList.remove('open');
+            document.getElementById('sidebar-overlay')?.classList.remove('visible');
+            document.body.style.overflow = '';
+        }
+
+        // Ferme la sidebar au clic sur un lien (navigation mobile)
+        document.querySelectorAll('.sb-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 900) closeSidebar();
+            });
+        });
+
+        // Ferme si on redimensionne vers desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 900) closeSidebar();
+        });
+
+        document.getElementById('hamburger-btn').addEventListener('click', () => {
+            const menu = document.getElementById('mobile-menu');
+            const btn = document.getElementById('hamburger-btn');
+            menu.classList.toggle('open');
+            btn.classList.toggle('open');
+        });
+
+        // Ferme au clic sur un lien
+        document.querySelectorAll('#mobile-menu .sb-link').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('mobile-menu').classList.remove('open');
+                document.getElementById('hamburger-btn').classList.remove('open');
+            });
+        });
+
+        document.getElementById('logout-btn-mobile')?.addEventListener('click', e => {
+            e.preventDefault();
+            localStorage.clear();
+            location.href = 'index.html';
+        });
+    </script>
+</body>
+
+</html>

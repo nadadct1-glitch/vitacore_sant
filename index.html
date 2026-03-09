@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VitaCore — Connexion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+/* ── RESET & VARS ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0a; --bg2:#111; --bgc:#161616;
+  --acc:#c8ff00; --acc-dim:rgba(200,255,0,.12); --acc-brd:rgba(200,255,0,.3);
+  --txt:#f0f0f0; --txt2:#888; --txt3:#444;
+  --brd:#222; --danger:#ff4d4d; --success:#00d68f;
+  --r-md:14px; --r-lg:20px; --r-xl:28px;
+  --tr:all .22s cubic-bezier(.4,0,.2,1);
+  --ff:'Syne',sans-serif; --fb:'DM Sans',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--fb);background:var(--bg);color:var(--txt);min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}
+
+/* ── BG EFFECTS ── */
+.bg-grid{position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(200,255,0,.025)1px,transparent 1px),linear-gradient(90deg,rgba(200,255,0,.025)1px,transparent 1px);background-size:64px 64px;pointer-events:none}
+.bg-glow{position:fixed;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(200,255,0,.07)0%,transparent 70%);top:-200px;right:-150px;pointer-events:none;z-index:0}
+.bg-glow2{position:fixed;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(0,149,255,.05)0%,transparent 70%);bottom:-100px;left:-100px;pointer-events:none;z-index:0}
+
+/* ── LAYOUT ── */
+.layout{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;position:relative;z-index:1}
+
+/* ── HERO ── */
+.hero{padding:60px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--ff);font-size:1.4rem;font-weight:800;color:var(--txt);text-decoration:none}
+.brand-dot{width:10px;height:10px;background:var(--acc);border-radius:50%;box-shadow:0 0 12px var(--acc)}
+.hero-body{flex:1;display:flex;flex-direction:column;justify-content:center;padding:40px 0}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;background:var(--acc-dim);border:1px solid var(--acc-brd);padding:6px 14px;border-radius:20px;margin-bottom:24px;font-size:.78rem;font-weight:600;color:var(--acc);width:fit-content}
+.blink{width:6px;height:6px;background:var(--acc);border-radius:50%;animation:blink 1.5s ease infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.hero-title{font-size:clamp(2.2rem,3.5vw,3.4rem);font-weight:800;line-height:1.05;letter-spacing:-.03em;margin-bottom:18px}
+.hero-title em{color:var(--acc);font-style:normal}
+.hero-desc{font-size:.95rem;color:var(--txt2);line-height:1.75;max-width:400px;margin-bottom:32px}
+.hero-features{display:flex;flex-direction:column;gap:12px;margin-bottom:36px}
+.feat{display:flex;align-items:center;gap:12px;font-size:.88rem;color:var(--txt2)}
+.feat-icon{width:34px;height:34px;border-radius:10px;background:var(--acc-dim);border:1px solid var(--acc-brd);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1rem}
+.cards-row{display:flex;gap:12px;flex-wrap:wrap}
+.mini-card{background:var(--bgc);border:1px solid var(--brd);border-radius:var(--r-md);padding:14px 18px;transition:var(--tr)}
+.mini-card:hover{border-color:var(--acc-brd);transform:translateY(-3px)}
+.mini-card:nth-child(2){animation-delay:.5s}
+.mini-card:nth-child(3){animation-delay:1s}
+.mc-label{font-size:.68rem;color:var(--txt3);text-transform:uppercase;letter-spacing:.1em}
+.mc-val{font-family:var(--ff);font-size:1.35rem;font-weight:800;color:var(--acc);margin-top:2px}
+.float{animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.deco-line{position:absolute;top:0;right:0;width:1px;height:100%;background:linear-gradient(to bottom,transparent,var(--acc),transparent);opacity:.2}
+
+/* ── AUTH PANEL ── */
+.auth-panel{display:flex;align-items:center;justify-content:center;padding:60px 50px;border-left:1px solid var(--brd);background:var(--bg2)}
+.auth-box{width:100%;max-width:420px}
+.auth-tabs{display:flex;background:var(--bgc);border-radius:var(--r-md);padding:4px;margin-bottom:30px}
+.tab-btn{flex:1;padding:10px;border-radius:12px;border:none;cursor:pointer;font-family:var(--fb);font-weight:600;font-size:.88rem;background:transparent;color:var(--txt2);transition:var(--tr)}
+.tab-btn.active{background:var(--acc);color:#000;box-shadow:0 4px 16px rgba(200,255,0,.3)}
+.auth-form{display:none}
+.auth-form.active{display:block;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.form-title{font-family:var(--ff);font-size:1.55rem;font-weight:800;margin-bottom:4px}
+.form-sub{font-size:.85rem;color:var(--txt2);margin-bottom:24px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fg{margin-bottom:18px}
+.lbl{display:block;margin-bottom:7px;font-size:.78rem;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.08em}
+.inp{width:100%;padding:13px 16px;border-radius:var(--r-md);background:var(--bgc);border:1px solid var(--brd);color:var(--txt);font-family:var(--fb);font-size:.93rem;transition:var(--tr);outline:none}
+.inp:focus{border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-dim)}
+.inp::placeholder{color:var(--txt3)}
+.inp.error{border-color:var(--danger)}
+.err{font-size:.78rem;color:var(--danger);margin-top:5px;display:none}
+.inp.error+.err{display:block}
+.alert{padding:12px 16px;border-radius:var(--r-md);margin-bottom:16px;font-size:.87rem;display:none;align-items:center;gap:10px}
+.alert.show{display:flex}
+.alert-error{background:rgba(255,77,77,.1);border:1px solid rgba(255,77,77,.3);color:#ff8080}
+.alert-success{background:rgba(0,214,143,.1);border:1px solid rgba(0,214,143,.3);color:#33e8a8}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 24px;border-radius:var(--r-md);border:none;cursor:pointer;font-family:var(--fb);font-weight:600;font-size:.9rem;text-decoration:none;transition:var(--tr)}
+.btn-primary{background:var(--acc);color:#000;box-shadow:0 4px 20px rgba(200,255,0,.25);width:100%;padding:15px}
+.btn-primary:hover{background:#d4ff33;transform:translateY(-2px);box-shadow:0 8px 28px rgba(200,255,0,.4)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+.auth-foot{text-align:center;margin-top:18px;font-size:.83rem;color:var(--txt2)}
+.auth-foot a{color:var(--acc);font-weight:600;text-decoration:none;margin-left:4px}
+.forgot{text-align:right;margin-bottom:18px}
+.forgot a{font-size:.83rem;color:var(--acc);text-decoration:none}
+.terms-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:20px}
+.terms-row input{width:17px;height:17px;margin-top:2px;accent-color:var(--acc);flex-shrink:0;cursor:pointer}
+.terms-row label{font-size:.83rem;color:var(--txt2);cursor:pointer}
+.terms-row a{color:var(--acc)}
+.loader{display:inline-block;width:17px;height:17px;border:2px solid rgba(0,0,0,.3);border-top-color:#000;border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .hero{display:none}
+  .auth-panel{border-left:none;padding:60px 24px 40px;min-height:100vh}
+  .auth-panel::before{content:'VitaCore';display:block;font-family:var(--ff);font-weight:800;font-size:1.6rem;color:var(--acc);text-align:center;margin-bottom:32px}
+}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+<div class="bg-glow2"></div>
+
+<div class="layout">
+  <!-- ── HERO ── -->
+  <div class="hero">
+    <a class="brand" href="#"><span class="brand-dot"></span>VitaCore</a>
+    <div class="hero-body">
+      <div class="hero-tag"><span class="blink"></span>Plateforme de santé intelligente</div>
+      <h1 class="hero-title">Gérez votre<br><em>santé globale</em><br>simplement.</h1>
+      <p class="hero-desc">VitaCore centralise votre bilan médical, suit vos pathologies et vous accompagne avec des indicateurs clairs et personnalisés.</p>
+      <div class="hero-features">
+        <div class="feat"><div class="feat-icon">🩺</div>Bilan de santé complet en 5 étapes</div>
+        <div class="feat"><div class="feat-icon">📊</div>Dashboard analytique en temps réel</div>
+        <div class="feat"><div class="feat-icon">🔒</div>Données médicales 100% sécurisées</div>
+        <div class="feat"><div class="feat-icon">💊</div>Suivi des médicaments et traitements</div>
+      </div>
+      <div class="cards-row">
+        <div class="mini-card float"><div class="mc-label">Utilisateurs</div><div class="mc-val">12K+</div></div>
+        <div class="mini-card float"><div class="mc-label">Score moyen</div><div class="mc-val">78/100</div></div>
+        <div class="mini-card float"><div class="mc-label">Bilans créés</div><div class="mc-val">48K+</div></div>
+      </div>
+    </div>
+    <div class="deco-line"></div>
+  </div>
+
+  <!-- ── AUTH ── -->
+  <div class="auth-panel">
+    <div class="auth-box">
+      <div class="auth-tabs">
+        <button class="tab-btn active" data-tab="login">Connexion</button>
+        <button class="tab-btn" data-tab="register">Inscription</button>
+      </div>
+
+      <!-- LOGIN -->
+      <div class="auth-form active" id="form-login">
+        <div class="form-title">Bon retour 👋</div>
+        <div class="form-sub">Connectez-vous à votre espace santé</div>
+        <div id="login-alert" class="alert"></div>
+        <div class="fg">
+          <label class="lbl">Email</label>
+          <input type="email" class="inp" id="l-email" placeholder="vous@email.com"/>
+          <div class="err">Email invalide</div>
+        </div>
+        <div class="fg">
+          <label class="lbl">Mot de passe</label>
+          <input type="password" class="inp" id="l-pw" placeholder="••••••••"/>
+          <div class="err">Requis</div>
+        </div>
+        <div class="forgot"><a href="#">Mot de passe oublié ?</a></div>
+        <button class="btn btn-primary" id="login-btn">Se connecter →</button>
+        <p class="auth-foot">Pas de compte ?<a href="#" class="sw" data-to="register">S'inscrire</a></p>
+      </div>
+
+      <!-- REGISTER -->
+      <div class="auth-form" id="form-register">
+        <div class="form-title">Créer un compte</div>
+        <div class="form-sub">Commencez votre suivi santé aujourd'hui</div>
+        <div id="reg-alert" class="alert"></div>
+        <div class="form-row">
+          <div class="fg">
+            <label class="lbl">Prénom</label>
+            <input type="text" class="inp" id="r-fn" placeholder="Jean"/>
+            <div class="err">Requis</div>
+          </div>
+          <div class="fg">
+            <label class="lbl">Nom</label>
+            <input type="text" class="inp" id="r-ln" placeholder="Dupont"/>
+            <div class="err">Requis</div>
+          </div>
+        </div>
+        <div class="fg">
+          <label class="lbl">Email</label>
+          <input type="email" class="inp" id="r-em" placeholder="vous@email.com"/>
+          <div class="err">Email invalide</div>
+        </div>
+        <div class="fg">
+          <label class="lbl">Mot de passe</label>
+          <input type="password" class="inp" id="r-pw" placeholder="Min. 8 caractères"/>
+          <div class="err">8 caractères minimum</div>
+        </div>
+        <div class="fg">
+          <label class="lbl">Confirmer</label>
+          <input type="password" class="inp" id="r-cf" placeholder="••••••••"/>
+          <div class="err">Les mots de passe ne correspondent pas</div>
+        </div>
+        <div class="terms-row">
+          <input type="checkbox" id="terms"/>
+          <label for="terms">J'accepte les <a href="#">conditions d'utilisation</a> et la <a href="#">politique de confidentialité</a></label>
+        </div>
+        <button class="btn btn-primary" id="reg-btn">Créer mon compte →</button>
+        <p class="auth-foot">Déjà un compte ?<a href="#" class="sw" data-to="login">Se connecter</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:8040/api/v1';
+
+/* ── utils ── */
+const $  = id => document.getElementById(id);
+const sl = ms => new Promise(r => setTimeout(r, ms));
+
+/* ── auth store ── */
+const Auth = {
+  set(token, user){ localStorage.setItem('vc_token', token); localStorage.setItem('vc_user', JSON.stringify(user)) },
+  token(){ return localStorage.getItem('vc_token') },
+  ok(){ return !!Auth.token() },
+};
+
+if(Auth.ok()) location.href = 'dashboard.html';
+
+/* ── tabs ── */
+function switchTab(name){
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+  document.querySelectorAll('.auth-form').forEach(f => f.classList.toggle('active', f.id === `form-${name}`));
+}
+document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
+document.querySelectorAll('.sw').forEach(a => a.addEventListener('click', e => { e.preventDefault(); switchTab(a.dataset.to); }));
+
+/* ── validation helpers ── */
+function clearErr(el){ el.classList.remove('error') }
+function showErr(el){ el.classList.add('error') }
+function showAlert(id, msg, type='error'){
+  const el = $(id);
+  el.className = `alert alert-${type} show`;
+  el.innerHTML = msg;
+}
+function hideAlert(id){ $(id).classList.remove('show') }
+function setLoad(btn, on){
+  if(on){ btn.dataset.orig = btn.innerHTML; btn.innerHTML = '<span class="loader"></span>'; btn.disabled = true; }
+  else  { btn.innerHTML = btn.dataset.orig; btn.disabled = false; }
+}
+
+/* ── login ── */
+$('login-btn').addEventListener('click', async () => {
+  const email = $('l-email'), pw = $('l-pw');
+  clearErr(email); clearErr(pw); hideAlert('login-alert');
+  let ok = true;
+  if(!email.value || !email.value.includes('@')){ showErr(email); ok=false; }
+  if(!pw.value){ showErr(pw); ok=false; }
+  if(!ok) return;
+  setLoad($('login-btn'), true);
+  try{
+    const r = await fetch(`${API}/auth/login`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ email:email.value, password:pw.value }) });
+    const d = await r.json();
+    if(!r.ok) throw new Error(d.detail || 'Erreur de connexion');
+    Auth.set(d.access_token, d.user);
+    showAlert('login-alert', '✓ Connexion réussie !', 'success');
+    await sl(600);
+    location.href = 'dashboard.html';
+  } catch(e){
+    showAlert('login-alert', e.message);
+    setLoad($('login-btn'), false);
+  }
+});
+$('l-email').addEventListener('keydown', e => e.key==='Enter' && $('login-btn').click());
+$('l-pw').addEventListener('keydown',    e => e.key==='Enter' && $('login-btn').click());
+
+/* ── register ── */
+$('reg-btn').addEventListener('click', async () => {
+  const fn=$('r-fn'),ln=$('r-ln'),em=$('r-em'),pw=$('r-pw'),cf=$('r-cf');
+  [fn,ln,em,pw,cf].forEach(clearErr); hideAlert('reg-alert');
+  let ok=true;
+  if(!fn.value.trim()){ showErr(fn); ok=false; }
+  if(!ln.value.trim()){ showErr(ln); ok=false; }
+  if(!em.value || !em.value.includes('@')){ showErr(em); ok=false; }
+  if(pw.value.length < 8){ showErr(pw); ok=false; }
+  if(pw.value !== cf.value){ showErr(cf); ok=false; }
+  if(!document.getElementById('terms').checked){ showAlert('reg-alert','Acceptez les conditions d\'utilisation'); ok=false; }
+  if(!ok) return;
+  setLoad($('reg-btn'), true);
+  try{
+    const r = await fetch(`${API}/auth/register`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ first_name:fn.value, last_name:ln.value, email:em.value, password:pw.value }) });
+    const d = await r.json();
+    if(!r.ok) throw new Error(d.detail || 'Erreur lors de l\'inscription');
+    Auth.set(d.access_token, d.user);
+    showAlert('reg-alert', '✓ Compte créé !', 'success');
+    await sl(600);
+    location.href = 'health-form.html';
+  } catch(e){
+    showAlert('reg-alert', e.message);
+    setLoad($('reg-btn'), false);
+  }
+});
+
+document.getElementById('logout-btn-mobile')?.addEventListener('click', e => {
+  e.preventDefault();
+  localStorage.clear();
+  location.href = 'index.html';
+});
+</script>
+</body>
+</html>

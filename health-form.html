@@ -1,0 +1,1776 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bilan de Santé — VitaCore</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+      --bg: #0a0a0a;
+      --bg2: #111;
+      --bgc: #161616;
+      --acc: #c8ff00;
+      --acc-dim: rgba(200, 255, 0, .12);
+      --acc-brd: rgba(200, 255, 0, .3);
+      --txt: #f0f0f0;
+      --txt2: #888;
+      --txt3: #444;
+      --brd: #222;
+      --danger: #ff4d4d;
+      --success: #00d68f;
+      --r-sm: 8px;
+      --r-md: 14px;
+      --r-lg: 20px;
+      --r-xl: 28px;
+      --tr: all .22s cubic-bezier(.4, 0, .2, 1);
+      --ff: 'Syne', sans-serif;
+      --fb: 'DM Sans', sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      font-family: var(--fb);
+      background: var(--bg);
+      color: var(--txt);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg2)
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--brd);
+      border-radius: 3px
+    }
+
+    /* ── NAV ── */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 28px;
+      background: rgba(10, 10, 10, .9);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--brd)
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-family: var(--ff);
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--txt);
+      text-decoration: none
+    }
+
+    .brand-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--acc);
+      border-radius: 50%
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 10px 20px;
+      border-radius: var(--r-md);
+      border: none;
+      cursor: pointer;
+      font-family: var(--fb);
+      font-weight: 600;
+      font-size: .875rem;
+      text-decoration: none;
+      transition: var(--tr)
+    }
+
+    .btn-primary {
+      background: var(--acc);
+      color: #000;
+      box-shadow: 0 4px 18px rgba(200, 255, 0, .25)
+    }
+
+    .btn-primary:hover {
+      background: #d4ff33;
+      transform: translateY(-1px)
+    }
+
+    .btn-primary:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+      transform: none !important
+    }
+
+    .btn-secondary {
+      background: var(--bgc);
+      color: var(--txt);
+      border: 1px solid var(--brd)
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--acc);
+      color: var(--acc)
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--txt2)
+    }
+
+    .btn-ghost:hover {
+      color: var(--acc);
+      background: var(--acc-dim)
+    }
+
+    .btn-sm {
+      padding: 7px 14px;
+      font-size: .78rem
+    }
+
+    /* ── LAYOUT ── */
+    .layout {
+      display: flex;
+      min-height: 100vh;
+      padding-top: 73px
+    }
+
+    .sidebar {
+      width: 250px;
+      min-height: calc(100vh - 73px);
+      background: var(--bg2);
+      border-right: 1px solid var(--brd);
+      padding: 24px 14px;
+      position: fixed;
+      top: 73px;
+      left: 0;
+      bottom: 0;
+      overflow-y: auto
+    }
+
+    .sb-sec {
+      margin-bottom: 28px
+    }
+
+    .sb-title {
+      font-size: .67rem;
+      font-weight: 700;
+      color: var(--txt3);
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      margin-bottom: 8px;
+      padding: 0 8px
+    }
+
+    .sb-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: var(--r-sm);
+      color: var(--txt2);
+      text-decoration: none;
+      font-size: .875rem;
+      font-weight: 500;
+      transition: var(--tr);
+      margin-bottom: 2px
+    }
+
+    .sb-link:hover {
+      color: var(--txt);
+      background: var(--bgc)
+    }
+
+    .sb-link.active {
+      color: var(--acc);
+      background: var(--acc-dim);
+      border: 1px solid var(--acc-brd)
+    }
+
+    .main {
+      margin-left: 250px;
+      flex: 1;
+      padding: 32px
+    }
+
+    /* ── FORM HEADER ── */
+    .fheader {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--brd);
+      padding: 20px 32px;
+      margin: -32px -32px 32px
+    }
+
+    .fprog-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px
+    }
+
+    .ftitle {
+      font-family: var(--ff);
+      font-size: 1.3rem;
+      font-weight: 800
+    }
+
+    .fstep-txt {
+      font-size: .8rem;
+      color: var(--txt2)
+    }
+
+    .autosave {
+      font-size: .78rem;
+      color: var(--txt2)
+    }
+
+    /* ── STEPS ── */
+    .steps {
+      display: flex;
+      align-items: flex-start
+    }
+
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      position: relative
+    }
+
+    .step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 17px;
+      left: calc(50% + 19px);
+      width: calc(100% - 38px);
+      height: 2px;
+      background: var(--brd);
+      z-index: 0;
+      transition: background .4s
+    }
+
+    .step.done:not(:last-child)::after {
+      background: var(--success)
+    }
+
+    .step.active:not(:last-child)::after {
+      background: var(--acc-brd)
+    }
+
+    .step-circle {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: .8rem;
+      font-family: var(--ff);
+      border: 2px solid var(--brd);
+      background: var(--bgc);
+      color: var(--txt3);
+      transition: all .3s
+    }
+
+    .step.active .step-circle {
+      border-color: var(--acc);
+      background: var(--acc);
+      color: #000
+    }
+
+    .step.done .step-circle {
+      border-color: var(--success);
+      background: var(--success);
+      color: #000
+    }
+
+    .step-lbl {
+      font-size: .66rem;
+      color: var(--txt3);
+      margin-top: 6px;
+      text-align: center;
+      line-height: 1.3
+    }
+
+    .step.active .step-lbl {
+      color: var(--acc)
+    }
+
+    .step.done .step-lbl {
+      color: var(--success)
+    }
+
+    /* ── PROGRESS BAR ── */
+    .pbar {
+      height: 3px;
+      background: var(--brd);
+      border-radius: 2px;
+      margin-top: 14px
+    }
+
+    .pfill {
+      height: 100%;
+      background: var(--acc);
+      border-radius: 2px;
+      transition: width .4s ease
+    }
+
+    /* ── FORM PAGES ── */
+    .fpage {
+      display: none;
+      animation: fadeIn .3s ease
+    }
+
+    .fpage.active {
+      display: block
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    /* ── SECTION BLOCK ── */
+    .sblock {
+      margin-bottom: 28px
+    }
+
+    .sblock-title {
+      font-family: var(--ff);
+      font-size: .95rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--brd);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px
+    }
+
+    .sblock-title .ico {
+      font-size: 1.1rem
+    }
+
+    /* ── FORM FIELDS ── */
+    .fg {
+      margin-bottom: 18px
+    }
+
+    .lbl {
+      display: block;
+      margin-bottom: 7px;
+      font-size: .75rem;
+      font-weight: 600;
+      color: var(--txt2);
+      text-transform: uppercase;
+      letter-spacing: .08em
+    }
+
+    .inp {
+      width: 100%;
+      padding: 13px 15px;
+      border-radius: var(--r-md);
+      background: var(--bgc);
+      border: 1px solid var(--brd);
+      color: var(--txt);
+      font-family: var(--fb);
+      font-size: .9rem;
+      transition: var(--tr);
+      outline: none
+    }
+
+    .inp:focus {
+      border-color: var(--acc);
+      box-shadow: 0 0 0 3px var(--acc-dim)
+    }
+
+    .inp::placeholder {
+      color: var(--txt3)
+    }
+
+    .inp[readonly] {
+      cursor: not-allowed;
+      background: var(--bg2)
+    }
+
+    select.inp {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%23666' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 13px center
+    }
+
+    textarea.inp {
+      resize: vertical;
+      min-height: 90px
+    }
+
+    .fr2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px
+    }
+
+    .fr3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px
+    }
+
+    .fr4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px
+    }
+
+    /* ── TAG SELECT ── */
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px
+    }
+
+    .tag {
+      padding: 6px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      border: 1px solid var(--brd);
+      background: var(--bgc);
+      color: var(--txt2);
+      font-size: .82rem;
+      font-weight: 500;
+      transition: var(--tr);
+      user-select: none
+    }
+
+    .tag:hover {
+      border-color: var(--acc);
+      color: var(--acc)
+    }
+
+    .tag.sel {
+      border-color: var(--acc);
+      background: var(--acc-dim);
+      color: var(--acc)
+    }
+
+    /* ── RATING BUTTONS ── */
+    .rgroup {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap
+    }
+
+    .rbtn {
+      padding: 8px 15px;
+      border-radius: 20px;
+      border: 1px solid var(--brd);
+      background: var(--bgc);
+      color: var(--txt2);
+      font-size: .82rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--tr)
+    }
+
+    .rbtn:hover {
+      border-color: var(--acc);
+      color: var(--acc)
+    }
+
+    .rbtn.active {
+      border-color: var(--acc);
+      background: var(--acc-dim);
+      color: var(--acc)
+    }
+
+    /* ── DYNAMIC ENTRY ── */
+    .entry {
+      background: var(--bg2);
+      border: 1px solid var(--brd);
+      border-radius: var(--r-md);
+      padding: 16px;
+      margin-bottom: 12px;
+      position: relative
+    }
+
+    .entry .rm {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: rgba(255, 77, 77, .12);
+      border: none;
+      cursor: pointer;
+      color: var(--danger);
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--tr)
+    }
+
+    .entry .rm:hover {
+      background: rgba(255, 77, 77, .25)
+    }
+
+    .empty-hint {
+      color: var(--txt2);
+      font-size: .85rem;
+      text-align: center;
+      padding: 20px;
+      border: 1px dashed var(--brd);
+      border-radius: var(--r-md)
+    }
+
+    /* ── FORM NAV ── */
+    .fnav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 32px;
+      padding-top: 22px;
+      border-top: 1px solid var(--brd)
+    }
+
+    /* ── ALERT ── */
+    .alert {
+      padding: 12px 16px;
+      border-radius: var(--r-md);
+      margin-bottom: 16px;
+      font-size: .85rem;
+      display: none;
+      align-items: center;
+      gap: 9px
+    }
+
+    .alert.show {
+      display: flex
+    }
+
+    .alert-error {
+      background: rgba(255, 77, 77, .1);
+      border: 1px solid rgba(255, 77, 77, .3);
+      color: #ff8080
+    }
+
+    .alert-success {
+      background: rgba(0, 214, 143, .1);
+      border: 1px solid rgba(0, 214, 143, .3);
+      color: #33e8a8
+    }
+
+    /* ── LOADER ── */
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(0, 0, 0, .3);
+      border-top-color: #000;
+      border-radius: 50%;
+      animation: spin .6s linear infinite
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    @media(max-width:900px) {
+      .sidebar {
+        display: none
+      }
+
+      .main {
+        margin-left: 0;
+        padding: 20px
+      }
+
+      .fheader {
+        margin: -20px -20px 24px;
+        padding: 16px 20px
+      }
+
+      .fr2,
+      .fr3,
+      .fr4 {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .step-lbl {
+        display: none
+      }
+    }
+
+    @media(max-width:480px) {
+
+      .fr2,
+      .fr3,
+      .fr4 {
+        grid-template-columns: 1fr
+      }
+    }
+
+    /* ══════════════════════════════════════
+   HAMBURGER BUTTON
+══════════════════════════════════════ */
+    .hamburger {
+      display: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--bgc);
+      border: 1px solid var(--brd2);
+      cursor: pointer;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      flex-shrink: 0;
+      transition: var(--tr);
+      z-index: 400;
+    }
+
+    .hamburger:hover {
+      border-color: var(--rose-brd, var(--skin-brd, rgba(255, 255, 255, .2)));
+    }
+
+    .hamburger span {
+      display: block;
+      width: 18px;
+      height: 2px;
+      background: var(--txt);
+      border-radius: 2px;
+      transition: var(--tr);
+    }
+
+    .hamburger.open span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+
+    .hamburger.open span:nth-child(2) {
+      opacity: 0;
+      transform: scaleX(0);
+    }
+
+    .hamburger.open span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+
+    /* ══════════════════════════════════════
+   SIDEBAR OVERLAY (mobile)
+══════════════════════════════════════ */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .6);
+      backdrop-filter: blur(4px);
+      z-index: 198;
+      animation: fadeIn .2s ease;
+    }
+
+    .sidebar-overlay.visible {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* ══════════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+══════════════════════════════════════ */
+    @media (max-width: 900px) {
+
+      /* Show hamburger in nav */
+      .hamburger {
+        display: flex;
+      }
+
+      /* Sidebar: slide in from left */
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform .28s cubic-bezier(.4, 0, .2, 1);
+        z-index: 199;
+        box-shadow: 8px 0 40px rgba(0, 0, 0, .5);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      /* Main content fills full width */
+      .main {
+        margin-left: 0 !important;
+        padding: 14px 14px 80px;
+      }
+
+      /* Grids: 1 column on mobile */
+      .grid-2,
+      .grid-3,
+      .grid-4,
+      .dashboard-grid,
+      .diag-layout,
+      .evolution-layout,
+      .derm-chat-layout,
+      .midwife-layout,
+      .profile-skin-layout,
+      .nutri-grid,
+      .week-detail-layout,
+      .prep-categories {
+        grid-template-columns: 1fr !important;
+      }
+
+      /* Products grid: 2 cols on mobile */
+      .products-grid {
+        grid-template-columns: 1fr 1fr !important;
+      }
+
+      /* Advice/prep cards: 1 col */
+      .advice-cards,
+      .prep-cards {
+        grid-template-columns: 1fr !important;
+      }
+
+      /* Tabs: scrollable horizontally */
+      .tabs {
+        width: 100% !important;
+        overflow-x: auto;
+        flex-wrap: nowrap !important;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .tabs::-webkit-scrollbar {
+        display: none;
+      }
+
+      .tab {
+        white-space: nowrap;
+        font-size: .78rem;
+        padding: 7px 12px;
+      }
+
+      /* Nav: compress */
+      .nav {
+        padding: 0 14px;
+        gap: 8px;
+      }
+
+      .nav-badge {
+        display: none;
+      }
+
+      /* Page title smaller */
+      .page-title {
+        font-size: 1.5rem !important;
+      }
+
+      /* Chat layouts: full height */
+      .derm-chat-layout,
+      .midwife-layout {
+        height: auto !important;
+      }
+
+      .chat-col {
+        min-height: 500px;
+      }
+
+      /* Hide side tools on mobile */
+      .derm-tools,
+      .midwife-tools {
+        display: none;
+      }
+
+      /* Concern/forbidden grids: 2 cols */
+      .concern-grid,
+      .forbidden-grid {
+        grid-template-columns: 1fr 1fr !important;
+      }
+
+      /* Food cats: 3 cols */
+      .food-cats {
+        grid-template-columns: 1fr 1fr 1fr !important;
+      }
+
+      /* Bag list: 2 cols */
+      .bag-list {
+        grid-template-columns: 1fr 1fr !important;
+      }
+
+      /* Quick stats: wrap */
+      .quick-stats {
+        flex-wrap: wrap;
+      }
+
+      .qs {
+        min-width: 80px !important;
+      }
+
+      /* Skin type grid: 3 cols */
+      .skin-type-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+      }
+
+      /* Hero week counter */
+      .week-counter {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .main {
+        padding: 10px 10px 70px;
+      }
+
+      .page-title {
+        font-size: 1.25rem !important;
+      }
+
+      .products-grid,
+      .advice-cards {
+        grid-template-columns: 1fr !important;
+      }
+
+      .food-cats {
+        grid-template-columns: 1fr 1fr !important;
+      }
+
+      .bag-list {
+        grid-template-columns: 1fr !important;
+      }
+
+      .card {
+        padding: 14px;
+      }
+
+      .tab {
+        font-size: .72rem;
+        padding: 6px 10px;
+      }
+
+      .prep-categories {
+        grid-template-columns: 1fr 1fr !important;
+      }
+
+      .advice-categories {
+        grid-template-columns: 1fr 1fr !important;
+      }
+    }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 58px;
+      left: 0;
+      right: 0;
+      background: rgba(8, 4, 16, .98);
+      backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--brd);
+      padding: 10px 14px 18px;
+      z-index: 299;
+      flex-direction: column;
+      gap: 2px;
+      max-height: calc(100vh - 58px);
+      overflow-y: auto;
+    }
+
+    .mobile-menu.open {
+      display: flex;
+    }
+
+    .hamburger {
+      display: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--bgc);
+      border: 1px solid var(--brd2);
+      cursor: pointer;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: var(--tr);
+    }
+
+    .hamburger span {
+      display: block;
+      width: 18px;
+      height: 2px;
+      background: var(--txt);
+      border-radius: 2px;
+      transition: var(--tr);
+    }
+
+    .hamburger.open span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+
+    .hamburger.open span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .hamburger.open span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+
+    @media (max-width: 900px) {
+      .hamburger {
+        display: flex;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .main {
+        margin-left: 0 !important;
+        padding: 14px 14px 80px;
+      }
+
+      .nav-badge {
+        display: none;
+      }
+
+      /* vos autres règles responsive ici */
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="nav">
+    <a class="brand" href="dashboard.html"><span class="brand-dot"></span>VitaCore</a>
+    <button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="mobile-menu" id="mobile-menu">
+      <a class="sb-link" href="dashboard.html">🏠 Dashboard</a>
+      <a class="sb-link" href="health-form.html">📋 Bilan Santé</a>
+      <a class="sb-link" href="analytics.html">📊 Analyses</a>
+      <a class="sb-link" href="ai-bilan.html">🩺 Bilan IA</a>
+      <a class="sb-link" href="consultation.html">🏥 Consultation IA</a>
+      <a class="sb-link" href="evolution.html">📈 Évolution</a>
+      <a class="sb-link" href="nutri.html">🥦 Nutri</a>
+      <a class="sb-link" href="lifestyle.html">✨ Style de Vie</a>
+      <a class="sb-link" href="derma.html">💆 Derma</a>
+      <a class="sb-link" href="maternite.html">🌸 Maternité</a>
+      <a class="sb-link" href="guide.html">🔮 Guide Oracle</a>
+      <a class="sb-link" href="psyche.html">🧠 Psyché</a>
+      <a class="sb-link" href="nexus_ia.html">🌐 Nexus</a>
+
+      <!-- SÉPARATEUR -->
+      <div style="height:1px;background:var(--brd);margin:8px 0"></div>
+
+      <!-- URGENCES -->
+      <div
+        style="font-size:.61rem;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.14em;margin-bottom:7px;padding:0 8px">
+        Urgences</div>
+      <div
+        style="padding:8px 11px;background:rgba(255,90,122,.05);border:1px solid rgba(255,90,122,.2);border-radius:var(--r-sm);font-size:.74rem;color:var(--danger);line-height:1.6;margin-bottom:12px">
+        ⚠️ Secours Abalo: <strong>88 80</strong><br>Urgences: <strong>88 80</strong><br>Maternité 24h: <strong>voir
+          rubrique</strong>
+      </div>
+      <!-- COMPTE -->
+      <div
+        style="font-size:.61rem;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.14em;margin-bottom:7px;padding:0 8px">
+        Compte</div>
+      <a class="sb-link" href="#" id="logout-btn-mobile">🚪 &nbsp;Déconnexion</a>
+    </div>
+    <div class="nav-right">
+      <a href="dashboard.html" class="btn btn-ghost btn-sm">← Dashboard</a>
+    </div>
+  </nav>
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sb-sec">
+        <div class="sb-tt">Navigation</div>
+        <a class="sb-link" href="dashboard.html">🏠 &nbsp;Dashboard</a>
+        <a class="sb-link active" href="health-form.html">📋 &nbsp;Bilan Santé</a>
+        <a class="sb-link" href="analytics.html">📊 &nbsp;Analyses</a>
+        <a class="sb-link" href="ai-bilan.html">🩺 &nbsp;Bilan IA</a>
+        <a class="sb-link" href="consultation.html">🏥 &nbsp;Consultation IA</a>
+        <a class="sb-link" href="evolution.html">📈 &nbsp;Évolution</a>
+        <a class="sb-link" href="nutri.html">🥦 &nbsp;Nutri · Nutrition IA</a>
+        <a class="sb-link" href="lifestyle.html">✨ &nbsp;Style de Vie</a>
+        <a class="sb-link" href="derma.html">💆 &nbsp;Derma · Beauté IA</a>
+        <a class="sb-link" href="maternite.html">🌸 &nbsp;Maternité · Grossesse IA</a>
+        <a class="sb-link" href="guide.html">🔮 &nbsp;Guide Oracle</a>
+        <a class="sb-link" href="psyche.html">🧠 &nbsp;Psyché</a>
+        <a class="sb-link" href="nexus_ia.html">🌐 &nbsp;Nexus · Analyse</a>
+      </div>
+      <div class="sb-sec">
+        <div class="sb-tt">Urgences</div>
+        <div
+          style="padding:8px 11px;background:rgba(255,90,122,.05);border:1px solid rgba(255,90,122,.2);border-radius:var(--r-sm);font-size:.74rem;color:var(--danger);line-height:1.6">
+          ⚠️ Secours Abalo: <strong>88 80</strong><br>Urgences: <strong>88 80</strong><br>Maternité 24h: <strong>voir
+            rubrique</strong>
+        </div>
+      </div>
+      <div class="sb-sec">
+        <div class="sb-tt">Compte</div>
+        <a class="sb-link" href="#" id="logout-btn">🚪 &nbsp;Déconnexion</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <!-- FORM HEADER -->
+      <div class="fheader">
+        <div class="fprog-top">
+          <div>
+            <div class="ftitle">📋 Bilan de Santé Complet</div>
+            <div class="fstep-txt">Étape <span id="cur">1</span> sur 5</div>
+          </div>
+          <div class="autosave" id="autosave"></div>
+        </div>
+        <div class="steps" id="steps">
+          <div class="step active" data-s="1">
+            <div class="step-circle">1</div>
+            <div class="step-lbl">Informations<br>générales</div>
+          </div>
+          <div class="step" data-s="2">
+            <div class="step-circle">2</div>
+            <div class="step-lbl">Constantes<br>vitales</div>
+          </div>
+          <div class="step" data-s="3">
+            <div class="step-circle">3</div>
+            <div class="step-lbl">Antécédents<br>& Pathologies</div>
+          </div>
+          <div class="step" data-s="4">
+            <div class="step-circle">4</div>
+            <div class="step-lbl">Mode de vie<br>& Habitudes</div>
+          </div>
+          <div class="step" data-s="5">
+            <div class="step-circle">5</div>
+            <div class="step-lbl">Médicaments<br>& Traitements</div>
+          </div>
+        </div>
+        <div class="pbar">
+          <div class="pfill" id="pfill" style="width:20%"></div>
+        </div>
+      </div>
+
+      <div id="g-alert" class="alert"></div>
+
+      <!-- ════════ PAGE 1 — IDENTITÉ ════════ -->
+      <div class="fpage active" id="p1">
+        <div class="sblock">
+          <div class="sblock-title"><span><span class="ico">👤</span> Informations Personnelles</span></div>
+          <div class="fr2">
+            <div class="fg"><label class="lbl">Date de naissance</label><input type="date" class="inp"
+                id="date_of_birth" name="date_of_birth" /></div>
+            <div class="fg"><label class="lbl">Genre</label>
+              <select class="inp" id="gender" name="gender">
+                <option value="">Sélectionner</option>
+                <option value="male">Homme</option>
+                <option value="female">Femme</option>
+                <option value="other">Autre</option>
+                <option value="prefer_not">Préfère ne pas répondre</option>
+              </select>
+            </div>
+          </div>
+          <div class="fr2">
+            <div class="fg"><label class="lbl">Groupe sanguin</label>
+              <select class="inp" id="blood_type" name="blood_type">
+                <option value="">Inconnu</option>
+                <option>A+</option>
+                <option>A-</option>
+                <option>B+</option>
+                <option>B-</option>
+                <option>O+</option>
+                <option>O-</option>
+                <option>AB+</option>
+                <option>AB-</option>
+              </select>
+            </div>
+            <div class="fg"><label class="lbl">Nationalité</label><input type="text" class="inp" id="nationality"
+                name="nationality" placeholder="Française" /></div>
+          </div>
+          <div class="fr2">
+            <div class="fg"><label class="lbl">Profession</label><input type="text" class="inp" id="occupation"
+                name="occupation" placeholder="Ingénieur, Médecin..." /></div>
+            <div class="fg"><label class="lbl">Situation familiale</label>
+              <select class="inp" id="marital_status" name="marital_status">
+                <option value="">Sélectionner</option>
+                <option value="single">Célibataire</option>
+                <option value="married">Marié(e)</option>
+                <option value="divorced">Divorcé(e)</option>
+                <option value="widowed">Veuf/Veuve</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="sblock">
+          <div class="sblock-title"><span class="ico">📞</span> Contact d'Urgence</div>
+          <div class="fr2">
+            <div class="fg"><label class="lbl">Nom du contact</label><input type="text" class="inp" id="emergency_name"
+                name="emergency_name" placeholder="Prénom Nom" /></div>
+            <div class="fg"><label class="lbl">Lien de parenté</label><input type="text" class="inp"
+                id="emergency_relation" name="emergency_relation" placeholder="Conjoint, Parent..." /></div>
+          </div>
+          <div class="fg"><label class="lbl">Téléphone d'urgence</label><input type="tel" class="inp"
+              id="emergency_phone" name="emergency_phone" placeholder="+33 6 xx xx xx xx" /></div>
+        </div>
+        <div class="sblock">
+          <div class="sblock-title"><span class="ico">🏥</span> Médecin Traitant</div>
+          <div class="fr2">
+            <div class="fg"><label class="lbl">Nom du médecin</label><input type="text" class="inp" id="doctor_name"
+                name="doctor_name" placeholder="Dr. Dupont" /></div>
+            <div class="fg"><label class="lbl">Téléphone</label><input type="tel" class="inp" id="doctor_phone"
+                name="doctor_phone" placeholder="+33 1 xx xx xx xx" /></div>
+          </div>
+          <div class="fg"><label class="lbl">Adresse du cabinet</label><input type="text" class="inp"
+              id="doctor_address" name="doctor_address" placeholder="123 Rue de la Santé, Paris" /></div>
+        </div>
+      </div>
+
+      <!-- ════════ PAGE 2 — CONSTANTES ════════ -->
+      <div class="fpage" id="p2">
+        <div class="sblock">
+          <div class="sblock-title"><span class="ico">📏</span> Mensurations</div>
+          <div class="fr3">
+            <div class="fg"><label class="lbl">Poids (kg)</label><input type="number" class="inp" id="weight"
+                name="weight" placeholder="70" step=".1" /></div>
+            <div class="fg"><label class="lbl">Taille (cm)</label><input type="number" class="inp" id="height"
+                name="height" placeholder="175" /></div>
+            <div class="fg"><label class="lbl">IMC (calculé)</label><input type="text" class="inp" id="bmi_disp"
+                readonly placeholder="—" /></div>
+          </div>
+          <div class="fr2">
+            <div class="fg"><label class="lbl">Tour de taille (cm)</label><input type="number" class="inp"
+                id="waist_circumference" name="waist_circumference" placeholder="80" /></div>
+            <div class="fg"><label class="lbl">Tour de hanches (cm)</label><input type="number" class="inp"
+                id="hip_circumference" name="hip_circumference" placeholder="95" /></div>
+          </div>
+        </div>
+        <div class="sblock">
+          <div class="sblock-title"><span class="ico">💓</span> Paramètres Cardiaques</div>
+          <div class="fr3">
+            <div class="fg"><label class="lbl">Tension systolique (mmHg)</label><input type="number" class="inp"
+                id="blood_pressure_systolic" name="blood_pressure_systolic" placeholder="120" /></div>
+            <div class="fg"><label class="lbl">Tension diastolique (mmHg)</label><input type="number" class="inp"
+                id="blood_pressure_diastolic" name="blood_pressure_diastolic" placeholder="80" /></div>
+            <div class="fg"><label class="lbl">Fréq. cardiaque (bpm)</label><input type="number" class="inp"
+                id="heart_rate" name="heart_rate" placeholder="72" /></div>
+          </div>
+        </div>
+        <div class="sblock">
+          <div class="sblock-title"><span class="ico">🩸</span> Analyses Biologiques</div>
+          <div class="fr2">
+            <div class="fg"><label class="lbl">Glycémie à jeun (mg/dL)</label><input type="number" class="inp"
+                id="blood_sugar" name="blood_sugar" placeholder="95" /></div>
+            <div class="fg"><label class="lbl">Cholestérol total (mg/dL)</label><input type="number" class="inp"
+                id="cholesterol_total" name="cholesterol_total" placeholder="180" /></div>
+          </div>
+          <div class="fr4">
+            <div class="fg"><label class="lbl">HDL (mg/dL)</label><input type="number" class="inp" id="cholesterol_hdl"
+                name="cholesterol_hdl" placeholder="55" /></div>
+            <div class="fg"><label class="lbl">LDL (mg/dL)</label><input type="number" class="inp" id="cholesterol_ldl"
+                name="cholesterol_ldl" placeholder="100" /></div>
+            <div class="fg"><label class="lbl">Triglycérides</label><input type="number" class="inp" id="triglycerides"
+                name="triglycerides" placeholder="120" /></div>
+            <div class="fg"><label class="lbl">Hémoglobine (g/dL)</label><input type="number" class="inp"
+                id="hemoglobin" name="hemoglobin" placeholder="14.5" step=".1" /></div>
+          </div>
+          <div class="fr2">
+            <div class="fg"><label class="lbl">Créatinine (mg/dL)</label><input type="number" class="inp"
+                id="creatinine" name="creatinine" placeholder="1.0" step=".01" /></div>
+            <div class="fg"><label class="lbl">Température (°C)</label><input type="number" class="inp" id="temperature"
+                name="temperature" placeholder="37.0" step=".1" /></div>
+          </div>
+          <div class="fg"><label class="lbl">Date du dernier bilan biologique</label><input type="date" class="inp"
+              id="last_blood_test" name="last_blood_test" /></div>
+        </div>
+      </div>
+
+      <!-- ════════ PAGE 3 — ANTÉCÉDENTS ════════ -->
+      <div class="fpage" id="p3">
+        <div class="sblock">
+          <div class="sblock-title"><span class="ico">⚠️</span> Allergies</div>
+          <div class="fg"><label class="lbl">Types d'allergies</label>
+            <div class="tags" id="allergy_types">
+              <div class="tag" data-v="penicillin">Pénicilline</div>
+              <div class="tag" data-v="aspirin">Aspirine</div>
+              <div class="tag" data-v="latex">Latex</div>
+              <div class="tag" data-v="nuts">Noix</div>
+              <div class="tag" data-v="shellfish">Fruits de mer</div>
+              <div class="tag" data-v="pollen">Pollen</div>
+              <div class="tag" data-v="dust">Acariens</div>
+              <div class="tag" data-v="pet">Animaux</div>
+              <div class="tag" data-v="iodine">Iode</div>
+              <div class="tag" data-v="other">Autres</div>
+            </div>
+          </div>
+          <div class="fg"><label class="lbl">Précisions</label><textarea class="inp" id="allergy_notes"
+              name="allergy_notes" placeholder="Décrivez vos réactions allergiques..."></textarea></div>
+        </div>
+        <div class="sblock">
+          <div class="sblock-title"><span class="ico">🧬</span> Antécédents Familiaux</div>
+          <div class="tags" id="family_history">
+            <div class="tag" data-v="diabetes">Diabète</div>
+            <div class="tag" data-v="heart_disease">Cardiopathie</div>
+            <div class="tag" data-v="hypertension">Hypertension</div>
+            <div class="tag" data-v="cancer">Cancer</div>
+            <div class="tag" data-v="stroke">AVC</div>
+            <div class="tag" data-v="mental_health">Santé mentale</div>
+            <div class="tag" data-v="kidney">Maladie rénale</div>
+            <div class="tag" data-v="asthma">Asthme</div>
+            <div class="tag" data-v="obesity">Obésité</div>
+            <div class="tag" data-v="alzheimer">Alzheimer</div>
+          </div>
+        </div>
+        <div class="sblock">
+          <div class="sblock-title" style="justify-content:space-between">
+            <span><span class="ico">🦠</span> Maladies et Pathologies</span>
+            <button class="btn btn-secondary btn-sm" id="add-dis">+ Ajouter</button>
+          </div>
+          <div id="dis-container"></div>
+          <div class="empty-hint" id="dis-empty">Cliquez sur "+ Ajouter" pour enregistrer vos pathologies</div>
+        </div>
+        <div class="sblock">
+          <div class="sblock-title"><span class="ico">🏥</span> Hospitalisations & Chirurgies</div>
+          <div class="fg"><label class="lbl">Avez-vous été hospitalisé(e) ?</label>
+            <div class="rgroup" id="hospitalized">
+              <button type="button" class="rbtn" data-v="yes">Oui</button>
+              <button type="button" class="rbtn" data-v="no">Non</button>
+            </div>
+          </div>
+          <div class="fg"><label class="lbl">Détails (chirurgies, raisons...)</label><textarea class="inp"
+              id="hospitalization_notes" name="hospitalization_notes" rows="3"
+              placeholder="Appendicite 2018, Fracture 2020..."></textarea></div>
+          <div class="fg"><label class="lbl">Dernière consultation médicale</label><input type="date" class="inp"
+              id="last_checkup" name="last_checkup" /></div>
+        </div>
+        <div class="sblock">
+          <div class="sblock-title"><span class="ico">🧠</span> Santé Mentale</div>
+          <div class="fg"><label class="lbl">Antécédents</label>
+            <div class="tags" id="mental_health_history">
+              <div class="tag" data-v="anxiety">Anxiété</div>
+              <div class="tag" data-v="depression">Dépression</div>
+              <div class="tag" data-v="burnout">Burn-out</div>
+              <div class="tag" data-v="sleep_disorders">Troubles du sommeil</div>
+              <div class="tag" data-v="ptsd">PTSD</div>
+              <div class="tag" data-v="none">Aucun</div>
+            </div>
+          </div>
+          <div class="fg"><label class="lbl">Niveau de stress général</label>
+            <div class="rgroup" id="stress_level">
+              <button type="button" class="rbtn" data-v="1">😌 Très faible</button>
+              <button type="button" class="rbtn" data-v="2">🙂 Faible</button>
+              <button type="button" class="rbtn" data-v="3">😐 Modéré</button>
+              <button type="button" class="rbtn" data-v="4">😟 Élevé</button>
+              <button type="button" class="rbtn" data-v="5">😰 Très élevé</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════ PAGE 4 — MODE DE VIE ════════ -->
+      <div class="fpage" id="p4">
+        <div class="sblock">
+          <div class="sblock-title"><span class="ico">🚬</span> Tabac & Alcool</div>
+          <div class="fg"><label class="lbl">Statut tabagique</label>
+            <div class="rgroup" id="smoking_status">
+              <button type="button" class="rbtn" data-v="never">Jamais</button><button type="button" class="rbtn"
+                data-v="ex">Ex-fumeur</button><button type="button" class="rbtn"
+                data-v="occasional">Occasionnel</button><button type="button" class="rbtn"
+                data-v="regular">Régulier</button><button type="button" class="rbtn" data-v="heavy">Gros fumeur</button>
+            </div>
+          </div>
+          <div class="fr2" id="smoking-details" style="display:none">
+            <div class="fg"><label class="lbl">Cigarettes/jour</label><input type="number" class="inp"
+                id="cigarettes_per_day" name="cigarettes_per_day" /></div>
+            <div class="fg"><label class="lbl">Années de tabagisme</label><input type="number" class="inp"
+                id="smoking_years" name="smoking_years" /></div>
+          </div>
+          <div class="fg"><label class="lbl">Consommation d'alcool</label>
+            <div class="rgroup" id="alcohol_consumption">
+              <button type="button" class="rbtn" data-v="never">Jamais</button><button type="button" class="rbtn"
+                data-v="rare">Rarement</button><button type="button" class="rbtn" data-v="social">Social</button><button
+                type="button" class="rbtn" data-v="regular">Régulier</button><button type="button" class="rbtn"
+                data-v="heavy">Excessif</button>
+            </div>
+          </div>
+        </div>
+        <div class="sblock">
+          <div class="sblock-title"><span class="ico">🏃</span> Activité Physique</div>
+          <div class="fg"><label class="lbl">Niveau d'activité</label>
+            <div class="rgroup" id="physical_activity">
+              <button type="button" class="rbtn" data-v="sedentary">🛋️ Sédentaire</button><button type="button"
+                class="rbtn" data-v="light">🚶 Légère</button><button type="button" class="rbtn" data-v="moderate">🚴
+                Modérée</button><button type="button" class="rbtn" data-v="active">🏃 Active</button><button
+                type="button" class="rbtn" data-v="very_active">🏋️ Très active</button>
+            </div>
+          </div>
+          <div class="fr2">
+            <div class="fg"><label class="lbl">Fréquence (séances/semaine)</label><input type="number" class="inp"
+                id="exercise_frequency" name="exercise_frequency" placeholder="3" min="0" max="14" /></div>
+            <div class="fg"><label class="lbl">Durée moyenne (min)</label><input type="number" class="inp"
+                id="exercise_duration" name="exercise_duration" placeholder="45" /></div>
+          </div>
+          <div class="fg"><label class="lbl">Sports pratiqués</label>
+            <div class="tags" id="sports">
+              <div class="tag" data-v="running">Course</div>
+              <div class="tag" data-v="cycling">Vélo</div>
+              <div class="tag" data-v="swimming">Natation</div>
+              <div class="tag" data-v="gym">Musculation</div>
+              <div class="tag" data-v="yoga">Yoga</div>
+              <div class="tag" data-v="football">Football</div>
+              <div class="tag" data-v="tennis">Tennis</div>
+              <div class="tag" data-v="martial_arts">Arts martiaux</div>
+              <div class="tag" data-v="dance">Danse</div>
+              <div class="tag" data-v="walking">Marche</div>
+            </div>
+          </div>
+        </div>
+        <div class="sblock">
+          <div class="sblock-title"><span class="ico">🍎</span> Alimentation</div>
+          <div class="fg"><label class="lbl">Régime alimentaire</label>
+            <div class="tags" id="diet_types">
+              <div class="tag" data-v="omnivore">Omnivore</div>
+              <div class="tag" data-v="vegetarian">Végétarien</div>
+              <div class="tag" data-v="vegan">Végétalien</div>
+              <div class="tag" data-v="gluten_free">Sans gluten</div>
+              <div class="tag" data-v="lactose_free">Sans lactose</div>
+              <div class="tag" data-v="keto">Kéto</div>
+              <div class="tag" data-v="mediterranean">Méditerranéen</div>
+              <div class="tag" data-v="halal">Halal</div>
+              <div class="tag" data-v="kosher">Casher</div>
+            </div>
+          </div>
+          <div class="fg"><label class="lbl">Qualité de l'alimentation</label>
+            <div class="rgroup" id="diet_quality">
+              <button type="button" class="rbtn" data-v="poor">😞 Mauvaise</button><button type="button" class="rbtn"
+                data-v="average">😐 Moyenne</button><button type="button" class="rbtn" data-v="good">🙂
+                Bonne</button><button type="button" class="rbtn" data-v="excellent">😄 Excellente</button>
+            </div>
+          </div>
+          <div class="fr2">
+            <div class="fg"><label class="lbl">Eau quotidienne (litres)</label><input type="number" class="inp"
+                id="water_intake" name="water_intake" placeholder="1.5" step=".1" /></div>
+            <div class="fg"><label class="lbl">Cafés par jour</label><input type="number" class="inp"
+                id="coffee_per_day" name="coffee_per_day" placeholder="2" /></div>
+          </div>
+        </div>
+        <div class="sblock">
+          <div class="sblock-title"><span class="ico">😴</span> Sommeil</div>
+          <div class="fr2">
+            <div class="fg"><label class="lbl">Heures de sommeil/nuit</label><input type="number" class="inp"
+                id="sleep_hours" name="sleep_hours" placeholder="7.5" step=".5" min="1" max="14" /></div>
+            <div class="fg"><label class="lbl">Qualité du sommeil</label>
+              <div class="rgroup" id="sleep_quality" style="margin-top:4px">
+                <button type="button" class="rbtn" data-v="poor">Mauvaise</button><button type="button" class="rbtn"
+                  data-v="average">Moyenne</button><button type="button" class="rbtn"
+                  data-v="good">Bonne</button><button type="button" class="rbtn" data-v="excellent">Excellente</button>
+              </div>
+            </div>
+          </div>
+          <div class="fg"><label class="lbl">Troubles du sommeil</label>
+            <div class="tags" id="sleep_disorder_types">
+              <div class="tag" data-v="insomnia">Insomnie</div>
+              <div class="tag" data-v="apnea">Apnée</div>
+              <div class="tag" data-v="snoring">Ronflement</div>
+              <div class="tag" data-v="hypersomnia">Hypersomnie</div>
+              <div class="tag" data-v="nightmares">Cauchemars</div>
+              <div class="tag" data-v="none">Aucun</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════ PAGE 5 — MÉDICAMENTS ════════ -->
+      <div class="fpage" id="p5">
+        <div class="sblock">
+          <div class="sblock-title" style="justify-content:space-between">
+            <span><span class="ico">💊</span> Médicaments en cours</span>
+            <button class="btn btn-secondary btn-sm" id="add-med">+ Ajouter</button>
+          </div>
+          <div id="med-container"></div>
+          <div class="empty-hint" id="med-empty">Cliquez sur "+ Ajouter" pour enregistrer vos médicaments</div>
+        </div>
+        <div class="sblock">
+          <div class="sblock-title"><span class="ico">🧴</span> Suppléments & Vitamines</div>
+          <div class="tags" id="supplements">
+            <div class="tag" data-v="vitamin_d">Vitamine D</div>
+            <div class="tag" data-v="vitamin_c">Vitamine C</div>
+            <div class="tag" data-v="omega3">Oméga 3</div>
+            <div class="tag" data-v="magnesium">Magnésium</div>
+            <div class="tag" data-v="zinc">Zinc</div>
+            <div class="tag" data-v="iron">Fer</div>
+            <div class="tag" data-v="calcium">Calcium</div>
+            <div class="tag" data-v="probiotics">Probiotiques</div>
+            <div class="tag" data-v="protein">Protéines</div>
+            <div class="tag" data-v="melatonin">Mélatonine</div>
+          </div>
+        </div>
+        <div class="sblock">
+          <div class="sblock-title"><span class="ico">🎯</span> Objectifs de santé</div>
+          <div class="tags" id="health_goals">
+            <div class="tag" data-v="weight_loss">Perdre du poids</div>
+            <div class="tag" data-v="muscle_gain">Prendre du muscle</div>
+            <div class="tag" data-v="cardio">Améliorer le cardio</div>
+            <div class="tag" data-v="stress">Réduire le stress</div>
+            <div class="tag" data-v="sleep">Améliorer le sommeil</div>
+            <div class="tag" data-v="diabetes_control">Contrôler le diabète</div>
+            <div class="tag" data-v="bp_control">Contrôler la tension</div>
+            <div class="tag" data-v="maintain">Maintenir ma forme</div>
+          </div>
+        </div>
+        <div class="sblock">
+          <div class="sblock-title"><span class="ico">📝</span> Notes supplémentaires</div>
+          <div class="fg"><label class="lbl">Informations complémentaires</label><textarea class="inp"
+              id="additional_notes" name="additional_notes" rows="5"
+              placeholder="Toute information médicale que vous souhaitez ajouter..."></textarea></div>
+        </div>
+      </div>
+
+      <!-- NAVIGATION -->
+      <div class="fnav">
+        <button class="btn btn-secondary" id="prev-btn" style="visibility:hidden">← Précédent</button>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button class="btn btn-ghost btn-sm" id="save-btn">💾 Sauvegarder</button>
+          <button class="btn btn-primary" id="next-btn">Suivant →</button>
+          <button class="btn btn-primary" id="submit-btn" style="display:none">✓ Enregistrer le bilan</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const API = 'http://localhost:8040/api/v1';
+    const token = () => localStorage.getItem('vc_token');
+    if (!token()) location.href = 'index.html';
+
+    document.getElementById('logout-btn').addEventListener('click', e => {
+      e.preventDefault(); localStorage.clear(); location.href = 'index.html';
+    });
+
+    /* ── STEPS ── */
+    let cur = 1;
+    const TOTAL = 5;
+
+    function goTo(n) {
+      document.getElementById(`p${cur}`).classList.remove('active');
+      document.querySelectorAll('.step').forEach((s, i) => {
+        s.classList.toggle('active', i + 1 === n);
+        s.classList.toggle('done', i + 1 < n);
+      });
+      cur = n;
+      document.getElementById(`p${cur}`).classList.add('active');
+      document.getElementById('cur').textContent = n;
+      document.getElementById('pfill').style.width = (n / TOTAL * 100) + '%';
+      document.getElementById('prev-btn').style.visibility = n === 1 ? 'hidden' : 'visible';
+      document.getElementById('next-btn').style.display = n === TOTAL ? 'none' : 'inline-flex';
+      document.getElementById('submit-btn').style.display = n === TOTAL ? 'inline-flex' : 'none';
+      window.scrollTo(0, 0);
+    }
+
+    document.getElementById('next-btn').addEventListener('click', () => { if (cur < TOTAL) goTo(cur + 1); });
+    document.getElementById('prev-btn').addEventListener('click', () => { if (cur > 1) goTo(cur - 1); });
+
+    /* ── BMI ── */
+    function calcBMI() {
+      const w = parseFloat(document.getElementById('weight').value);
+      const h = parseFloat(document.getElementById('height').value);
+      const el = document.getElementById('bmi_disp');
+      if (w && h) {
+        const b = (w / ((h / 100) ** 2)).toFixed(1);
+        const labels = { 0: 'Insuffisance pondérale', 18.5: 'Poids normal', 25: 'Surpoids', 30: 'Obésité' };
+        const bNum = parseFloat(b);
+        let l = bNum < 18.5 ? 'Insuffisance pondérale' : bNum < 25 ? 'Poids normal' : bNum < 30 ? 'Surpoids' : 'Obésité';
+        el.value = `${b} — ${l}`;
+      } else el.value = '';
+    }
+    document.getElementById('weight').addEventListener('input', calcBMI);
+    document.getElementById('height').addEventListener('input', calcBMI);
+
+    /* ── TAG SELECTS ── */
+    document.querySelectorAll('.tag').forEach(t => t.addEventListener('click', () => t.classList.toggle('sel')));
+
+    /* ── RATING GROUPS ── */
+    document.querySelectorAll('.rgroup').forEach(g => {
+      g.querySelectorAll('.rbtn').forEach(b => b.addEventListener('click', () => {
+        g.querySelectorAll('.rbtn').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        if (g.id === 'smoking_status') {
+          document.getElementById('smoking-details').style.display =
+            ['occasional', 'regular', 'heavy'].includes(b.dataset.v) ? 'grid' : 'none';
+        }
+      }));
+    });
+
+    /* ── DISEASE ENTRIES ── */
+    let dCount = 0;
+    document.getElementById('add-dis').addEventListener('click', () => addDisease());
+    function addDisease(d = {}) {
+      dCount++;
+      document.getElementById('dis-empty').style.display = 'none';
+      const e = document.createElement('div');
+      e.className = 'entry'; e.id = `d${dCount}`;
+      e.innerHTML = `
+    <button class="rm" onclick="rmEntry('d${dCount}','dis-empty','dis-container')">✕</button>
+    <div class="fr3" style="margin-bottom:10px">
+      <div class="fg" style="margin-bottom:0"><label class="lbl">Maladie / Pathologie</label><input type="text" class="inp" id="dn${dCount}" placeholder="Diabète type 2..." value="${d.name || ''}"/></div>
+      <div class="fg" style="margin-bottom:0"><label class="lbl">Sévérité</label>
+        <select class="inp" id="ds${dCount}">
+          <option value="mild" ${d.severity === 'mild' ? 'selected' : ''}>Légère</option>
+          <option value="moderate" ${d.severity === 'moderate' ? 'selected' : ''}>Modérée</option>
+          <option value="severe" ${d.severity === 'severe' ? 'selected' : ''}>Sévère</option>
+          <option value="chronic" ${d.severity === 'chronic' ? 'selected' : ''}>Chronique</option>
+        </select>
+      </div>
+      <div class="fg" style="margin-bottom:0"><label class="lbl">Année diagnostic</label><input type="number" class="inp" id="dy${dCount}" placeholder="2020" value="${d.diagnosed_year || ''}"/></div>
+    </div>
+    <div class="fg" style="margin-bottom:0"><label class="lbl">Traitement actuel</label><input type="text" class="inp" id="dt${dCount}" placeholder="Metformine, Insuline..." value="${d.current_treatment || ''}"/></div>`;
+      document.getElementById('dis-container').appendChild(e);
+    }
+
+    /* ── MED ENTRIES ── */
+    let mCount = 0;
+    document.getElementById('add-med').addEventListener('click', () => addMed());
+    function addMed(m = {}) {
+      mCount++;
+      document.getElementById('med-empty').style.display = 'none';
+      const e = document.createElement('div');
+      e.className = 'entry'; e.id = `m${mCount}`;
+      e.innerHTML = `
+    <button class="rm" onclick="rmEntry('m${mCount}','med-empty','med-container')">✕</button>
+    <div class="fr2" style="margin-bottom:10px">
+      <div class="fg" style="margin-bottom:0"><label class="lbl">Médicament</label><input type="text" class="inp" id="mn${mCount}" placeholder="Metformine 500mg..." value="${m.name || ''}"/></div>
+      <div class="fg" style="margin-bottom:0"><label class="lbl">Dosage</label><input type="text" class="inp" id="md${mCount}" placeholder="500mg, 10mg..." value="${m.dosage || ''}"/></div>
+    </div>
+    <div class="fr2">
+      <div class="fg" style="margin-bottom:0"><label class="lbl">Fréquence</label>
+        <select class="inp" id="mf${mCount}">
+          <option value="once_daily">1x/jour</option><option value="twice_daily">2x/jour</option>
+          <option value="three_daily">3x/jour</option><option value="weekly">1x/semaine</option><option value="as_needed">Au besoin</option>
+        </select>
+      </div>
+      <div class="fg" style="margin-bottom:0"><label class="lbl">Prescrit par</label><input type="text" class="inp" id="mp${mCount}" placeholder="Dr. Dupont" value="${m.prescribed_by || ''}"/></div>
+    </div>`;
+      document.getElementById('med-container').appendChild(e);
+    }
+
+    function rmEntry(id, emptyId, containerId) {
+      document.getElementById(id)?.remove();
+      if (!document.getElementById(containerId).querySelector('.entry'))
+        document.getElementById(emptyId).style.display = 'block';
+    }
+
+    /* ── COLLECT ALL DATA ── */
+    function collect() {
+      const data = {};
+      document.querySelectorAll('.inp').forEach(el => { if (el.name && el.value) data[el.name] = el.value; });
+      // Tag groups
+      const tagGroups = ['allergy_types', 'family_history', 'mental_health_history', 'sports', 'diet_types', 'sleep_disorder_types', 'supplements', 'health_goals'];
+      tagGroups.forEach(gid => {
+        const el = document.getElementById(gid);
+        if (el) data[gid] = Array.from(el.querySelectorAll('.tag.sel')).map(t => t.dataset.v);
+      });
+      // Rating groups
+      document.querySelectorAll('.rgroup').forEach(g => {
+        const a = g.querySelector('.rbtn.active');
+        if (a) data[g.id] = a.dataset.v;
+      });
+      // Diseases
+      const diseases = [];
+      document.querySelectorAll('[id^="d"]').forEach(e => {
+        const i = e.id.replace('d', '');
+        if (!isNaN(i) && document.getElementById(`dn${i}`)) {
+          const name = document.getElementById(`dn${i}`).value;
+          if (name) diseases.push({ name, severity: document.getElementById(`ds${i}`).value, diagnosed_year: document.getElementById(`dy${i}`).value, current_treatment: document.getElementById(`dt${i}`).value });
+        }
+      });
+      data.diseases = diseases;
+      // Medications
+      const medications = [];
+      document.querySelectorAll('[id^="m"]').forEach(e => {
+        const i = e.id.replace('m', '');
+        if (!isNaN(i) && document.getElementById(`mn${i}`)) {
+          const name = document.getElementById(`mn${i}`).value;
+          if (name) medications.push({ name, dosage: document.getElementById(`md${i}`).value, frequency: document.getElementById(`mf${i}`).value, prescribed_by: document.getElementById(`mp${i}`).value });
+        }
+      });
+      data.medications = medications;
+      return data;
+    }
+
+    /* ── SAVE ── */
+    async function save(quiet = false) {
+      document.getElementById('autosave').textContent = '💾 Sauvegarde...';
+      try {
+        await fetch(`${API}/health/profile`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token()}` }, body: JSON.stringify(collect()) });
+        document.getElementById('autosave').textContent = '✓ Sauvegardé';
+        setTimeout(() => document.getElementById('autosave').textContent = '', 3000);
+        if (!quiet) showToast('Bilan sauvegardé !', 'success');
+      } catch (e) {
+        document.getElementById('autosave').textContent = '';
+        if (!quiet) showToast('Erreur de sauvegarde', 'error');
+      }
+    }
+
+    document.getElementById('save-btn').addEventListener('click', () => save(false));
+    document.getElementById('submit-btn').addEventListener('click', async () => {
+      const btn = document.getElementById('submit-btn');
+      const orig = btn.innerHTML; btn.innerHTML = '<span style="display:inline-block;width:15px;height:15px;border:2px solid rgba(0,0,0,.3);border-top-color:#000;border-radius:50%;animation:spin .6s linear infinite"></span>'; btn.disabled = true;
+      await save(true);
+      btn.innerHTML = orig; btn.disabled = false;
+      showToast('Bilan enregistré avec succès !', 'success');
+      setTimeout(() => location.href = 'dashboard.html', 1200);
+    });
+
+    // Auto-save every 2 min
+    setInterval(() => save(true), 120000);
+
+    /* ── LOAD EXISTING ── */
+    async function loadProfile() {
+      try {
+        const r = await fetch(`${API}/health/profile`, { headers: { Authorization: `Bearer ${token()}` } });
+        const d = await r.json();
+        if (!d) return;
+        Object.entries(d).forEach(([k, v]) => {
+          const el = document.getElementById(k) || document.querySelector(`[name="${k}"]`);
+          if (el && v !== null) el.value = v;
+        });
+        if (d.diseases) d.diseases.forEach(x => addDisease(x));
+        if (d.medications) d.medications.forEach(x => addMed(x));
+        calcBMI();
+      } catch (e) { }
+    }
+    loadProfile();
+
+    /* ── TOAST ── */
+    function showToast(msg, type = 'success') {
+      const colors = { success: '#00d68f', error: '#ff4d4d', info: '#0095ff' };
+      const icons = { success: '✓', error: '✕', info: 'ℹ' };
+      let wrap = document.getElementById('toasts');
+      if (!wrap) { wrap = document.createElement('div'); wrap.id = 'toasts'; wrap.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;'; document.body.appendChild(wrap); }
+      const t = document.createElement('div');
+      t.style.cssText = `background:#161616;border:1px solid ${colors[type]}40;border-left:3px solid ${colors[type]};color:#f0f0f0;padding:12px 18px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.875rem;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.4);min-width:250px;animation:slideIn .3s ease`;
+      t.innerHTML = `<span style="color:${colors[type]};font-weight:700">${icons[type]}</span><span>${msg}</span>`;
+      if (!document.getElementById('toast-css')) { const s = document.createElement('style'); s.id = 'toast-css'; s.textContent = '@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}@keyframes spin{to{transform:rotate(360deg)}}'; document.head.appendChild(s); }
+      wrap.appendChild(t);
+      setTimeout(() => t.remove(), 3500);
+    }
+
+    /* ══════════════════════════
+       MOBILE SIDEBAR TOGGLE
+    ══════════════════════════ */
+    function toggleSidebar() {
+      const sb = document.querySelector('.sidebar');
+      const btn = document.getElementById('hamburger-btn');
+      const ovl = document.getElementById('sidebar-overlay');
+      const isOpen = sb.classList.contains('open');
+      if (isOpen) { closeSidebar(); }
+      else {
+        sb.classList.add('open');
+        btn.classList.add('open');
+        ovl.classList.add('visible');
+        document.body.style.overflow = 'hidden'; // empêche scroll fond
+      }
+    }
+
+    function closeSidebar() {
+      document.querySelector('.sidebar')?.classList.remove('open');
+      document.getElementById('hamburger-btn')?.classList.remove('open');
+      document.getElementById('sidebar-overlay')?.classList.remove('visible');
+      document.body.style.overflow = '';
+    }
+
+    // Ferme la sidebar au clic sur un lien (navigation mobile)
+    document.querySelectorAll('.sb-link').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth <= 900) closeSidebar();
+      });
+    });
+
+    // Ferme si on redimensionne vers desktop
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 900) closeSidebar();
+    });
+
+    document.getElementById('hamburger-btn').addEventListener('click', () => {
+      const menu = document.getElementById('mobile-menu');
+      const btn = document.getElementById('hamburger-btn');
+      menu.classList.toggle('open');
+      btn.classList.toggle('open');
+    });
+
+    // Ferme au clic sur un lien
+    document.querySelectorAll('#mobile-menu .sb-link').forEach(link => {
+      link.addEventListener('click', () => {
+        document.getElementById('mobile-menu').classList.remove('open');
+        document.getElementById('hamburger-btn').classList.remove('open');
+      });
+    });
+
+    document.getElementById('logout-btn-mobile')?.addEventListener('click', e => {
+      e.preventDefault();
+      localStorage.clear();
+      location.href = 'index.html';
+    });
+  </script>
+</body>
+
+</html>

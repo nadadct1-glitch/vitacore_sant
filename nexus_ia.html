@@ -1,0 +1,2953 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nexus — Analyse Générale IA · VitaCore</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* ════════════════ RESET & VARS ════════════════ */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        :root {
+            --bg: #03050e;
+            --bg2: #050810;
+            --bgc: #080d18;
+            --bgch: #0c1220;
+            --g1: #d4a853;
+            --g2: #f0c060;
+            --g3: #ffe080;
+            --jade: #2dd4a0;
+            --jade-dim: rgba(45, 212, 160, .08);
+            --jade-brd: rgba(45, 212, 160, .22);
+            --jade-glow: rgba(45, 212, 160, .35);
+            --gold: #d4a853;
+            --gold-dim: rgba(212, 168, 83, .09);
+            --gold-brd: rgba(212, 168, 83, .25);
+            --gold-glow: rgba(212, 168, 83, .4);
+            --sky: #4aa8e0;
+            --sky-dim: rgba(74, 168, 224, .08);
+            --sky-brd: rgba(74, 168, 224, .22);
+            --rose: #e06080;
+            --rose-dim: rgba(224, 96, 128, .08);
+            --rose-brd: rgba(224, 96, 128, .22);
+            --vio: #9060d8;
+            --vio-dim: rgba(144, 96, 216, .08);
+            --vio-brd: rgba(144, 96, 216, .22);
+            --txt: #eef2ff;
+            --txt2: #556080;
+            --txt3: #1a2035;
+            --brd: #0d1525;
+            --brd2: #141e30;
+            --danger: #ff5050;
+            --warning: #ffaa30;
+            --success: #2dd4a0;
+            --info: #4aa8e0;
+            --ff: 'Syne', sans-serif;
+            --fb: 'DM Sans', sans-serif;
+            --mono: 'Space Mono', monospace;
+            --tr: .2s cubic-bezier(.4, 0, .2, 1);
+            --r-sm: 7px;
+            --r-md: 13px;
+            --r-lg: 19px;
+            --r-xl: 27px;
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            font-family: var(--fb);
+            background: var(--bg);
+            color: var(--txt);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden
+        }
+
+        ::-webkit-scrollbar {
+            width: 3px
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--brd2)
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--jade)
+        }
+
+        /* AMBIENT */
+        .ambient {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(160px);
+            animation: drift 26s ease-in-out infinite
+        }
+
+        .orb1 {
+            width: 900px;
+            height: 900px;
+            background: radial-gradient(circle, rgba(212, 168, 83, .08), transparent 70%);
+            top: -300px;
+            right: -200px
+        }
+
+        .orb2 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(45, 212, 160, .06), transparent 70%);
+            bottom: -200px;
+            left: -150px;
+            animation-delay: -13s
+        }
+
+        .orb3 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(74, 168, 224, .05), transparent 70%);
+            top: 50%;
+            left: 45%;
+            animation-delay: -7s
+        }
+
+        @keyframes drift {
+
+            0%,
+            100% {
+                transform: translate(0, 0)
+            }
+
+            50% {
+                transform: translate(22px, -16px)
+            }
+        }
+
+        /* Grid overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background-image: linear-gradient(rgba(212, 168, 83, .012) 1px, transparent 1px), linear-gradient(90deg, rgba(212, 168, 83, .012) 1px, transparent 1px);
+            background-size: 58px 58px;
+            pointer-events: none
+        }
+
+        /* Scan lines */
+        .scanline {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, .03) 2px, rgba(0, 0, 0, .03) 4px);
+            animation: scanMove 12s linear infinite
+        }
+
+        @keyframes scanMove {
+            0% {
+                background-position: 0 0
+            }
+
+            100% {
+                background-position: 0 100px
+            }
+        }
+
+        /* NAV */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 300;
+            height: 58px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            background: rgba(3, 5, 14, .96);
+            backdrop-filter: blur(28px);
+            border-bottom: 1px solid var(--brd)
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-family: var(--ff);
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--txt);
+            text-decoration: none
+        }
+
+        .brand-dot {
+            width: 7px;
+            height: 7px;
+            background: #c8ff00;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(200, 255, 0, .8)
+        }
+
+        .nav-center {
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .nav-badge {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            background: var(--gold-dim);
+            border: 1px solid var(--gold-brd);
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: .72rem;
+            font-weight: 600;
+            color: var(--gold);
+            font-family: var(--mono)
+        }
+
+        .npd {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--jade);
+            animation: jp 1.8s ease infinite
+        }
+
+        @keyframes jp {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 var(--jade-glow)
+            }
+
+            50% {
+                box-shadow: 0 0 0 7px transparent
+            }
+        }
+
+        .nav-status {
+            font-size: .69rem;
+            font-family: var(--mono);
+            color: var(--txt2)
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: var(--r-md);
+            border: 1px solid var(--brd2);
+            cursor: pointer;
+            font-family: var(--fb);
+            font-weight: 600;
+            font-size: .82rem;
+            text-decoration: none;
+            transition: var(--tr);
+            background: transparent;
+            color: var(--txt2)
+        }
+
+        .btn:hover {
+            border-color: var(--gold-brd);
+            color: var(--gold);
+            background: var(--gold-dim)
+        }
+
+        .btn-sm {
+            padding: 5px 12px;
+            font-size: .76rem
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, #8a6820, var(--gold));
+            color: #000;
+            border-color: transparent;
+            font-weight: 700;
+            box-shadow: 0 4px 18px rgba(212, 168, 83, .25)
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 28px rgba(212, 168, 83, .4);
+            color: #000
+        }
+
+        .btn-gold:disabled {
+            opacity: .4;
+            cursor: not-allowed;
+            transform: none
+        }
+
+        .btn-jade {
+            background: linear-gradient(135deg, #0d7055, var(--jade));
+            color: #000;
+            border-color: transparent;
+            font-weight: 700
+        }
+
+        .btn-jade:hover {
+            transform: translateY(-1px)
+        }
+
+        /* LAYOUT */
+        .layout {
+            display: flex;
+            min-height: 100vh;
+            padding-top: 58px;
+            position: relative;
+            z-index: 1
+        }
+
+        .sidebar {
+            width: 236px;
+            min-height: calc(100vh - 58px);
+            background: var(--bg2);
+            border-right: 1px solid var(--brd);
+            padding: 18px 12px;
+            position: fixed;
+            top: 58px;
+            left: 0;
+            bottom: 0;
+            overflow-y: auto
+        }
+
+        .sb-sec {
+            margin-bottom: 22px
+        }
+
+        .sb-tt {
+            font-size: .61rem;
+            font-weight: 700;
+            color: var(--txt3);
+            text-transform: uppercase;
+            letter-spacing: .14em;
+            margin-bottom: 7px;
+            padding: 0 8px;
+            font-family: var(--mono)
+        }
+
+        .sb-link {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 8px 11px;
+            border-radius: var(--r-sm);
+            color: var(--txt2);
+            text-decoration: none;
+            font-size: .845rem;
+            font-weight: 500;
+            transition: var(--tr);
+            margin-bottom: 2px
+        }
+
+        .sb-link:hover {
+            color: var(--txt);
+            background: var(--bgc)
+        }
+
+        .sb-link.active {
+            color: var(--gold);
+            background: var(--gold-dim);
+            border: 1px solid var(--gold-brd)
+        }
+
+        .main {
+            margin-left: 236px;
+            flex: 1;
+            padding: 28px 28px 80px;
+            min-width: 0
+        }
+
+        /* ════════════════════════════════════════
+   HERO SECTION
+════════════════════════════════════════ */
+        .nexus-hero {
+            margin-bottom: 28px;
+            position: relative
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 22px;
+            align-items: center;
+            margin-bottom: 22px
+        }
+
+        .hero-emblem {
+            position: relative;
+            width: 80px;
+            height: 80px
+        }
+
+        .emblem-ring {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px solid var(--gold-brd);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            position: relative;
+            box-shadow: 0 0 30px rgba(212, 168, 83, .15)
+        }
+
+        .emblem-ring::before {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 1px solid rgba(212, 168, 83, .1);
+            animation: orbitSpin 20s linear infinite
+        }
+
+        .emblem-ring::after {
+            content: '';
+            position: absolute;
+            inset: -16px;
+            border-radius: 50%;
+            border: 1px dashed rgba(45, 212, 160, .1);
+            animation: orbitSpin 35s linear infinite reverse
+        }
+
+        @keyframes orbitSpin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        .hero-text {}
+
+        .hero-eyebrow {
+            font-family: var(--mono);
+            font-size: .68rem;
+            color: var(--jade);
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            margin-bottom: 8px
+        }
+
+        .hero-title {
+            font-family: var(--ff);
+            font-size: 2.4rem;
+            font-weight: 800;
+            letter-spacing: -.04em;
+            line-height: 1;
+            margin-bottom: 6px
+        }
+
+        .hero-title .gold {
+            background: linear-gradient(90deg, var(--gold), var(--g3));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text
+        }
+
+        .hero-title .jade {
+            background: linear-gradient(90deg, var(--jade), #80ffcc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text
+        }
+
+        .hero-sub {
+            color: var(--txt2);
+            font-size: .88rem;
+            line-height: 1.65;
+            max-width: 520px
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-end
+        }
+
+        .last-analyzed {
+            font-size: .68rem;
+            font-family: var(--mono);
+            color: var(--txt3);
+            text-align: right;
+            margin-top: 4px
+        }
+
+        /* GLOBAL SCORE BANNER */
+        .score-banner {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 24px;
+            background: linear-gradient(135deg, rgba(212, 168, 83, .07), rgba(45, 212, 160, .04));
+            border: 1px solid var(--gold-brd);
+            border-radius: var(--r-xl);
+            padding: 22px 26px;
+            margin-bottom: 22px;
+            align-items: center;
+            position: relative;
+            overflow: hidden
+        }
+
+        .score-banner::before {
+            content: 'NEXUS HEALTH INDEX';
+            position: absolute;
+            right: 24px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-family: var(--mono);
+            font-size: 4rem;
+            font-weight: 700;
+            color: rgba(212, 168, 83, .04);
+            letter-spacing: .2em;
+            white-space: nowrap;
+            pointer-events: none
+        }
+
+        .global-ring {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            flex-shrink: 0
+        }
+
+        .global-ring canvas {
+            width: 120px !important;
+            height: 120px !important
+        }
+
+        .global-center {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center
+        }
+
+        .global-score {
+            font-family: var(--ff);
+            font-size: 2.2rem;
+            font-weight: 800;
+            line-height: 1
+        }
+
+        .global-lbl {
+            font-size: .58rem;
+            color: var(--txt2);
+            font-family: var(--mono);
+            text-transform: uppercase;
+            letter-spacing: .12em
+        }
+
+        .score-info h2 {
+            font-family: var(--ff);
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 5px
+        }
+
+        .score-verdict {
+            font-size: .9rem;
+            color: var(--txt2);
+            line-height: 1.65;
+            margin-bottom: 14px;
+            max-width: 500px
+        }
+
+        .score-mini-grid {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap
+        }
+
+        .smg-item {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: .78rem
+        }
+
+        .smg-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 2px
+        }
+
+        .smg-val {
+            font-family: var(--mono);
+            font-weight: 700
+        }
+
+        /* ════════════════════════════════════════
+   MAIN GRID
+════════════════════════════════════════ */
+        .nexus-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px
+        }
+
+        .nexus-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px
+        }
+
+        .nexus-grid-4 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 20px
+        }
+
+        .span-2 {
+            grid-column: span 2
+        }
+
+        .span-3 {
+            grid-column: span 3
+        }
+
+        /* CARDS */
+        .card {
+            background: var(--bgc);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-lg);
+            padding: 18px;
+            transition: var(--tr)
+        }
+
+        .card:hover {
+            border-color: rgba(212, 168, 83, .2)
+        }
+
+        .card-gold {
+            border-color: var(--gold-brd);
+            box-shadow: 0 0 24px rgba(212, 168, 83, .06)
+        }
+
+        .card-jade {
+            border-color: var(--jade-brd);
+            box-shadow: 0 0 20px rgba(45, 212, 160, .05)
+        }
+
+        .card-sky {
+            border-color: var(--sky-brd);
+            box-shadow: 0 0 20px rgba(74, 168, 224, .05)
+        }
+
+        .card-rose {
+            border-color: var(--rose-brd);
+            box-shadow: 0 0 20px rgba(224, 96, 128, .05)
+        }
+
+        .card-vio {
+            border-color: var(--vio-brd);
+            box-shadow: 0 0 20px rgba(144, 96, 216, .05)
+        }
+
+        .sh {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px
+        }
+
+        .sh-title {
+            font-family: var(--ff);
+            font-size: .88rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 7px
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 9px;
+            border-radius: 20px;
+            font-size: .67rem;
+            font-weight: 700
+        }
+
+        .b-ok {
+            background: rgba(45, 212, 160, .12);
+            color: var(--success);
+            border: 1px solid rgba(45, 212, 160, .3)
+        }
+
+        .b-warn {
+            background: rgba(255, 170, 48, .12);
+            color: var(--warning);
+            border: 1px solid rgba(255, 170, 48, .3)
+        }
+
+        .b-bad {
+            background: rgba(255, 80, 80, .12);
+            color: var(--danger);
+            border: 1px solid rgba(255, 80, 80, .3)
+        }
+
+        .b-gold {
+            background: var(--gold-dim);
+            color: var(--gold);
+            border: 1px solid var(--gold-brd)
+        }
+
+        .b-jade {
+            background: var(--jade-dim);
+            color: var(--jade);
+            border: 1px solid var(--jade-brd)
+        }
+
+        .b-sky {
+            background: var(--sky-dim);
+            color: var(--sky);
+            border: 1px solid var(--sky-brd)
+        }
+
+        .b-vio {
+            background: var(--vio-dim);
+            color: var(--vio);
+            border: 1px solid var(--vio-brd)
+        }
+
+        /* ════════════════════════════════════════
+   SYSTEM CARDS (6 body systems)
+════════════════════════════════════════ */
+        .sys-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px
+        }
+
+        .sys-card {
+            background: var(--bgch);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-lg);
+            padding: 15px;
+            transition: var(--tr);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden
+        }
+
+        .sys-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--gold-brd)
+        }
+
+        .sys-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, transparent, rgba(212, 168, 83, .03));
+            pointer-events: none
+        }
+
+        .sys-card-hdr {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px
+        }
+
+        .sys-ico {
+            font-size: 1.5rem
+        }
+
+        .sys-score-badge {
+            font-family: var(--mono);
+            font-size: .9rem;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: 6px
+        }
+
+        .sys-name {
+            font-family: var(--ff);
+            font-size: .88rem;
+            font-weight: 700;
+            margin-bottom: 4px
+        }
+
+        .sys-status {
+            font-size: .72rem;
+            color: var(--txt2);
+            margin-bottom: 10px
+        }
+
+        .sys-bar {
+            height: 4px;
+            background: var(--brd2);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 8px
+        }
+
+        .sys-bar-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 1s ease
+        }
+
+        .sys-metrics {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap
+        }
+
+        .sys-metric {
+            font-size: .67rem;
+            font-family: var(--mono);
+            padding: 2px 7px;
+            border-radius: 4px;
+            background: var(--bgc);
+            border: 1px solid var(--brd2);
+            color: var(--txt2)
+        }
+
+        /* ════════════════════════════════════════
+   BIOMARKER PANELS
+════════════════════════════════════════ */
+        .biomarker-table {
+            display: flex;
+            flex-direction: column;
+            gap: 0
+        }
+
+        .bm-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--brd);
+            transition: var(--tr)
+        }
+
+        .bm-row:last-child {
+            border-bottom: none
+        }
+
+        .bm-row:hover {
+            background: var(--bgch);
+            margin: 0 -10px;
+            padding: 10px;
+            border-radius: var(--r-sm)
+        }
+
+        .bm-ico {
+            font-size: 1rem;
+            width: 24px;
+            text-align: center;
+            flex-shrink: 0
+        }
+
+        .bm-name {
+            font-size: .82rem;
+            font-weight: 600;
+            color: var(--txt);
+            width: 130px;
+            flex-shrink: 0
+        }
+
+        .bm-value {
+            font-family: var(--mono);
+            font-size: .84rem;
+            font-weight: 700;
+            width: 90px
+        }
+
+        .bm-range {
+            flex: 1;
+            position: relative;
+            height: 6px;
+            background: var(--brd2);
+            border-radius: 3px;
+            overflow: visible
+        }
+
+        .bm-zone {
+            position: absolute;
+            top: 0;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(45, 212, 160, .2)
+        }
+
+        .bm-pointer {
+            position: absolute;
+            top: -4px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 2px solid var(--bg);
+            transform: translateX(-50%);
+            transition: left 1s ease
+        }
+
+        .bm-status {
+            font-size: .67rem;
+            font-family: var(--mono);
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 4px;
+            flex-shrink: 0
+        }
+
+        /* ════════════════════════════════════════
+   TREND LINES
+════════════════════════════════════════ */
+        .trend-section {
+            margin-bottom: 20px
+        }
+
+        .chart-wrap {
+            position: relative;
+            height: 180px
+        }
+
+        .mini-chart-wrap {
+            position: relative;
+            height: 100px
+        }
+
+        /* ════════════════════════════════════════
+   RISK MATRIX
+════════════════════════════════════════ */
+        .risk-matrix {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px
+        }
+
+        .risk-item {
+            padding: 13px 15px;
+            border-radius: var(--r-lg);
+            border: 1px solid;
+            transition: var(--tr)
+        }
+
+        .risk-item:hover {
+            transform: translateX(2px)
+        }
+
+        .ri-critical {
+            background: rgba(255, 80, 80, .06);
+            border-color: rgba(255, 80, 80, .25)
+        }
+
+        .ri-high {
+            background: rgba(255, 130, 50, .05);
+            border-color: rgba(255, 130, 50, .2)
+        }
+
+        .ri-medium {
+            background: rgba(255, 170, 48, .04);
+            border-color: rgba(255, 170, 48, .18)
+        }
+
+        .ri-low {
+            background: rgba(45, 212, 160, .04);
+            border-color: rgba(45, 212, 160, .18)
+        }
+
+        .ri-hdr {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px
+        }
+
+        .ri-name {
+            font-family: var(--ff);
+            font-size: .84rem;
+            font-weight: 700;
+            color: var(--txt)
+        }
+
+        .ri-level {
+            font-size: .65rem;
+            font-family: var(--mono);
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 4px
+        }
+
+        .rl-c {
+            background: rgba(255, 80, 80, .2);
+            color: var(--danger)
+        }
+
+        .rl-h {
+            background: rgba(255, 130, 50, .2);
+            color: #ff8032
+        }
+
+        .rl-m {
+            background: rgba(255, 170, 48, .2);
+            color: var(--warning)
+        }
+
+        .rl-l {
+            background: rgba(45, 212, 160, .2);
+            color: var(--success)
+        }
+
+        .ri-desc {
+            font-size: .77rem;
+            color: var(--txt2);
+            line-height: 1.55;
+            margin-bottom: 8px
+        }
+
+        .ri-timeline {
+            font-size: .68rem;
+            font-family: var(--mono);
+            color: var(--txt3)
+        }
+
+        .ri-impact-dots {
+            display: flex;
+            gap: 2px;
+            margin-top: 6px
+        }
+
+        .rid {
+            width: 8px;
+            height: 8px;
+            border-radius: 2px
+        }
+
+        /* ════════════════════════════════════════
+   PREDICTION ENGINE
+════════════════════════════════════════ */
+        .prediction-hero {
+            background: linear-gradient(135deg, rgba(45, 212, 160, .07), rgba(212, 168, 83, .04));
+            border: 1px solid var(--jade-brd);
+            border-radius: var(--r-xl);
+            padding: 22px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden
+        }
+
+        .ph-watermark {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-family: var(--mono);
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: rgba(45, 212, 160, .04);
+            letter-spacing: .15em;
+            pointer-events: none;
+            white-space: nowrap
+        }
+
+        .ph-title {
+            font-family: var(--ff);
+            font-size: 1.05rem;
+            font-weight: 800;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 9px
+        }
+
+        .prediction-timeline {
+            display: flex;
+            gap: 0;
+            position: relative;
+            margin-bottom: 18px
+        }
+
+        .prediction-timeline::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--jade-brd), transparent);
+            transform: translateY(-50%)
+        }
+
+        .pred-node {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            cursor: pointer;
+            transition: var(--tr)
+        }
+
+        .pred-node:hover .pred-dot {
+            transform: scale(1.25)
+        }
+
+        .pred-dot {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid;
+            z-index: 1;
+            transition: transform .3s
+        }
+
+        .pred-dot-now {
+            background: var(--jade);
+            border-color: var(--jade);
+            box-shadow: 0 0 12px var(--jade-glow)
+        }
+
+        .pred-dot-1m {
+            background: rgba(45, 212, 160, .4);
+            border-color: var(--jade-brd)
+        }
+
+        .pred-dot-3m {
+            background: rgba(45, 212, 160, .25);
+            border-color: rgba(45, 212, 160, .4)
+        }
+
+        .pred-dot-6m {
+            background: rgba(212, 168, 83, .3);
+            border-color: var(--gold-brd)
+        }
+
+        .pred-dot-1y {
+            background: rgba(212, 168, 83, .2);
+            border-color: rgba(212, 168, 83, .35)
+        }
+
+        .pred-score {
+            font-family: var(--ff);
+            font-size: 1.1rem;
+            font-weight: 800
+        }
+
+        .pred-label {
+            font-size: .67rem;
+            font-family: var(--mono);
+            color: var(--txt2);
+            text-align: center;
+            white-space: nowrap
+        }
+
+        .pred-delta {
+            font-size: .65rem;
+            font-weight: 700;
+            font-family: var(--mono)
+        }
+
+        .pred-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px
+        }
+
+        .pred-card {
+            background: var(--bgch);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-lg);
+            padding: 13px;
+            transition: var(--tr)
+        }
+
+        .pred-card:hover {
+            border-color: var(--jade-brd);
+            transform: translateY(-1px)
+        }
+
+        .pc-ico {
+            font-size: 1.2rem;
+            margin-bottom: 6px
+        }
+
+        .pc-name {
+            font-size: .7rem;
+            color: var(--txt2);
+            font-family: var(--mono);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: 4px
+        }
+
+        .pc-val {
+            font-family: var(--ff);
+            font-size: 1.1rem;
+            font-weight: 800;
+            margin-bottom: 3px
+        }
+
+        .pc-trend {
+            font-size: .68rem;
+            font-family: var(--mono);
+            font-weight: 700
+        }
+
+        .pc-bar {
+            height: 3px;
+            background: var(--brd2);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 6px
+        }
+
+        .pc-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width .8s ease
+        }
+
+        .trend-up {
+            color: var(--success)
+        }
+
+        .trend-down {
+            color: var(--danger)
+        }
+
+        .trend-stab {
+            color: var(--warning)
+        }
+
+        /* ════════════════════════════════════════
+   AI INTERPRETATION
+════════════════════════════════════════ */
+        .ai-section {
+            background: var(--bgc);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-xl);
+            padding: 22px;
+            margin-bottom: 20px
+        }
+
+        .ai-hdr {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px
+        }
+
+        .ai-hdr-left {
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .ai-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(212, 168, 83, .2), rgba(45, 212, 160, .15));
+            border: 1px solid var(--gold-brd);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem
+        }
+
+        .ai-name {
+            font-family: var(--ff);
+            font-size: .95rem;
+            font-weight: 700
+        }
+
+        .ai-sub {
+            font-size: .7rem;
+            color: var(--txt2);
+            font-family: var(--mono)
+        }
+
+        .ai-body {
+            font-size: .87rem;
+            line-height: 1.85;
+            color: var(--txt2)
+        }
+
+        .ai-body strong {
+            color: var(--txt)
+        }
+
+        .ai-body h3 {
+            font-family: var(--ff);
+            font-size: .92rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin: 16px 0 7px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid var(--brd)
+        }
+
+        .ai-body h3:first-child {
+            margin-top: 0
+        }
+
+        .ai-body h4 {
+            font-family: var(--ff);
+            font-size: .84rem;
+            font-weight: 700;
+            color: var(--jade);
+            margin: 12px 0 5px
+        }
+
+        .ai-body ul {
+            padding-left: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            margin: 6px 0
+        }
+
+        .ai-body li {
+            line-height: 1.65
+        }
+
+        .ai-body li::marker {
+            color: var(--jade)
+        }
+
+        .ai-body p {
+            margin-bottom: .5em
+        }
+
+        .ai-body p:last-child {
+            margin-bottom: 0
+        }
+
+        .ai-body blockquote {
+            border-left: 3px solid var(--gold-brd);
+            padding-left: 14px;
+            margin: 10px 0;
+            font-style: italic;
+            color: var(--txt2)
+        }
+
+        .ai-body code {
+            background: var(--bgch);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: var(--mono);
+            font-size: .8em;
+            color: var(--jade)
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 14px;
+            background: var(--jade);
+            border-radius: 1px;
+            animation: cblink .65s ease infinite;
+            margin-left: 1px;
+            vertical-align: middle
+        }
+
+        @keyframes cblink {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: 0
+            }
+        }
+
+        /* ════════════════════════════════════════
+   PRIORITY ACTIONS
+════════════════════════════════════════ */
+        .priority-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px
+        }
+
+        .prio-card {
+            border-radius: var(--r-lg);
+            padding: 16px;
+            border: 1px solid;
+            transition: var(--tr);
+            cursor: pointer
+        }
+
+        .prio-card:hover {
+            transform: translateY(-2px)
+        }
+
+        .pc-rank {
+            font-family: var(--mono);
+            font-size: .65rem;
+            font-weight: 700;
+            margin-bottom: 8px
+        }
+
+        .pc-title {
+            font-family: var(--ff);
+            font-size: .88rem;
+            font-weight: 700;
+            color: var(--txt);
+            margin-bottom: 4px
+        }
+
+        .pc-desc {
+            font-size: .78rem;
+            color: var(--txt2);
+            line-height: 1.55;
+            margin-bottom: 9px
+        }
+
+        .pc-impact {
+            font-size: .7rem;
+            font-family: var(--mono);
+            font-weight: 700
+        }
+
+        .pc-urgency {
+            width: 100%;
+            height: 2px;
+            border-radius: 1px;
+            margin-top: 8px
+        }
+
+        /* ════════════════════════════════════════
+   BODY SYSTEM DETAIL
+════════════════════════════════════════ */
+        .system-detail {
+            display: none
+        }
+
+        .system-detail.open {
+            display: block;
+            animation: slideDown .35s ease
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-8px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .sd-wrap {
+            background: var(--bgch);
+            border: 1px solid var(--gold-brd);
+            border-radius: var(--r-xl);
+            padding: 20px;
+            margin-top: 12px;
+            margin-bottom: 20px
+        }
+
+        /* ════════════════════════════════════════
+   LOADING STATE
+════════════════════════════════════════ */
+        .nexus-loading {
+            position: fixed;
+            inset: 0;
+            z-index: 500;
+            background: rgba(3, 5, 14, .92);
+            backdrop-filter: blur(16px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 24px
+        }
+
+        .nexus-loading.hide {
+            display: none
+        }
+
+        .nl-orb {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 2px solid var(--jade-brd);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.8rem;
+            animation: nlPulse 2s ease-in-out infinite;
+            position: relative
+        }
+
+        .nl-orb::before {
+            content: '';
+            position: absolute;
+            inset: -14px;
+            border-radius: 50%;
+            border: 1px solid rgba(45, 212, 160, .2);
+            animation: orbitSpin 8s linear infinite
+        }
+
+        .nl-orb::after {
+            content: '';
+            position: absolute;
+            inset: -28px;
+            border-radius: 50%;
+            border: 1px dashed rgba(212, 168, 83, .15);
+            animation: orbitSpin 14s linear infinite reverse
+        }
+
+        @keyframes nlPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 var(--jade-glow);
+                transform: scale(1)
+            }
+
+            50% {
+                box-shadow: 0 0 40px rgba(45, 212, 160, .3);
+                transform: scale(1.05)
+            }
+        }
+
+        .nl-title {
+            font-family: var(--ff);
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--txt)
+        }
+
+        .nl-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 320px
+        }
+
+        .nl-step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 14px;
+            border-radius: var(--r-md);
+            border: 1px solid var(--brd2);
+            background: var(--bgc);
+            transition: all .4s
+        }
+
+        .nl-step.active {
+            border-color: var(--jade-brd);
+            background: var(--jade-dim)
+        }
+
+        .nl-step.done {
+            border-color: rgba(45, 212, 160, .3);
+            background: rgba(45, 212, 160, .06)
+        }
+
+        .nl-step-ico {
+            width: 28px;
+            height: 28px;
+            border-radius: var(--r-sm);
+            background: var(--bgch);
+            border: 1px solid var(--brd2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .8rem;
+            flex-shrink: 0;
+            transition: all .4s
+        }
+
+        .nl-step.active .nl-step-ico {
+            background: var(--jade-dim);
+            border-color: var(--jade-brd)
+        }
+
+        .nl-step.done .nl-step-ico {
+            background: rgba(45, 212, 160, .15);
+            border-color: rgba(45, 212, 160, .35)
+        }
+
+        .nl-step-lbl {
+            font-size: .82rem;
+            font-weight: 600;
+            color: var(--txt2);
+            flex: 1
+        }
+
+        .nl-step.active .nl-step-lbl {
+            color: var(--txt)
+        }
+
+        .nl-step-st {
+            font-size: .68rem;
+            font-family: var(--mono)
+        }
+
+        .nl-step.active .nl-step-st {
+            color: var(--jade)
+        }
+
+        .nl-step.done .nl-step-st {
+            color: var(--success)
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid rgba(45, 212, 160, .3);
+            border-top-color: var(--jade);
+            border-radius: 50%;
+            animation: spin .7s linear infinite
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        /* ════════════════════════════════════════
+   COMPARATIVE RADAR
+════════════════════════════════════════ */
+        .radar-wrap {
+            position: relative;
+            height: 240px
+        }
+
+        /* ════════════════════════════════════════
+   HEALTH AGE
+════════════════════════════════════════ */
+        .health-age-card {
+            background: linear-gradient(135deg, rgba(212, 168, 83, .06), rgba(45, 212, 160, .03));
+            border: 1px solid var(--gold-brd);
+            border-radius: var(--r-xl);
+            padding: 20px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px
+        }
+
+        .ha-diff-num {
+            font-family: var(--ff);
+            font-size: 3rem;
+            font-weight: 800;
+            line-height: 1
+        }
+
+        .ha-label {
+            font-size: .78rem;
+            color: var(--txt2);
+            font-family: var(--mono)
+        }
+
+        .ha-ages {
+            display: flex;
+            gap: 18px;
+            justify-content: center
+        }
+
+        .ha-age {
+            text-align: center
+        }
+
+        .ha-age-num {
+            font-family: var(--ff);
+            font-size: 1.4rem;
+            font-weight: 800
+        }
+
+        .ha-age-lbl {
+            font-size: .65rem;
+            color: var(--txt2);
+            font-family: var(--mono)
+        }
+
+        /* PROGRESS RINGS ROW */
+        .mini-rings {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 10px 0
+        }
+
+        .mr-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px
+        }
+
+        .mr-canvas-wrap {
+            position: relative;
+            width: 56px;
+            height: 56px
+        }
+
+        .mr-canvas-wrap canvas {
+            width: 56px !important;
+            height: 56px !important
+        }
+
+        .mr-center {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--ff);
+            font-size: .72rem;
+            font-weight: 800
+        }
+
+        .mr-lbl {
+            font-size: .63rem;
+            color: var(--txt2);
+            font-family: var(--mono);
+            text-align: center;
+            white-space: nowrap
+        }
+
+        /* TOASTS */
+        #toasts {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 7px
+        }
+
+        .toast {
+            background: var(--bgc);
+            border: 1px solid var(--brd2);
+            border-left: 2px solid var(--jade);
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: .8rem;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, .7);
+            min-width: 230px;
+            animation: slideDown .25s ease;
+            font-family: var(--fb)
+        }
+
+        /* RESPONSIVE */
+        @media(max-width:1200px) {
+            .nexus-grid {
+                grid-template-columns: 1fr 1fr
+            }
+
+            .nexus-grid-4 {
+                grid-template-columns: 1fr 1fr
+            }
+
+            .priority-grid {
+                grid-template-columns: 1fr 1fr
+            }
+
+            .pred-cards {
+                grid-template-columns: 1fr 1fr
+            }
+
+            .sys-grid {
+                grid-template-columns: 1fr 1fr
+            }
+        }
+
+        @media(max-width:900px) {
+            .sidebar {
+                display: none
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 16px
+            }
+
+            .hero-grid {
+                grid-template-columns: auto 1fr
+            }
+
+            .hero-actions {
+                display: none
+            }
+
+            .score-banner {
+                grid-template-columns: 1fr
+            }
+
+            .global-ring {
+                margin: 0 auto
+            }
+
+            .nexus-grid,
+            .nexus-grid-2 {
+                grid-template-columns: 1fr
+            }
+
+            .sys-grid {
+                grid-template-columns: 1fr 1fr
+            }
+        }
+
+        @media print {
+
+            .nav,
+            .sidebar,
+            .nexus-loading,
+            .hero-actions {
+                display: none !important
+            }
+
+            .main {
+                margin: 0 !important
+            }
+        }
+
+
+        /* ══════════════════════════════════════
+   HAMBURGER BUTTON
+══════════════════════════════════════ */
+        .hamburger {
+            display: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--bgc);
+            border: 1px solid var(--brd2);
+            cursor: pointer;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            flex-shrink: 0;
+            transition: var(--tr);
+            z-index: 400;
+        }
+
+        .hamburger:hover {
+            border-color: var(--rose-brd, var(--skin-brd, rgba(255, 255, 255, .2)));
+        }
+
+        .hamburger span {
+            display: block;
+            width: 18px;
+            height: 2px;
+            background: var(--txt);
+            border-radius: 2px;
+            transition: var(--tr);
+        }
+
+        .hamburger.open span:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+
+        .hamburger.open span:nth-child(2) {
+            opacity: 0;
+            transform: scaleX(0);
+        }
+
+        .hamburger.open span:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+
+        /* ══════════════════════════════════════
+   SIDEBAR OVERLAY (mobile)
+══════════════════════════════════════ */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .6);
+            backdrop-filter: blur(4px);
+            z-index: 198;
+            animation: fadeIn .2s ease;
+        }
+
+        .sidebar-overlay.visible {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* ══════════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+══════════════════════════════════════ */
+        @media (max-width: 900px) {
+
+            /* Show hamburger in nav */
+            .hamburger {
+                display: flex;
+            }
+
+            /* Sidebar: slide in from left */
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform .28s cubic-bezier(.4, 0, .2, 1);
+                z-index: 199;
+                box-shadow: 8px 0 40px rgba(0, 0, 0, .5);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            /* Main content fills full width */
+            .main {
+                margin-left: 0 !important;
+                padding: 14px 14px 80px;
+            }
+
+            /* Grids: 1 column on mobile */
+            .grid-2,
+            .grid-3,
+            .grid-4,
+            .dashboard-grid,
+            .diag-layout,
+            .evolution-layout,
+            .derm-chat-layout,
+            .midwife-layout,
+            .profile-skin-layout,
+            .nutri-grid,
+            .week-detail-layout,
+            .prep-categories {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* Products grid: 2 cols on mobile */
+            .products-grid {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            /* Advice/prep cards: 1 col */
+            .advice-cards,
+            .prep-cards {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* Tabs: scrollable horizontally */
+            .tabs {
+                width: 100% !important;
+                overflow-x: auto;
+                flex-wrap: nowrap !important;
+                scrollbar-width: none;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .tabs::-webkit-scrollbar {
+                display: none;
+            }
+
+            .tab {
+                white-space: nowrap;
+                font-size: .78rem;
+                padding: 7px 12px;
+            }
+
+            /* Nav: compress */
+            .nav {
+                padding: 0 14px;
+                gap: 8px;
+            }
+
+            .nav-badge {
+                display: none;
+            }
+
+            /* Page title smaller */
+            .page-title {
+                font-size: 1.5rem !important;
+            }
+
+            /* Chat layouts: full height */
+            .derm-chat-layout,
+            .midwife-layout {
+                height: auto !important;
+            }
+
+            .chat-col {
+                min-height: 500px;
+            }
+
+            /* Hide side tools on mobile */
+            .derm-tools,
+            .midwife-tools {
+                display: none;
+            }
+
+            /* Concern/forbidden grids: 2 cols */
+            .concern-grid,
+            .forbidden-grid {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            /* Food cats: 3 cols */
+            .food-cats {
+                grid-template-columns: 1fr 1fr 1fr !important;
+            }
+
+            /* Bag list: 2 cols */
+            .bag-list {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            /* Quick stats: wrap */
+            .quick-stats {
+                flex-wrap: wrap;
+            }
+
+            .qs {
+                min-width: 80px !important;
+            }
+
+            /* Skin type grid: 3 cols */
+            .skin-type-grid {
+                grid-template-columns: repeat(3, 1fr) !important;
+            }
+
+            /* Hero week counter */
+            .week-counter {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main {
+                padding: 10px 10px 70px;
+            }
+
+            .page-title {
+                font-size: 1.25rem !important;
+            }
+
+            .products-grid,
+            .advice-cards {
+                grid-template-columns: 1fr !important;
+            }
+
+            .food-cats {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            .bag-list {
+                grid-template-columns: 1fr !important;
+            }
+
+            .card {
+                padding: 14px;
+            }
+
+            .tab {
+                font-size: .72rem;
+                padding: 6px 10px;
+            }
+
+            .prep-categories {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            .advice-categories {
+                grid-template-columns: 1fr 1fr !important;
+            }
+        }
+
+
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 58px;
+            left: 0;
+            right: 0;
+            background: rgba(8, 4, 16, .98);
+            backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--brd);
+            padding: 10px 14px 18px;
+            z-index: 299;
+            flex-direction: column;
+            gap: 2px;
+            max-height: calc(100vh - 58px);
+            overflow-y: auto;
+        }
+
+        .mobile-menu.open {
+            display: flex;
+        }
+
+        .hamburger {
+            display: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--bgc);
+            border: 1px solid var(--brd2);
+            cursor: pointer;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: var(--tr);
+        }
+
+        .hamburger span {
+            display: block;
+            width: 18px;
+            height: 2px;
+            background: var(--txt);
+            border-radius: 2px;
+            transition: var(--tr);
+        }
+
+        .hamburger.open span:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+
+        .hamburger.open span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.open span:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+
+        @media (max-width: 900px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0 !important;
+                padding: 14px 14px 80px;
+            }
+
+            .nav-badge {
+                display: none;
+            }
+
+            /* vos autres règles responsive ici */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="ambient">
+        <div class="orb orb1"></div>
+        <div class="orb orb2"></div>
+        <div class="orb orb3"></div>
+    </div>
+    <div class="scanline"></div>
+
+    <!-- LOADING OVERLAY -->
+    <div class="nexus-loading" id="nexus-loading">
+        <div class="nl-orb">🔬</div>
+        <div class="nl-title">Nexus IA · Analyse en cours…</div>
+        <div class="nl-steps" id="nl-steps"></div>
+    </div>
+
+    <!-- NAV -->
+    <nav class="nav">
+        <a class="brand" href="dashboard.html"><span class="brand-dot"></span>VitaCore</a>
+        <button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+        <div class="mobile-menu" id="mobile-menu">
+            <a class="sb-link" href="dashboard.html">🏠 Dashboard</a>
+            <a class="sb-link" href="health-form.html">📋 Bilan Santé</a>
+            <a class="sb-link" href="analytics.html">📊 Analyses</a>
+            <a class="sb-link" href="ai-bilan.html">🩺 Bilan IA</a>
+            <a class="sb-link" href="consultation.html">🏥 Consultation IA</a>
+            <a class="sb-link" href="evolution.html">📈 Évolution</a>
+            <a class="sb-link" href="nutri.html">🥦 Nutri</a>
+            <a class="sb-link" href="lifestyle.html">✨ Style de Vie</a>
+            <a class="sb-link" href="derma.html">💆 Derma</a>
+            <a class="sb-link" href="maternite.html">🌸 Maternité</a>
+            <a class="sb-link" href="guide.html">🔮 Guide Oracle</a>
+            <a class="sb-link" href="psyche.html">🧠 Psyché</a>
+            <a class="sb-link" href="nexus_ia.html">🌐 Nexus</a>
+
+            <!-- SÉPARATEUR -->
+            <div style="height:1px;background:var(--brd);margin:8px 0"></div>
+
+            <!-- URGENCES -->
+            <div
+                style="font-size:.61rem;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.14em;margin-bottom:7px;padding:0 8px">
+                Urgences</div>
+            <div
+                style="padding:8px 11px;background:rgba(255,90,122,.05);border:1px solid rgba(255,90,122,.2);border-radius:var(--r-sm);font-size:.74rem;color:var(--danger);line-height:1.6;margin-bottom:12px">
+                ⚠️ Secours Abalo: <strong>88 80</strong><br>Urgences: <strong>88 80</strong><br>Maternité 24h:
+                <strong>voir rubrique</strong>
+            </div>
+            <!-- COMPTE -->
+            <div
+                style="font-size:.61rem;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.14em;margin-bottom:7px;padding:0 8px">
+                Compte</div>
+            <a class="sb-link" href="#" id="logout-btn-mobile">🚪 &nbsp;Déconnexion</a>
+        </div>
+        <div class="nav-center">
+            <div class="nav-badge"><span class="npd"></span>NEXUS · Analyse Générale IA</div>
+            <div class="nav-status" id="nav-status">Initialisation…</div>
+        </div>
+        <div style="display:flex;gap:8px">
+            <button class="btn btn-sm btn-jade" id="refresh-btn">⟳ Actualiser</button>
+            <button class="btn btn-sm" onclick="window.print()">🖨 Rapport</button>
+            <a href="dashboard.html" class="btn btn-sm">← Accueil</a>
+        </div>
+    </nav>
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+    <!-- LAYOUT -->
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sb-sec">
+                <div class="sb-tt">Navigation</div>
+                <a class="sb-link" href="dashboard.html">🏠 &nbsp;Dashboard</a>
+                <a class="sb-link" href="health-form.html">📋 &nbsp;Bilan Santé</a>
+                <a class="sb-link" href="analytics.html">📊 &nbsp;Analyses</a>
+                <a class="sb-link" href="ai-bilan.html">🩺 &nbsp;Bilan IA</a>
+                <a class="sb-link" href="consultation.html">🏥 &nbsp;Consultation IA</a>
+                <a class="sb-link" href="evolution.html">📈 &nbsp;Évolution</a>
+                <a class="sb-link" href="nutri.html">🥦 &nbsp;Nutri · Nutrition IA</a>
+                <a class="sb-link" href="lifestyle.html">✨ &nbsp;Style de Vie</a>
+                <a class="sb-link" href="derma.html">💆 &nbsp;Derma · Beauté IA</a>
+                <a class="sb-link" href="maternite.html">🌸 &nbsp;Maternité · Grossesse IA</a>
+                <a class="sb-link" href="guide.html">🔮 &nbsp;Guide Oracle</a>
+                <a class="sb-link" href="psyche.html">🧠 &nbsp;Psyché</a>
+                <a class="sb-link active" href="nexus_ia.html">🌐 &nbsp;Nexus · Analyse</a>
+            </div>
+            <div class="sb-sec">
+                <div class="sb-tt">Urgences</div>
+                <div
+                    style="padding:8px 11px;background:rgba(255,90,122,.05);border:1px solid rgba(255,90,122,.2);border-radius:var(--r-sm);font-size:.74rem;color:var(--danger);line-height:1.6">
+                    ⚠️ Secours Abalo: <strong>88 80</strong><br>Urgences: <strong>88 80</strong><br>Maternité 24h:
+                    <strong>voir rubrique</strong>
+                </div>
+            </div>
+            <div class="sb-sec">
+                <div class="sb-tt">Compte</div>
+                <a class="sb-link" href="#" id="logout-btn">🚪 &nbsp;Déconnexion</a>
+            </div>
+        </aside>
+
+        <main class="main" id="main-content" style="opacity:0;transition:opacity .5s">
+
+            <!-- HERO -->
+            <div class="nexus-hero">
+                <div class="hero-grid">
+                    <div class="hero-emblem">
+                        <div class="emblem-ring">🌐</div>
+                    </div>
+                    <div class="hero-text">
+                        <div class="hero-eyebrow">⬡ VITACORE NEXUS · MOTEUR D'ANALYSE GLOBALE</div>
+                        <div class="hero-title">Analyse <span class="gold">Générale</span> &amp; <span
+                                class="jade">Prédictions</span> IA</div>
+                        <div class="hero-sub">Synthèse complète de tous vos indicateurs de santé. Interprétation système
+                            par système, corrélations croisées, prédictions à 1–12 mois et plan d'action personnalisé
+                            par l'intelligence artificielle.</div>
+                    </div>
+                    <div class="hero-actions">
+                        <button class="btn btn-gold" id="run-full-analysis-btn">🔬 Relancer l'Analyse</button>
+                        <div class="last-analyzed" id="last-analyzed-txt">Dernière analyse : —</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GLOBAL SCORE BANNER -->
+            <div class="score-banner" id="score-banner">
+                <div class="global-ring">
+                    <canvas id="globalRingCanvas"></canvas>
+                    <div class="global-center">
+                        <div class="global-score" id="global-score-num">—</div>
+                        <div class="global-lbl">NHI</div>
+                    </div>
+                </div>
+                <div class="score-info">
+                    <h2 id="global-label">—</h2>
+                    <div class="score-verdict" id="global-verdict">Chargement de votre analyse globale…</div>
+                    <div class="score-mini-grid" id="score-mini-grid"></div>
+                </div>
+                <div class="ph-watermark">NEXUS</div>
+            </div>
+
+            <!-- 6 BODY SYSTEMS -->
+            <div class="sh" style="margin-bottom:12px">
+                <span class="sh-title">⚙️ Analyse par Système Corporel</span>
+                <span class="badge b-gold">6 systèmes analysés</span>
+            </div>
+            <div class="sys-grid" id="sys-grid"></div>
+            <div class="system-detail" id="system-detail-wrap">
+                <div class="sd-wrap">
+                    <div class="sh"><span class="sh-title" id="sd-title">—</span><button class="btn btn-sm"
+                            onclick="closeSystemDetail()">✕ Fermer</button></div>
+                    <div class="ai-body" id="sd-content"></div>
+                </div>
+            </div>
+
+            <!-- BIOMARKERS + TRENDS -->
+            <div class="nexus-grid-2" style="margin-bottom:20px">
+                <div class="card card-gold">
+                    <div class="sh"><span class="sh-title">🧪 Biomarqueurs Clés</span><span
+                            class="badge b-gold">Référence OMS</span></div>
+                    <div class="biomarker-table" id="biomarker-table"></div>
+                </div>
+                <div class="card card-jade">
+                    <div class="sh"><span class="sh-title">📈 Évolution sur 6 Mois</span><span
+                            class="badge b-jade">Tendances</span></div>
+                    <div class="trend-section">
+                        <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HEALTH AGE + MINI RINGS + RADAR -->
+            <div class="nexus-grid" style="margin-bottom:20px">
+                <div class="card health-age-card card-gold">
+                    <div class="sh-title" style="margin-bottom:4px">⏱️ Âge Biologique</div>
+                    <div class="ha-ages">
+                        <div class="ha-age">
+                            <div class="ha-age-num" id="chron-age" style="color:var(--txt2)">35</div>
+                            <div class="ha-age-lbl">Réel</div>
+                        </div>
+                        <div class="ha-age">
+                            <div class="ha-age-num" id="bio-age" style="color:var(--jade)">—</div>
+                            <div class="ha-age-lbl">Biologique</div>
+                        </div>
+                    </div>
+                    <div class="ha-diff-num" id="ha-diff" style="color:var(--jade)">—</div>
+                    <div class="ha-label" id="ha-label">Calcul en cours…</div>
+                    <div class="mini-rings" id="mini-rings"></div>
+                </div>
+                <div class="card card-sky">
+                    <div class="sh"><span class="sh-title">🕸️ Profil Radar</span><span class="badge b-sky">6D</span>
+                    </div>
+                    <div class="radar-wrap"><canvas id="radarChart"></canvas></div>
+                </div>
+                <div class="card card-vio">
+                    <div class="sh"><span class="sh-title">📊 Score par Catégorie</span></div>
+                    <div class="chart-wrap"><canvas id="categoryChart"></canvas></div>
+                </div>
+            </div>
+
+            <!-- RISK MATRIX -->
+            <div class="sh" style="margin-bottom:12px">
+                <span class="sh-title">⚠️ Matrice de Risques</span>
+                <span class="badge b-warn" id="risk-count-badge">—</span>
+            </div>
+            <div class="risk-matrix" id="risk-matrix"></div>
+
+            <!-- PREDICTION ENGINE -->
+            <div class="prediction-hero">
+                <div class="ph-watermark">PREDICT</div>
+                <div class="ph-title">🔮 Moteur de Prédiction IA — Trajectoire de Santé</div>
+                <div class="prediction-timeline" id="pred-timeline"></div>
+                <div class="pred-cards" id="pred-cards"></div>
+            </div>
+
+            <!-- AI FULL INTERPRETATION -->
+            <div class="ai-section" id="ai-interpretation">
+                <div class="ai-hdr">
+                    <div class="ai-hdr-left">
+                        <div class="ai-avatar">🌐</div>
+                        <div>
+                            <div class="ai-name">Nexus Intelligence · Analyse Complète</div>
+                            <div class="ai-sub">Synthèse globale · Corrélations · Prédictions · Recommandations</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-sm btn-gold" id="gen-interpretation-btn">✨ Générer l'Interprétation</button>
+                </div>
+                <div class="ai-body" id="ai-interp-content">
+                    <span style="color:var(--txt2);font-style:italic">Cliquez sur "Générer l'Interprétation" pour
+                        obtenir une analyse complète et personnalisée par l'IA Nexus.</span>
+                </div>
+            </div>
+
+            <!-- PRIORITY ACTIONS -->
+            <div class="sh" style="margin-bottom:12px">
+                <span class="sh-title">🎯 Actions Prioritaires</span>
+                <span class="badge b-jade">Personnalisées</span>
+            </div>
+            <div class="priority-grid" id="priority-grid"></div>
+
+            <!-- CORRELATIONS -->
+            <div class="nexus-grid-2">
+                <div class="card card-jade">
+                    <div class="sh"><span class="sh-title">🔗 Corrélations Corps-Esprit</span><span
+                            class="badge b-jade">IA</span></div>
+                    <div id="correlations-list"></div>
+                </div>
+                <div class="card card-gold">
+                    <div class="sh"><span class="sh-title">📅 Calendrier de Suivi Recommandé</span></div>
+                    <div id="followup-list"></div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <div id="toasts"></div>
+    
+    <script>
+        /* ══════════════════════════════════════════════════
+           CONFIG & AUTH
+        ══════════════════════════════════════════════════ */
+        const API = 'http://localhost:8040/api/v1';
+        const ANTHROPIC_API = `${API}/ai/chat`;
+        const MDL = 'claude-sonnet-4-20250514';
+        const tk = () => localStorage.getItem('vc_token');
+        const UO = () => { try { return JSON.parse(localStorage.getItem('vc_user')); } catch { return null; } };
+        if (!tk()) location.href = 'index.html';
+        const U = UO();
+        document.getElementById('logout-btn').addEventListener('click', e => { e.preventDefault(); localStorage.clear(); location.href = 'index.html'; });
+
+        /* DATA */
+        function loadAllData() {
+            const def = [
+                { date: 'Sep 2024', weight: 84.2, bps: 135, bpd: 88, hr: 78, glucose: 108, waist: 92, score: 58, wellbeing: 5 },
+                { date: 'Oct 2024', weight: 83.0, bps: 132, bpd: 86, hr: 76, glucose: 104, waist: 90, score: 62, wellbeing: 6 },
+                { date: 'Nov 2024', weight: 81.5, bps: 128, bpd: 84, hr: 74, glucose: 101, waist: 88, score: 66, wellbeing: 6 },
+                { date: 'Déc 2024', weight: 80.8, bps: 126, bpd: 82, hr: 73, glucose: 99, waist: 86, score: 69, wellbeing: 7 },
+                { date: 'Jan 2025', weight: 79.5, bps: 124, bpd: 81, hr: 72, glucose: 97, waist: 84, score: 72, wellbeing: 7 },
+                { date: 'Fév 2025', weight: 78.2, bps: 122, bpd: 80, hr: 70, glucose: 95, waist: 82, score: 76, wellbeing: 8 },
+            ];
+            const ms = (() => { try { return JSON.parse(localStorage.getItem('vc_measurements') || '[]'); } catch { return []; } })();
+            const moods = (() => { try { return JSON.parse(localStorage.getItem('vc_moods') || '[]'); } catch { return []; } })();
+            const evts = (() => { try { return JSON.parse(localStorage.getItem('vc_events') || '[]'); } catch { return []; } })();
+            const measurements = ms.length ? ms : def;
+            const last = measurements[measurements.length - 1], first = measurements[0];
+            const H = 1.75, A = 35;
+            const bmi = +(last.weight / (H * H)).toFixed(1);
+            const wt = (last.weight - first.weight) / measurements.length;
+            const st = (last.score - first.score) / measurements.length;
+            const moodAvg = moods.length ? (moods.reduce((a, m) => a + m.val, 0) / moods.length).toFixed(1) : 6.5;
+            const negEv = evts.filter(e => e.type === 'neg').length;
+            return { last, first, measurements, bmi, H, A, wt, st, moods, evts, moodAvg, negEv };
+        }
+
+        const D = loadAllData();
+        const { last: L, first: F, measurements: MS, bmi: BMI, H: HEIGHT, A: AGE, wt: weightTrend, st: scoreTrend, moodAvg, negEv: negEvents } = D;
+
+        function buildFullCtx() {
+            return `PATIENT: ${U?.first_name || ''} ${U?.last_name || ''}
+    Poids: ${L.weight}kg | IMC: ${BMI} | Tension: ${L.bps}/${L.bpd} | FC: ${L.hr}bpm | Glycémie: ${L.glucose}mg/dL
+    Tour taille: ${L.waist || 82}cm | Score santé: ${L.score}/100 | Bien-être: ${L.wellbeing || 7}/10
+    Évolution sur ${MS.length} mois: poids de ${F.weight}→${L.weight}kg | score ${F.score}→${L.score}
+    Humeur moyenne: ${moodAvg}/10 | Événements négatifs: ${negEvents}`;
+        }
+
+        function computeSysScores() {
+            const bp = L.bps < 120 ? 92 : L.bps < 130 ? 78 : L.bps < 140 ? 62 : L.bps < 160 ? 42 : 25;
+            const bmiS = BMI < 18.5 ? 60 : BMI < 23 ? 95 : BMI < 25 ? 85 : BMI < 27 ? 70 : BMI < 30 ? 55 : 35;
+            const glc = L.glucose < 90 ? 92 : L.glucose < 100 ? 85 : L.glucose < 110 ? 70 : L.glucose < 126 ? 50 : 30;
+            const hr = L.hr < 60 ? 88 : L.hr < 75 ? 92 : L.hr < 85 ? 75 : L.hr < 100 ? 55 : 35;
+            const mood = Math.round((parseFloat(moodAvg) / 10) * 100);
+            const wS = Math.max(30, 100 - Math.abs(BMI - 22) * 8);
+            return {
+                cardiovascular: Math.round(bp * .6 + hr * .4),
+                metabolique: Math.round(bmiS * .4 + glc * .4 + wS * .2),
+                neuropsycho: mood,
+                musculosquel: Math.round(bmiS * .3 + (100 - Math.max(0, (L.waist || 82) - 80) * 2) * .4 + hr * .3),
+                digestif: Math.round(glc * .4 + bmiS * .3 + 70 * .3),
+                immunitaire: Math.round(L.score * .5 + bp * .25 + glc * .25),
+            };
+        }
+
+        const SS = computeSysScores();
+        const GS = Math.round(Object.values(SS).reduce((a, b) => a + b, 0) / 6);
+
+        const sColor = s => s >= 80 ? 'var(--success)' : s >= 65 ? 'var(--jade)' : s >= 50 ? 'var(--warning)' : 'var(--danger)';
+        const sLabel = s => s >= 85 ? 'Excellent' : s >= 75 ? 'Très bon' : s >= 65 ? 'Bon' : s >= 50 ? 'Moyen' : s >= 35 ? 'À améliorer' : 'Critique';
+
+        /* LOADING */
+        const LSTEPS = [
+            { ico: '📊', label: 'Agrégation des données' },
+            { ico: '❤️', label: 'Analyse cardiovasculaire' },
+            { ico: '🧬', label: 'Analyse métabolique' },
+            { ico: '🧠', label: 'Évaluation neuropsychologique' },
+            { ico: '📈', label: 'Calcul des tendances' },
+            { ico: '⚠️', label: 'Matrice de risques' },
+            { ico: '🔮', label: 'Moteur de prédiction' },
+            { ico: '✨', label: 'Synthèse IA finale' },
+        ];
+
+        function initLoadUI() {
+            document.getElementById('nl-steps').innerHTML = LSTEPS.map(s => `<div class="nl-step"><div class="nl-step-ico">${s.ico}</div><div class="nl-step-lbl">${s.label}</div><div class="nl-step-st"></div></div>`).join('');
+        }
+        function setLStep(i) {
+            document.querySelectorAll('.nl-step').forEach((el, j) => {
+                if (j < i) { el.classList.add('done'); el.classList.remove('active'); el.querySelector('.nl-step-st').textContent = '✓'; }
+                else if (j === i) { el.classList.add('active'); el.classList.remove('done'); el.querySelector('.nl-step-st').innerHTML = '<div class="spinner"></div>'; }
+                else { el.classList.remove('active', 'done'); el.querySelector('.nl-step-st').textContent = ''; }
+            });
+        }
+
+        /* CHARTS */
+        let gRing = null, tChart = null, rChart = null, cChart = null;
+
+        function buildGlobalRing() {
+            const ctx = document.getElementById('globalRingCanvas').getContext('2d');
+            if (gRing) gRing.destroy();
+            const color = sColor(GS);
+            gRing = new Chart(ctx, { type: 'doughnut', data: { datasets: [{ data: [GS, 100 - GS], backgroundColor: [color, 'rgba(255,255,255,.04)'], borderWidth: 0, borderRadius: 5 }] }, options: { cutout: '78%', plugins: { legend: { display: false }, tooltip: { enabled: false } }, animation: { duration: 1200 } } });
+            document.getElementById('global-score-num').textContent = GS;
+            document.getElementById('global-score-num').style.color = color;
+            const lbl = sLabel(GS);
+            document.getElementById('global-label').textContent = `Santé ${lbl}`;
+            document.getElementById('global-label').style.color = color;
+            document.getElementById('global-verdict').textContent = GS >= 75 ? `Votre état de santé général est ${lbl.toLowerCase()}. Vos indicateurs montrent une progression positive sur les ${MS.length} derniers mois.` : GS >= 55 ? `Votre état de santé est ${lbl.toLowerCase()} avec des marges d'amélioration identifiées. Plusieurs indicateurs méritent attention.` : `Votre état de santé nécessite une attention soutenue. Des interventions ciblées peuvent améliorer votre score NHI.`;
+            const syns = ['Cardio', 'Métabo', 'Psycho', 'Musculo', 'Digestif', 'Immuno'];
+            const vals = Object.values(SS);
+            document.getElementById('score-mini-grid').innerHTML = syns.map((s, i) => `<div class="smg-item"><div class="smg-dot" style="background:${sColor(vals[i])}"></div><span style="color:var(--txt2)">${s}</span><span class="smg-val" style="color:${sColor(vals[i])}">${vals[i]}</span></div>`).join('');
+        }
+
+        function buildTrendChart() {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            if (tChart) tChart.destroy();
+            const labels = MS.map(m => m.date.split(' ')[0]);
+            tChart = new Chart(ctx, {
+                type: 'line', data: {
+                    labels, datasets: [
+                        { label: 'Score', data: MS.map(m => m.score), borderColor: 'var(--jade)', backgroundColor: 'rgba(45,212,160,.06)', tension: .4, fill: true, pointBackgroundColor: 'var(--jade)', pointRadius: 4 },
+                        { label: 'Poids', data: MS.map(m => m.weight), borderColor: 'var(--gold)', backgroundColor: 'rgba(212,168,83,.04)', tension: .4, fill: false, pointBackgroundColor: 'var(--gold)', pointRadius: 3 },
+                        { label: 'Glycémie', data: MS.map(m => m.glucose), borderColor: 'var(--rose)', tension: .4, fill: false, borderDash: [4, 3], pointRadius: 3 },
+                    ]
+                }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: 'rgba(238,242,255,.5)', font: { size: 10 } } }, tooltip: { backgroundColor: 'rgba(8,13,24,.95)' } }, scales: { x: { grid: { color: 'rgba(255,255,255,.04)' }, ticks: { color: 'rgba(238,242,255,.4)', font: { size: 9 } } }, y: { grid: { color: 'rgba(255,255,255,.04)' }, ticks: { color: 'rgba(238,242,255,.4)', font: { size: 9 } } } } }
+            });
+        }
+
+        function buildRadarChart() {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            if (rChart) rChart.destroy();
+            rChart = new Chart(ctx, {
+                type: 'radar', data: {
+                    labels: ['Cardio', 'Métabo', 'Psycho', 'Musculo', 'Digestif', 'Immuno'], datasets: [
+                        { label: 'Actuel', data: Object.values(SS), borderColor: 'var(--jade)', backgroundColor: 'rgba(45,212,160,.12)', pointBackgroundColor: 'var(--jade)', pointRadius: 4, borderWidth: 2 },
+                        { label: 'Optimal', data: [90, 90, 90, 90, 90, 90], borderColor: 'rgba(212,168,83,.3)', backgroundColor: 'rgba(212,168,83,.04)', borderDash: [5, 4], pointRadius: 0, borderWidth: 1 },
+                    ]
+                }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: 'rgba(238,242,255,.5)', font: { size: 10 } } } }, scales: { r: { angleLines: { color: 'rgba(255,255,255,.06)' }, grid: { color: 'rgba(255,255,255,.06)' }, pointLabels: { color: 'rgba(238,242,255,.6)', font: { size: 11 } }, ticks: { display: false }, min: 0, max: 100 } } }
+            });
+        }
+
+        function buildCategoryChart() {
+            const ctx = document.getElementById('categoryChart').getContext('2d');
+            if (cChart) cChart.destroy();
+            const colors = ['#2dd4a0', '#d4a853', '#9060d8', '#4aa8e0', '#2dd4a0', '#e06080'];
+            cChart = new Chart(ctx, { type: 'bar', data: { labels: ['Cardio', 'Métabo', 'Neuro', 'Musculo', 'Digestif', 'Immuno'], datasets: [{ data: Object.values(SS), backgroundColor: colors.map(c => c + '88'), borderColor: colors, borderWidth: 1.5, borderRadius: 6 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { backgroundColor: 'rgba(8,13,24,.95)', callbacks: { label: (c) => `Score: ${c.raw}/100` } } }, scales: { x: { max: 100, grid: { color: 'rgba(255,255,255,.04)' }, ticks: { color: 'rgba(238,242,255,.4)', font: { size: 9 } } }, y: { grid: { display: false }, ticks: { color: 'rgba(238,242,255,.6)', font: { size: 9 } } } } } });
+        }
+
+        /* SYSTEMS */
+        const SYSTEMS = [
+            { ico: '❤️', name: 'Cardiovasculaire', metrics: [`${L.bps}/${L.bpd} mmHg`, `${L.hr}bpm`], detail: `Tension: ${L.bps}/${L.bpd} mmHg, FC repos: ${L.hr}bpm. ${L.bps >= 130 ? 'Tension élevée — risque cardiovasculaire accru.' : 'Tension dans les normes.'} Tendance ${weightTrend < 0 ? 'favorable' : 'à surveiller'}.` },
+            { ico: '🔥', name: 'Métabolique', metrics: [`IMC ${BMI}`, `${L.glucose}mg/dL`], detail: `IMC: ${BMI} (${BMI < 25 ? 'normal' : 'surpoids'}), glycémie: ${L.glucose}mg/dL (${L.glucose >= 100 ? 'pré-diabète' : 'normale'}). Variation poids: ${weightTrend < 0 ? '-' : '+'}${Math.abs(weightTrend * MS.length).toFixed(1)}kg sur ${MS.length} mois.` },
+            { ico: '🧠', name: 'Neuropsychologique', metrics: [`Humeur ${moodAvg}/10`, `${negEvents} évts négatifs`], detail: `Humeur moyenne: ${moodAvg}/10, bien-être: ${L.wellbeing || 7}/10, ${negEvents} événements négatifs récents. ${parseFloat(moodAvg) >= 7 ? 'État émotionnel stable.' : 'Tensions émotionnelles à adresser.'}` },
+            { ico: '💪', name: 'Musculo-squelettique', metrics: [`Taille ${L.waist || 82}cm`, `${L.weight}kg`], detail: `Tour de taille: ${L.waist || 82}cm. ${(L.waist || 82) > 88 ? 'Risque métabolique abdominal accru (seuil 88cm).' : 'Dans les normes recommandées.'} IMC: ${BMI}.` },
+            { ico: '🫁', name: 'Digestif & Nutritionnel', metrics: [`Glycémie ${L.glucose}`, `IMC ${BMI}`], detail: `Glycémie: ${L.glucose}mg/dL. ${L.glucose >= 100 ? 'Charge glycémique alimentaire probablement élevée — réduire les glucides raffinés.' : 'Profil nutritionnel équilibré.'}` },
+            { ico: '🛡️', name: 'Immunitaire & Défenses', metrics: [`Score ${L.score}/100`, `Bien-être ${L.wellbeing || 7}/10`], detail: `Score global: ${L.score}/100, bien-être: ${L.wellbeing || 7}/10. ${L.score >= 70 ? 'Base immunitaire solide.' : 'Des facteurs de stress et de déséquilibre peuvent impacter les défenses.'}` },
+        ];
+
+        function buildSysGrid() {
+            document.getElementById('sys-grid').innerHTML = SYSTEMS.map((s, i) => {
+                const sc = Object.values(SS)[i], col = sColor(sc);
+                return `<div class="sys-card" onclick="openSD(${i})">
+      <div class="sys-card-hdr"><div class="sys-ico">${s.ico}</div><div class="sys-score-badge" style="background:${col}22;color:${col};border:1px solid ${col}33">${sc}</div></div>
+      <div class="sys-name">${s.name}</div>
+      <div class="sys-status" style="color:${col}">${sLabel(sc)}</div>
+      <div class="sys-bar"><div class="sys-bar-fill" style="width:${sc}%;background:${col}"></div></div>
+      <div class="sys-metrics">${s.metrics.map(m => `<span class="sys-metric">${m}</span>`).join('')}</div>
+    </div>`;
+            }).join('');
+        }
+
+        function openSD(i) {
+            const s = SYSTEMS[i]; const sc = Object.values(SS)[i];
+            document.getElementById('system-detail-wrap').classList.add('open');
+            document.getElementById('sd-title').innerHTML = `${s.ico} ${s.name} — Score ${sc}/100`;
+            document.getElementById('sd-content').innerHTML = `<p>${s.detail}</p><p style="margin-top:10px;color:var(--jade)">Cliquez "Générer l'Interprétation" pour une analyse approfondie.</p>`;
+            document.getElementById('system-detail-wrap').scrollIntoView({ behavior: 'smooth' });
+        }
+        function closeSystemDetail() { document.getElementById('system-detail-wrap').classList.remove('open'); }
+
+        /* BIOMARKERS */
+        function buildBiomarkers() {
+            const bms = [
+                { ico: '🩸', name: 'Glycémie à jeun', val: `${L.glucose} mg/dL`, num: L.glucose, ok: L.glucose < 100, warn_: L.glucose < 126, max: 130 },
+                { ico: '💓', name: 'Tension systolique', val: `${L.bps} mmHg`, num: L.bps, ok: L.bps < 130, warn_: L.bps < 140, max: 170 },
+                { ico: '💓', name: 'Tension diastolique', val: `${L.bpd} mmHg`, num: L.bpd, ok: L.bpd < 85, warn_: L.bpd < 90, max: 110 },
+                { ico: '❤️', name: 'FC repos', val: `${L.hr} bpm`, num: L.hr, ok: L.hr < 80, warn_: L.hr < 100, max: 120 },
+                { ico: '⚖️', name: 'IMC', val: `${BMI}`, num: BMI * 2.5, ok: BMI < 25, warn_: BMI < 30, max: 85 },
+                { ico: '📏', name: 'Tour de taille', val: `${L.waist || 82} cm`, num: L.waist || 82, ok: (L.waist || 82) < 88, warn_: (L.waist || 82) < 102, max: 115 },
+                { ico: '💊', name: 'Score NHI', val: `${L.score}/100`, num: L.score, ok: L.score >= 70, warn_: L.score >= 50, max: 100 },
+                { ico: '🧘', name: 'Bien-être', val: `${L.wellbeing || 7}/10`, num: (L.wellbeing || 7) * 10, ok: (L.wellbeing || 7) >= 7, warn_: (L.wellbeing || 7) >= 5, max: 100 },
+            ];
+            document.getElementById('biomarker-table').innerHTML = bms.map(b => {
+                const status = b.ok ? 'ok' : b.warn_ ? 'warn' : 'bad';
+                const col = status === 'ok' ? 'var(--success)' : status === 'warn' ? 'var(--warning)' : 'var(--danger)';
+                const pct = Math.min(94, Math.max(4, (b.num / b.max) * 100));
+                return `<div class="bm-row">
+      <div class="bm-ico">${b.ico}</div>
+      <div class="bm-name">${b.name}</div>
+      <div class="bm-value" style="color:${col}">${b.val}</div>
+      <div class="bm-range"><div class="bm-zone" style="left:5%;width:55%"></div><div class="bm-pointer" style="left:${pct}%;background:${col}"></div></div>
+      <div class="bm-status" style="background:${col}22;color:${col};border:1px solid ${col}44">${status === 'ok' ? '✓ OK' : status === 'warn' ? '⚠ Attn' : '✕ Élevé'}</div>
+    </div>`;
+            }).join('');
+        }
+
+        /* HEALTH AGE */
+        function buildHealthAge() {
+            const off = (GS - 70) / 5;
+            const bioAge = Math.round(AGE - off + (L.bps >= 140 ? 4 : L.bps >= 130 ? 2 : L.bps < 120 ? -2 : 0) + (BMI >= 30 ? 5 : BMI >= 27 ? 2 : BMI < 23 ? -2 : 0) + (L.glucose >= 126 ? 5 : L.glucose >= 100 ? 2 : -1) + (parseFloat(moodAvg) < 5 ? 2 : parseFloat(moodAvg) > 7 ? -1 : 0));
+            const diff = AGE - bioAge;
+            document.getElementById('chron-age').textContent = AGE;
+            document.getElementById('bio-age').textContent = bioAge;
+            document.getElementById('bio-age').style.color = diff > 0 ? 'var(--success)' : diff < 0 ? 'var(--danger)' : 'var(--warning)';
+            document.getElementById('ha-diff').textContent = diff > 0 ? `-${diff} ans` : diff < 0 ? `+${Math.abs(diff)} ans` : '=';
+            document.getElementById('ha-diff').style.color = diff > 0 ? 'var(--success)' : diff < 0 ? 'var(--danger)' : 'var(--warning)';
+            document.getElementById('ha-label').textContent = diff > 0 ? `Vous paraissez biologiquement plus jeune que votre âge réel !` : diff < 0 ? `Votre âge biologique dépasse votre âge réel — des actions s'imposent.` : 'Âge biologique = âge réel';
+            const minis = [{ lbl: 'Cardio', sc: SS.cardiovascular, col: 'var(--rose)' }, { lbl: 'Métabo', sc: SS.metabolique, col: 'var(--gold)' }, { lbl: 'Neuro', sc: SS.neuropsycho, col: 'var(--vio)' }, { lbl: 'Immuno', sc: SS.immunitaire, col: 'var(--jade)' }];
+            document.getElementById('mini-rings').innerHTML = minis.map((m, i) => `<div class="mr-item"><div class="mr-canvas-wrap"><canvas id="mr-${i}"></canvas><div class="mr-center" style="color:${m.col}">${m.sc}</div></div><div class="mr-lbl">${m.lbl}</div></div>`).join('');
+            minis.forEach((m, i) => setTimeout(() => { const ctx = document.getElementById(`mr-${i}`).getContext('2d'); new Chart(ctx, { type: 'doughnut', data: { datasets: [{ data: [m.sc, 100 - m.sc], backgroundColor: [m.col, 'rgba(255,255,255,.04)'], borderWidth: 0, borderRadius: 3 }] }, options: { cutout: '72%', plugins: { legend: { display: false }, tooltip: { enabled: false } }, animation: { duration: 700, delay: i * 120 } } }); }, 150 + i * 80));
+        }
+
+        /* RISK MATRIX */
+        function buildRiskMatrix() {
+            const risks = [];
+            if (L.bps >= 130) risks.push({ name: 'Risque cardiovasculaire', level: L.bps >= 140 ? 'CRITIQUE' : 'ÉLEVÉ', cls: L.bps >= 140 ? 'ri-critical' : 'ri-high', lc: L.bps >= 140 ? 'rl-c' : 'rl-h', desc: `Tension ${L.bps}/${L.bpd} mmHg. Risque accru d'AVC, infarctus et insuffisance rénale.`, tl: 'Court à moyen terme', str: L.bps >= 140 ? 4 : 3, col: 'var(--danger)' });
+            if (L.glucose >= 100) risks.push({ name: 'Pré-diabète / Résistance insulinique', level: L.glucose >= 126 ? 'CRITIQUE' : 'ÉLEVÉ', cls: L.glucose >= 126 ? 'ri-critical' : 'ri-high', lc: L.glucose >= 126 ? 'rl-c' : 'rl-h', desc: `Glycémie ${L.glucose}mg/dL. ${L.glucose >= 126 ? 'Zone diabétique.' : 'Zone pré-diabétique.'} Risque complications microvasculaires.`, tl: 'Moyen à long terme', str: 3, col: 'var(--danger)' });
+            if (BMI >= 25) risks.push({ name: 'Surpoids & Complications métaboliques', level: BMI >= 30 ? 'ÉLEVÉ' : 'MODÉRÉ', cls: BMI >= 30 ? 'ri-high' : 'ri-medium', lc: BMI >= 30 ? 'rl-h' : 'rl-m', desc: `IMC ${BMI}. ${BMI >= 30 ? 'Obésité' : 'Surpoids'} avec risques cardiovasculaires, articulaires et métaboliques.`, tl: 'Long terme', str: BMI >= 30 ? 3 : 2, col: BMI >= 30 ? '#ff8032' : 'var(--warning)' });
+            if (parseFloat(moodAvg) < 6) risks.push({ name: 'Détresse psychologique', level: 'MODÉRÉ', cls: 'ri-medium', lc: 'rl-m', desc: `Humeur ${moodAvg}/10, ${negEvents} événements négatifs. Impact sur immunité et cardiovasculaire.`, tl: 'Court terme', str: 2, col: 'var(--warning)' });
+            if ((L.waist || 82) >= 88) risks.push({ name: 'Obésité abdominale', level: 'MODÉRÉ', cls: 'ri-medium', lc: 'rl-m', desc: `Tour de taille ${L.waist || 82}cm (seuil: 88cm). Marqueur de risque métabolique indépendant.`, tl: 'Moyen terme', str: 2, col: 'var(--warning)' });
+            risks.push({ name: 'Sédentarité potentielle', level: 'FAIBLE', cls: 'ri-low', lc: 'rl-l', desc: 'Activité physique insuffisante identifiée. Impact sur tous les systèmes corporels à long terme.', tl: 'Long terme', str: 1, col: 'var(--success)' });
+            const all = risks.slice(0, 6);
+            document.getElementById('risk-count-badge').textContent = `${all.filter(r => r.lc === 'rl-c' || r.lc === 'rl-h').length} prioritaires · ${all.length} total`;
+            document.getElementById('risk-matrix').innerHTML = all.map(r => `<div class="risk-item ${r.cls}">
+    <div class="ri-hdr"><div class="ri-name">${r.name}</div><span class="ri-level ${r.lc}">${r.level}</span></div>
+    <div class="ri-desc">${r.desc}</div>
+    <div class="ri-timeline">⏱ ${r.tl}</div>
+    <div class="ri-impact-dots">${Array.from({ length: 5 }, (_, i) => `<div class="rid" style="background:${i < r.str ? r.col : 'var(--brd2)'}"></div>`).join('')}</div>
+  </div>`).join('');
+        }
+
+        /* PREDICTIONS */
+        function buildPredictions() {
+            const pS = m => Math.min(100, Math.round(L.score + scoreTrend * m));
+            const pW = m => +(L.weight + weightTrend * m).toFixed(1);
+            const pBP = m => ({ s: Math.max(110, Math.round(L.bps + (weightTrend < 0 ? -m * .4 : m * .3))), d: Math.max(70, Math.round(L.bpd + (weightTrend < 0 ? -m * .25 : m * .2))) });
+            const nodes = [
+                { label: 'Aujourd\'hui', score: L.score, cls: 'pred-dot-now', delta: null },
+                { label: '+1 mois', score: pS(1), cls: 'pred-dot-1m', delta: pS(1) - L.score },
+                { label: '+3 mois', score: pS(3), cls: 'pred-dot-3m', delta: pS(3) - L.score },
+                { label: '+6 mois', score: pS(6), cls: 'pred-dot-6m', delta: pS(6) - L.score },
+                { label: '+12 mois', score: pS(12), cls: 'pred-dot-1y', delta: pS(12) - L.score },
+            ];
+            document.getElementById('pred-timeline').innerHTML = nodes.map(n => `<div class="pred-node">
+    <div class="pred-score" style="color:${sColor(n.score)}">${n.score}</div>
+    <div class="pred-dot ${n.cls}"></div>
+    <div class="pred-label">${n.label}</div>
+    ${n.delta !== null ? `<div class="pred-delta ${n.delta >= 0 ? 'trend-up' : 'trend-down'}">${n.delta >= 0 ? '+' : ''}${n.delta}</div>` : ''}
+  </div>`).join('');
+            const bp6 = pBP(6);
+            const cards = [
+                { ico: '⚖️', name: 'Poids (6 mois)', val: `${pW(6)} kg`, trend: weightTrend < 0 ? `↓ −${Math.abs(weightTrend * 6).toFixed(1)}kg` : `↑ +${(weightTrend * 6).toFixed(1)}kg`, up: weightTrend < 0, pct: Math.min(100, Math.max(0, 100 - (pW(6) - 60) * 2)) },
+                { ico: '❤️', name: 'Tension (6 mois)', val: `${bp6.s}/${bp6.d}`, trend: weightTrend < 0 ? '↓ Amélioration' : '→ Stable', up: weightTrend < 0, pct: bp6.s < 130 ? 85 : 60 },
+                { ico: '🌐', name: 'NHI (12 mois)', val: `${pS(12)}/100`, trend: scoreTrend > 0 ? `↑ +${Math.round(scoreTrend * 12)} pts` : `↓ ${Math.round(scoreTrend * 12)} pts`, up: scoreTrend > 0, pct: pS(12) },
+                { ico: '⏱️', name: 'Âge bio (12 mois)', val: `${Math.round(AGE - (pS(12) - 70) / 5)} ans`, trend: pS(12) > L.score ? '↓ Rajeunissement' : '→ Stable', up: pS(12) > L.score, pct: 75 },
+            ];
+            document.getElementById('pred-cards').innerHTML = cards.map(c => `<div class="pred-card">
+    <div class="pc-ico">${c.ico}</div>
+    <div class="pc-name">${c.name}</div>
+    <div class="pc-val" style="color:${c.up ? 'var(--jade)' : 'var(--danger)'}">${c.val}</div>
+    <div class="pc-trend ${c.up ? 'trend-up' : 'trend-down'}">${c.trend}</div>
+    <div class="pc-bar"><div class="pc-fill" style="width:${c.pct}%;background:${c.up ? 'var(--jade)' : 'var(--gold)'}"></div></div>
+  </div>`).join('');
+        }
+
+        /* PRIORITY ACTIONS */
+        function buildPriority() {
+            const acts = [];
+            if (L.bps >= 130) acts.push({ r: 1, ico: '🩺', title: 'Consultation cardiologique', desc: `Tension ${L.bps}/${L.bpd}mmHg nécessite bilan cardiovasculaire complet.`, impact: 'Réduction risque AVC -35%', col: 'var(--danger)', bg: 'rgba(255,80,80,.05)', br: 'rgba(255,80,80,.2)' });
+            if (L.glucose >= 100) acts.push({ r: acts.length + 1, ico: '🥗', title: 'Régime hypoglycémiant', desc: 'Réduire glucides à index élevé, augmenter fibres et protéines.', impact: 'Glycémie −15mg/dL en 2 mois', col: 'var(--warning)', bg: 'rgba(255,170,48,.04)', br: 'rgba(255,170,48,.2)' });
+            if (BMI >= 25) acts.push({ r: acts.length + 1, ico: '🏃', title: 'Programme cardio 4x/semaine', desc: 'Marche rapide ou natation 40min, 4x/semaine. Objectif: −5% poids.', impact: 'IMC −1.2 pts · NHI +8', col: 'var(--gold)', bg: 'rgba(212,168,83,.04)', br: 'rgba(212,168,83,.2)' });
+            acts.push({ r: acts.length + 1, ico: '🧘', title: 'Cohérence cardiaque quotidienne', desc: '5 min × 3/jour. Réduit tension et glycémie, améliore sommeil.', impact: 'Tension −5mmHg · Bien-être +2', col: 'var(--jade)', bg: 'rgba(45,212,160,.04)', br: 'rgba(45,212,160,.2)' });
+            acts.push({ r: acts.length + 1, ico: '💤', title: 'Optimiser le sommeil (7–9h)', desc: 'Le sommeil insuffisant aggrave tension, glycémie, poids et immunité.', impact: 'NHI +5 pts/mois', col: 'var(--vio)', bg: 'rgba(144,96,216,.04)', br: 'rgba(144,96,216,.2)' });
+            acts.push({ r: acts.length + 1, ico: '📊', title: 'Bilan biologique complet', desc: 'Cholestérol, HbA1c, NFS, CRP, vitamines D & B12 recommandés.', impact: 'Détection précoce', col: 'var(--sky)', bg: 'rgba(74,168,224,.04)', br: 'rgba(74,168,224,.2)' });
+            document.getElementById('priority-grid').innerHTML = acts.slice(0, 6).map(a => `<div class="prio-card" style="background:${a.bg};border-color:${a.br}">
+    <div class="pc-rank" style="color:${a.col}">ACTION #${a.r}</div>
+    <div style="font-size:1.3rem;margin-bottom:6px">${a.ico}</div>
+    <div class="pc-title">${a.title}</div>
+    <div class="pc-desc">${a.desc}</div>
+    <div class="pc-impact" style="color:${a.col}">Impact: ${a.impact}</div>
+    <div class="pc-urgency" style="background:${a.col}"></div>
+  </div>`).join('');
+        }
+
+        /* CORRELATIONS + FOLLOWUP */
+        function buildCorrelations() {
+            const corrs = [
+                { a: 'Stress', b: 'Tension artérielle', str: 88, note: 'Chaque point de bien-être perdu ≈ +2mmHg en moyenne', col: 'var(--rose)' },
+                { a: 'Poids', b: 'Glycémie', str: 74, note: '−5% poids → +20-30% sensibilité insulinique', col: 'var(--gold)' },
+                { a: 'Activité physique', b: 'Score NHI', str: 82, note: '30min/jour = +6 pts NHI sur 3 mois', col: 'var(--jade)' },
+                { a: 'Sommeil', b: 'Immunité & Métabolisme', str: 79, note: '7-9h réduit risque surpoids de 50% et inflammation systémique', col: 'var(--vio)' },
+            ];
+            document.getElementById('correlations-list').innerHTML = corrs.map(c => `<div style="padding:10px 0;border-bottom:1px solid var(--brd)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:.82rem;font-weight:600">
+      <span style="color:${c.col}">${c.a}</span><span style="color:var(--txt3);font-size:.7rem">⟷</span><span style="color:var(--txt2)">${c.b}</span>
+      <span style="margin-left:auto;font-family:var(--mono);font-size:.72rem;font-weight:700;color:${c.col}">${c.str}%</span>
+    </div>
+    <div style="height:3px;background:var(--brd2);border-radius:2px;overflow:hidden;margin-bottom:5px"><div style="height:100%;width:${c.str}%;background:${c.col};border-radius:2px;transition:width .8s ease"></div></div>
+    <div style="font-size:.74rem;color:var(--txt2)">${c.note}</div>
+  </div>`).join('');
+
+            const fu = [
+                { ico: '🩺', task: 'Consultation médecin généraliste', when: 'Dans 2 semaines', urgent: true },
+                { ico: '❤️', task: 'ECG et bilan cardiaque', when: 'Dans 1 mois', urgent: L.bps >= 140 },
+                { ico: '🩸', task: 'Bilan biologique complet', when: 'Dans 1 mois', urgent: false },
+                { ico: '🧠', task: 'Bilan psychologique', when: 'Si symptômes persistent', urgent: false },
+                { ico: '🥗', task: 'Consultation diététicienne', when: 'Dans 2 mois', urgent: false },
+                { ico: '🔄', task: 'Réévaluation NHI complète', when: 'Dans 3 mois', urgent: false },
+            ];
+            document.getElementById('followup-list').innerHTML = fu.map(f => `<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--brd)">
+    <span style="font-size:1rem">${f.ico}</span>
+    <div style="flex:1"><div style="font-size:.82rem;font-weight:600;color:var(--txt)">${f.task}</div><div style="font-size:.72rem;color:var(--txt2);margin-top:1px">${f.when}</div></div>
+    ${f.urgent ? '<span class="badge b-bad" style="font-size:.62rem">Urgent</span>' : '<span class="badge b-jade" style="font-size:.62rem">Planifié</span>'}
+  </div>`).join('');
+        }
+
+        /* AI INTERPRETATION */
+        const NEXUS_SYS = `Tu es Nexus — le moteur d'IA médicale et de santé de VitaCore. Tu réalises une interprétation clinique complète, scientifiquement rigoureuse et ultra-personnalisée.
+
+Sections obligatoires :
+### 🌐 Synthèse Générale & Verdict NHI
+### ❤️ Système Cardiovasculaire
+### 🔥 Système Métabolique
+### 🧠 Système Neuropsychologique
+### 💪 Composition Corporelle & Système Musculo-squelettique
+### 🛡️ Système Immunitaire & Inflammation
+### 📈 Analyse des Tendances
+### 🔗 Corrélations Intersystémiques
+### 🔮 Prédictions — Trajectoire de Santé (3, 6, 12 mois)
+### ⚠️ Alertes & Signaux Précoces
+### 🎯 Plan d'Intervention Personnalisé
+### 💡 Message Personnalisé de Motivation
+
+Sois précis, donne des chiffres et projections, cite des mécanismes biologiques. Bienveillant et motivant. Français uniquement.`;
+
+        document.getElementById('gen-interpretation-btn').addEventListener('click', genInterp);
+
+        async function genInterp() {
+            const content = document.getElementById('ai-interp-content');
+            content.innerHTML = '<span style="color:var(--txt2)">Génération de l\'analyse Nexus… <span class="cursor"></span></span>';
+            const btn = document.getElementById('gen-interpretation-btn');
+            btn.disabled = true; btn.innerHTML = '<div class="spinner" style="border-color:rgba(212,168,83,.3);border-top-color:var(--gold)"></div>';
+            const sysS = Object.entries(SS).map(([k, v]) => `${k}:${v}`).join(' | ');
+            const prompt = `${buildFullCtx()}\nScores systèmes: ${sysS}\nNHI Global: ${GS}/100 (${sLabel(GS)})\nTendance poids: ${weightTrend > 0 ? '+' : ''}${weightTrend.toFixed(2)}kg/mois | Score: ${scoreTrend > 0 ? '+' : ''}${scoreTrend.toFixed(2)}pts/mois\n\nRéalise l'analyse complète Nexus.`;
+            let full = '';
+            try {
+                const res = await fetch(API, { method: 'POST', headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('vc_token')}`  
+                    }, body: JSON.stringify({ model: MDL, max_tokens: 3500, system: NEXUS_SYS, messages: [{ role: 'user', content: prompt }], stream: true }) });
+                if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message); }
+                const reader = res.body.getReader(), dec = new TextDecoder();
+                while (true) {
+                    const { value, done } = await reader.read(); if (done) break;
+                    for (const line of dec.decode(value).split('\n')) {
+                        if (!line.startsWith('data: ')) continue;
+                        const d = line.slice(6); if (d === '[DONE]') continue;
+                        try { const p = JSON.parse(d); const delta = p.delta?.text || ''; if (delta) { full += delta; content.innerHTML = mdFull(full) + '<span class="cursor"></span>'; } } catch (_) { }
+                    }
+                }
+                content.innerHTML = mdFull(full);
+                toast('✓ Analyse Nexus générée !', 'success');
+                const now = new Date().toLocaleString('fr-FR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+                localStorage.setItem('vc_nexus_last', now);
+                document.getElementById('last-analyzed-txt').textContent = `Dernière analyse: ${now}`;
+                document.getElementById('sb-last').textContent = `🕐  ${now}`;
+            } catch (err) {
+                content.innerHTML = `<span style="color:var(--danger)">⚠ ${esc(err.message)}</span>`;
+                toast(`Erreur: ${err.message}`, 'error');
+            }
+            btn.disabled = false; btn.innerHTML = '✨ Régénérer';
+        }
+
+        function mdFull(t) {
+            if (!t) return '';
+            t = t.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            t = t.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+            t = t.replace(/^## (.+)$/gm, '<h3>$1</h3>');
+            t = t.replace(/^#### (.+)$/gm, '<h4>$1</h4>');
+            t = t.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
+            t = t.replace(/^- (.+)$/gm, '<li>$1</li>');
+            t = t.replace(/(<li>[\s\S]+?<\/li>\n?)+/g, m => `<ul>${m}</ul>`);
+            t = t.replace(/`([^`]+)`/g, '<code>$1</code>');
+            t = t.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>');
+            t = `<p>${t}</p>`;
+            ['h3', 'h4', 'ul', 'blockquote'].forEach(tag => { t = t.replace(new RegExp(`<p><${tag}>`, 'g'), `<${tag}>`).replace(new RegExp(`</${tag}></p>`, 'g'), `</${tag}>`); });
+            return t;
+        }
+        function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+        function toast(msg, type = 'success') {
+            const c = { success: 'var(--success)', error: 'var(--danger)', warn: 'var(--warning)', info: 'var(--jade)', info2: 'var(--gold)' };
+            const col = c[type] || c.success;
+            const el = document.createElement('div');
+            el.className = 'toast'; el.style.borderLeftColor = col;
+            el.innerHTML = `<span style="color:${col};font-weight:700">${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'}</span>${msg}`;
+            document.getElementById('toasts').appendChild(el);
+            setTimeout(() => el.remove(), 4000);
+        }
+
+        /* INIT */
+        async function initNexus() {
+            initLoadUI();
+            document.getElementById('nexus-loading').classList.remove('hide');
+            const steps = [buildGlobalRing, buildTrendChart, buildSysGrid, buildBiomarkers, buildRiskMatrix, buildPredictions, buildHealthAge, () => { buildRadarChart(); buildCategoryChart(); buildPriority(); buildCorrelations(); }];
+            for (let i = 0; i < steps.length; i++) {
+                setLStep(i); await new Promise(r => setTimeout(r, 280 + Math.random() * 260)); steps[i]();
+            }
+            document.querySelectorAll('.nl-step').forEach(el => { el.classList.add('done'); el.classList.remove('active'); el.querySelector('.nl-step-st').textContent = '✓'; });
+            await new Promise(r => setTimeout(r, 400));
+            document.getElementById('nexus-loading').classList.add('hide');
+            const main = document.getElementById('main-content');
+            main.style.opacity = '1';
+            document.getElementById('nav-status').textContent = `NHI ${GS}/100 · ${sLabel(GS)}`;
+            document.getElementById('nav-status').style.color = sColor(GS);
+            const last = localStorage.getItem('vc_nexus_last') || '—';
+            document.getElementById('last-analyzed-txt').textContent = `Dernière analyse: ${last === '—' ? 'Jamais' : last}`;
+            document.getElementById('sb-last').textContent = `🕐  ${last === '—' ? 'Jamais' : last}`;
+            toast(`Nexus initialisé · NHI ${GS}/100`, 'info2');
+        }
+
+        document.getElementById('refresh-btn').addEventListener('click', () => { document.getElementById('main-content').style.opacity = '0'; setTimeout(initNexus, 200); });
+        document.getElementById('run-full-analysis-btn').addEventListener('click', () => { document.getElementById('main-content').style.opacity = '0'; setTimeout(initNexus, 200); });
+
+        const sk = document.createElement('style');
+        sk.textContent = '@keyframes spin{to{transform:rotate(360deg)}} @keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}';
+        document.head.appendChild(sk);
+        initNexus();
+
+
+        /* ══════════════════════════
+           MOBILE SIDEBAR TOGGLE
+        ══════════════════════════ */
+        function toggleSidebar() {
+            const sb = document.querySelector('.sidebar');
+            const btn = document.getElementById('hamburger-btn');
+            const ovl = document.getElementById('sidebar-overlay');
+            const isOpen = sb.classList.contains('open');
+            if (isOpen) { closeSidebar(); }
+            else {
+                sb.classList.add('open');
+                btn.classList.add('open');
+                ovl.classList.add('visible');
+                document.body.style.overflow = 'hidden'; // empêche scroll fond
+            }
+        }
+
+        function closeSidebar() {
+            document.querySelector('.sidebar')?.classList.remove('open');
+            document.getElementById('hamburger-btn')?.classList.remove('open');
+            document.getElementById('sidebar-overlay')?.classList.remove('visible');
+            document.body.style.overflow = '';
+        }
+
+        // Ferme la sidebar au clic sur un lien (navigation mobile)
+        document.querySelectorAll('.sb-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 900) closeSidebar();
+            });
+        });
+
+        // Ferme si on redimensionne vers desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 900) closeSidebar();
+        });
+
+        document.getElementById('hamburger-btn').addEventListener('click', () => {
+            const menu = document.getElementById('mobile-menu');
+            const btn = document.getElementById('hamburger-btn');
+            menu.classList.toggle('open');
+            btn.classList.toggle('open');
+        });
+
+        // Ferme au clic sur un lien
+        document.querySelectorAll('#mobile-menu .sb-link').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('mobile-menu').classList.remove('open');
+                document.getElementById('hamburger-btn').classList.remove('open');
+            });
+        });
+
+        document.getElementById('logout-btn-mobile')?.addEventListener('click', e => {
+            e.preventDefault();
+            localStorage.clear();
+            location.href = 'index.html';
+        });
+    </script>
+</body>
+
+</html>

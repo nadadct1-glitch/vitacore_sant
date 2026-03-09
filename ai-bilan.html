@@ -1,0 +1,2508 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bilan IA — VitaCore</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* ═══════════════════════════════════════════
+   RESET & VARIABLES
+═══════════════════════════════════════════ */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+      --bg: #080808;
+      --bg2: #0f0f0f;
+      --bgc: #141414;
+      --bgch: #1c1c1c;
+      --acc: #c8ff00;
+      --acc2: #a8d900;
+      --acc-dim: rgba(200, 255, 0, .1);
+      --acc-brd: rgba(200, 255, 0, .25);
+      --txt: #efefef;
+      --txt2: #7a7a7a;
+      --txt3: #3a3a3a;
+      --brd: #1e1e1e;
+      --brd2: #2a2a2a;
+      --danger: #ff4444;
+      --warning: #ff9500;
+      --success: #00d68f;
+      --info: #2196f3;
+      --pulse: rgba(200, 255, 0, .4);
+      --r-sm: 8px;
+      --r-md: 14px;
+      --r-lg: 20px;
+      --r-xl: 28px;
+      --r-xxl: 36px;
+      --ff: 'Syne', sans-serif;
+      --fb: 'DM Sans', sans-serif;
+      --tr: .2s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      font-family: var(--fb);
+      background: var(--bg);
+      color: var(--txt);
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased
+    }
+
+    ::-webkit-scrollbar {
+      width: 4px
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--brd2);
+      border-radius: 2px
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--acc)
+    }
+
+    /* ── AMBIENT BG ── */
+    .ambient {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden
+    }
+
+    .amb-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: .35;
+      animation: drift 15s ease-in-out infinite
+    }
+
+    .amb-orb:nth-child(1) {
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(200, 255, 0, .15), transparent 70%);
+      top: -200px;
+      right: -100px;
+      animation-duration: 18s
+    }
+
+    .amb-orb:nth-child(2) {
+      width: 350px;
+      height: 350px;
+      background: radial-gradient(circle, rgba(0, 150, 255, .1), transparent 70%);
+      bottom: -100px;
+      left: -80px;
+      animation-delay: -7s;
+      animation-duration: 22s
+    }
+
+    @keyframes drift {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1)
+      }
+
+      33% {
+        transform: translate(30px, -20px) scale(1.05)
+      }
+
+      66% {
+        transform: translate(-20px, 15px) scale(.97)
+      }
+    }
+
+    /* ── NAVBAR ── */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 28px;
+      background: rgba(8, 8, 8, .9);
+      backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--brd)
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--ff);
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--txt);
+      text-decoration: none
+    }
+
+    .brand-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--acc);
+      border-radius: 50%;
+      box-shadow: 0 0 14px var(--acc);
+      animation: pulse-dot 2s ease infinite
+    }
+
+    @keyframes pulse-dot {
+
+      0%,
+      100% {
+        box-shadow: 0 0 8px var(--acc)
+      }
+
+      50% {
+        box-shadow: 0 0 20px var(--acc), 0 0 40px var(--pulse)
+      }
+    }
+
+    .nav-tag {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--acc-dim);
+      border: 1px solid var(--acc-brd);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: .75rem;
+      font-weight: 600;
+      color: var(--acc)
+    }
+
+    .nav-tag-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--acc);
+      animation: blink 1.5s ease infinite
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .2
+      }
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 10px 20px;
+      border-radius: var(--r-md);
+      border: none;
+      cursor: pointer;
+      font-family: var(--fb);
+      font-weight: 600;
+      font-size: .875rem;
+      text-decoration: none;
+      transition: var(--tr)
+    }
+
+    .btn-primary {
+      background: var(--acc);
+      color: #000;
+      box-shadow: 0 4px 20px rgba(200, 255, 0, .2)
+    }
+
+    .btn-primary:hover {
+      background: #d4ff33;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 28px rgba(200, 255, 0, .35)
+    }
+
+    .btn-primary:disabled {
+      opacity: .4;
+      cursor: not-allowed;
+      transform: none !important
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--txt2);
+      border: 1px solid var(--brd2)
+    }
+
+    .btn-ghost:hover {
+      color: var(--acc);
+      border-color: var(--acc-brd);
+      background: var(--acc-dim)
+    }
+
+    .btn-sm {
+      padding: 7px 14px;
+      font-size: .8rem
+    }
+
+    .btn-icon {
+      width: 38px;
+      height: 38px;
+      padding: 0;
+      border-radius: 50%;
+      background: var(--bgch);
+      border: 1px solid var(--brd2);
+      color: var(--txt2)
+    }
+
+    .btn-icon:hover {
+      color: var(--acc);
+      border-color: var(--acc-brd);
+      background: var(--acc-dim)
+    }
+
+    /* ═══════════════════════════════════════════
+   MAIN LAYOUT — SPLIT PANEL
+═══════════════════════════════════════════ */
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      min-height: 100vh;
+      padding-top: 65px;
+      position: relative;
+      z-index: 1
+    }
+
+    /* ═══════════════════════════════════════════
+   LEFT — CHAT PANEL
+═══════════════════════════════════════════ */
+    .chat-panel {
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--brd);
+      height: calc(100vh - 65px);
+      position: sticky;
+      top: 65px
+    }
+
+    /* ── CHAT HEADER ── */
+    .chat-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--brd);
+      background: var(--bg2);
+      flex-shrink: 0
+    }
+
+    .doctor-profile {
+      display: flex;
+      align-items: center;
+      gap: 14px
+    }
+
+    .doc-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--acc), #6eff00);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+      position: relative
+    }
+
+    .doc-status {
+      position: absolute;
+      bottom: 1px;
+      right: 1px;
+      width: 12px;
+      height: 12px;
+      background: var(--success);
+      border-radius: 50%;
+      border: 2px solid var(--bg2)
+    }
+
+    .doc-name {
+      font-family: var(--ff);
+      font-size: 1rem;
+      font-weight: 700
+    }
+
+    .doc-title {
+      font-size: .78rem;
+      color: var(--txt2);
+      margin-top: 1px
+    }
+
+    .doc-caps {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+      flex-wrap: wrap
+    }
+
+    .cap {
+      background: var(--bgch);
+      border: 1px solid var(--brd2);
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: .68rem;
+      color: var(--txt2);
+      font-weight: 500
+    }
+
+    /* ── PHASE INDICATOR ── */
+    .phase-bar {
+      padding: 12px 24px;
+      border-bottom: 1px solid var(--brd);
+      background: var(--bg);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .phase-steps {
+      display: flex;
+      gap: 4px;
+      flex: 1
+    }
+
+    .phase-step {
+      flex: 1;
+      height: 3px;
+      border-radius: 2px;
+      background: var(--brd2);
+      transition: background .4s ease
+    }
+
+    .phase-step.done {
+      background: var(--success)
+    }
+
+    .phase-step.active {
+      background: var(--acc);
+      box-shadow: 0 0 8px var(--pulse)
+    }
+
+    .phase-label {
+      font-size: .72rem;
+      color: var(--txt2);
+      white-space: nowrap;
+      font-weight: 500
+    }
+
+    .phase-label em {
+      color: var(--acc);
+      font-style: normal
+    }
+
+    /* ── MESSAGES ── */
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px
+    }
+
+    .msg {
+      display: flex;
+      gap: 10px;
+      animation: msgIn .3s cubic-bezier(.4, 0, .2, 1)
+    }
+
+    @keyframes msgIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .msg-ai {
+      flex-direction: row
+    }
+
+    .msg-user {
+      flex-direction: row-reverse
+    }
+
+    .msg-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .9rem
+    }
+
+    .msg-avatar.ai {
+      background: linear-gradient(135deg, var(--acc), #6eff00);
+      font-size: .85rem;
+      color: #000;
+      font-weight: 800;
+      font-family: var(--ff)
+    }
+
+    .msg-avatar.user {
+      background: var(--bgch);
+      border: 1px solid var(--brd2);
+      font-size: .85rem
+    }
+
+    .msg-bubble {
+      max-width: 82%;
+      padding: 12px 16px;
+      border-radius: var(--r-lg);
+      font-size: .875rem;
+      line-height: 1.65;
+      position: relative
+    }
+
+    .msg-ai .msg-bubble {
+      background: var(--bgc);
+      border: 1px solid var(--brd2);
+      border-top-left-radius: 4px;
+      color: var(--txt)
+    }
+
+    .msg-user .msg-bubble {
+      background: var(--acc-dim);
+      border: 1px solid var(--acc-brd);
+      border-top-right-radius: 4px;
+      color: var(--txt)
+    }
+
+    /* ── TYPING INDICATOR ── */
+    .typing {
+      display: flex;
+      gap: 4px;
+      padding: 10px 14px;
+      background: var(--bgc);
+      border: 1px solid var(--brd2);
+      border-radius: var(--r-lg);
+      border-top-left-radius: 4px;
+      width: fit-content
+    }
+
+    .typing span {
+      width: 7px;
+      height: 7px;
+      background: var(--acc);
+      border-radius: 50%;
+      animation: typingBounce .8s ease infinite
+    }
+
+    .typing span:nth-child(2) {
+      animation-delay: .15s
+    }
+
+    .typing span:nth-child(3) {
+      animation-delay: .3s
+    }
+
+    @keyframes typingBounce {
+
+      0%,
+      60%,
+      100% {
+        transform: translateY(0)
+      }
+
+      30% {
+        transform: translateY(-6px)
+      }
+    }
+
+    /* ── QUICK REPLIES ── */
+    .quick-replies {
+      padding: 12px 24px;
+      border-top: 1px solid var(--brd);
+      background: var(--bg2);
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      flex-shrink: 0
+    }
+
+    .qr {
+      padding: 7px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--brd2);
+      background: var(--bgch);
+      color: var(--txt2);
+      font-size: .8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--tr);
+      font-family: var(--fb)
+    }
+
+    .qr:hover {
+      border-color: var(--acc-brd);
+      color: var(--acc);
+      background: var(--acc-dim)
+    }
+
+    /* ── INPUT AREA ── */
+    .chat-input-area {
+      padding: 16px 24px;
+      border-top: 1px solid var(--brd);
+      background: var(--bg2);
+      flex-shrink: 0
+    }
+
+    .input-wrap {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+      background: var(--bgch);
+      border: 1px solid var(--brd2);
+      border-radius: var(--r-xl);
+      padding: 10px 14px;
+      transition: var(--tr)
+    }
+
+    .input-wrap:focus-within {
+      border-color: var(--acc-brd);
+      box-shadow: 0 0 0 3px var(--acc-dim)
+    }
+
+    #chat-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--txt);
+      font-family: var(--fb);
+      font-size: .875rem;
+      resize: none;
+      max-height: 100px;
+      line-height: 1.5
+    }
+
+    #chat-input::placeholder {
+      color: var(--txt3)
+    }
+
+    .send-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--acc);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: var(--tr);
+      color: #000;
+      font-size: 1rem
+    }
+
+    .send-btn:hover {
+      background: #d4ff33;
+      transform: scale(1.05)
+    }
+
+    .send-btn:disabled {
+      opacity: .3;
+      cursor: not-allowed;
+      transform: none
+    }
+
+    /* ═══════════════════════════════════════════
+   RIGHT — ANALYSIS PANEL
+═══════════════════════════════════════════ */
+    .analysis-panel {
+      overflow-y: auto;
+      background: var(--bg2);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px
+    }
+
+    /* ── HEALTH SCORE RING ── */
+    .score-section {
+      background: var(--bgc);
+      border: 1px solid var(--brd2);
+      border-radius: var(--r-xl);
+      padding: 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden
+    }
+
+    .score-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 0%, rgba(200, 255, 0, .04), transparent 60%);
+      pointer-events: none
+    }
+
+    .score-ring-wrap {
+      position: relative;
+      width: 160px;
+      height: 160px;
+      margin: 0 auto 16px
+    }
+
+    .score-ring-wrap canvas {
+      width: 160px !important;
+      height: 160px !important
+    }
+
+    .score-center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center
+    }
+
+    .score-num {
+      font-family: var(--ff);
+      font-size: 2.8rem;
+      font-weight: 800;
+      line-height: 1;
+      transition: color .5s ease
+    }
+
+    .score-label {
+      font-size: .72rem;
+      color: var(--txt2);
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      margin-top: 2px
+    }
+
+    .score-title {
+      font-family: var(--ff);
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 4px
+    }
+
+    .score-subtitle {
+      font-size: .8rem;
+      color: var(--txt2);
+      line-height: 1.5
+    }
+
+    .score-pending {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 20px 0;
+      color: var(--txt2);
+      font-size: .85rem
+    }
+
+    .score-pending .pending-ring {
+      width: 80px;
+      height: 80px;
+      border: 3px solid var(--brd2);
+      border-top-color: var(--acc);
+      border-radius: 50%;
+      animation: spin 1.5s linear infinite
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    /* ── SYSTEM CARDS ── */
+    .systems-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px
+    }
+
+    .sys-card {
+      background: var(--bgch);
+      border: 1px solid var(--brd2);
+      border-radius: var(--r-md);
+      padding: 14px;
+      transition: var(--tr);
+      cursor: default
+    }
+
+    .sys-card:hover {
+      border-color: var(--acc-brd);
+      background: var(--bgc)
+    }
+
+    .sys-icon {
+      font-size: 1.3rem;
+      margin-bottom: 6px
+    }
+
+    .sys-name {
+      font-size: .72rem;
+      font-weight: 600;
+      color: var(--txt2);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 4px
+    }
+
+    .sys-score {
+      font-family: var(--ff);
+      font-size: 1.2rem;
+      font-weight: 800;
+      margin-bottom: 6px
+    }
+
+    .sys-bar {
+      height: 3px;
+      background: var(--brd2);
+      border-radius: 2px;
+      overflow: hidden
+    }
+
+    .sys-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width .8s ease
+    }
+
+    .sys-status {
+      font-size: .68rem;
+      margin-top: 5px;
+      font-weight: 600
+    }
+
+    .sys-pending {
+      color: var(--txt3);
+      font-size: .78rem;
+      font-family: var(--fb)
+    }
+
+    /* ── RISK INDICATORS ── */
+    .risks-wrap {
+      background: var(--bgc);
+      border: 1px solid var(--brd2);
+      border-radius: var(--r-xl);
+      padding: 20px
+    }
+
+    .risks-title {
+      font-family: var(--ff);
+      font-size: .9rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .risk-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--brd)
+    }
+
+    .risk-item:last-child {
+      border-bottom: none
+    }
+
+    .risk-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0
+    }
+
+    .risk-name {
+      flex: 1;
+      font-size: .82rem;
+      font-weight: 500
+    }
+
+    .risk-badge {
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: .7rem;
+      font-weight: 700
+    }
+
+    .rb-low {
+      background: rgba(0, 214, 143, .12);
+      color: var(--success);
+      border: 1px solid rgba(0, 214, 143, .25)
+    }
+
+    .rb-mod {
+      background: rgba(255, 149, 0, .12);
+      color: var(--warning);
+      border: 1px solid rgba(255, 149, 0, .25)
+    }
+
+    .rb-high {
+      background: rgba(255, 68, 68, .12);
+      color: var(--danger);
+      border: 1px solid rgba(255, 68, 68, .25)
+    }
+
+    .risks-empty {
+      color: var(--txt3);
+      font-size: .82rem;
+      text-align: center;
+      padding: 16px;
+      border: 1px dashed var(--brd2);
+      border-radius: var(--r-md)
+    }
+
+    /* ── RECOMMENDATIONS ── */
+    .recs-wrap {
+      background: var(--bgc);
+      border: 1px solid var(--brd2);
+      border-radius: var(--r-xl);
+      padding: 20px
+    }
+
+    .recs-title {
+      font-family: var(--ff);
+      font-size: .9rem;
+      font-weight: 700;
+      margin-bottom: 14px
+    }
+
+    .rec-item {
+      display: flex;
+      gap: 11px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--brd)
+    }
+
+    .rec-item:last-child {
+      border-bottom: none
+    }
+
+    .rec-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: var(--r-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .95rem;
+      flex-shrink: 0
+    }
+
+    .rec-text {
+      font-size: .82rem;
+      line-height: 1.55;
+      color: var(--txt2)
+    }
+
+    .rec-text strong {
+      color: var(--txt);
+      font-weight: 600
+    }
+
+    .recs-empty {
+      color: var(--txt3);
+      font-size: .82rem;
+      text-align: center;
+      padding: 16px;
+      border: 1px dashed var(--brd2);
+      border-radius: var(--r-md)
+    }
+
+    /* ── REPORT BUTTON ── */
+    .report-section {
+      background: linear-gradient(135deg, rgba(200, 255, 0, .08), rgba(200, 255, 0, .03));
+      border: 1px solid var(--acc-brd);
+      border-radius: var(--r-xl);
+      padding: 20px;
+      text-align: center
+    }
+
+    .report-title {
+      font-family: var(--ff);
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 6px
+    }
+
+    .report-sub {
+      font-size: .8rem;
+      color: var(--txt2);
+      margin-bottom: 16px;
+      line-height: 1.55
+    }
+
+    /* ── SECTION HEADER ── */
+    .sec-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px
+    }
+
+    .sec-title {
+      font-family: var(--ff);
+      font-size: .88rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 7px
+    }
+
+    /* ── PROGRESS BAR ── */
+    .pbar {
+      height: 4px;
+      background: var(--brd2);
+      border-radius: 2px;
+      overflow: hidden
+    }
+
+    .pfill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width .6s ease
+    }
+
+    /* ── LABELS ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: .7rem;
+      font-weight: 700
+    }
+
+    .badge-ok {
+      background: rgba(0, 214, 143, .12);
+      color: var(--success);
+      border: 1px solid rgba(0, 214, 143, .25)
+    }
+
+    .badge-warn {
+      background: rgba(255, 149, 0, .12);
+      color: var(--warning);
+      border: 1px solid rgba(255, 149, 0, .25)
+    }
+
+    .badge-bad {
+      background: rgba(255, 68, 68, .12);
+      color: var(--danger);
+      border: 1px solid rgba(255, 68, 68, .25)
+    }
+
+    .badge-neutral {
+      background: var(--bgch);
+      color: var(--txt2);
+      border: 1px solid var(--brd2)
+    }
+
+    /* ── TOAST ── */
+    #toasts {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px
+    }
+
+    /* ── REPORT MODAL ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      background: rgba(0, 0, 0, .85);
+      backdrop-filter: blur(12px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px
+    }
+
+    .modal-overlay.show {
+      display: flex;
+      animation: fadeIn .2s ease
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    .modal {
+      background: var(--bg2);
+      border: 1px solid var(--brd2);
+      border-radius: var(--r-xxl);
+      width: 100%;
+      max-width: 720px;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: slideUp .3s cubic-bezier(.4, 0, .2, 1)
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .modal-header {
+      padding: 28px 32px 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between
+    }
+
+    .modal-body {
+      padding: 24px 32px 32px
+    }
+
+    .modal-close {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--bgch);
+      border: 1px solid var(--brd2);
+      color: var(--txt2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      transition: var(--tr);
+      flex-shrink: 0
+    }
+
+    .modal-close:hover {
+      color: var(--acc);
+      border-color: var(--acc-brd)
+    }
+
+    /* ── REPORT CONTENT ── */
+    .report-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 20px 0
+    }
+
+    .report-stat {
+      background: var(--bgch);
+      border: 1px solid var(--brd2);
+      border-radius: var(--r-md);
+      padding: 16px
+    }
+
+    .rs-label {
+      font-size: .7rem;
+      color: var(--txt2);
+      text-transform: uppercase;
+      letter-spacing: .09em;
+      margin-bottom: 4px
+    }
+
+    .rs-val {
+      font-family: var(--ff);
+      font-size: 1.5rem;
+      font-weight: 800
+    }
+
+    .report-section-title {
+      font-family: var(--ff);
+      font-size: 1rem;
+      font-weight: 700;
+      border-bottom: 1px solid var(--brd);
+      padding-bottom: 10px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .report-list li {
+      font-size: .85rem;
+      line-height: 1.7;
+      color: var(--txt2);
+      padding-left: 16px;
+      position: relative
+    }
+
+    .report-list li::before {
+      content: '•';
+      color: var(--acc);
+      position: absolute;
+      left: 0;
+      font-weight: 700
+    }
+
+    .report-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 2px
+    }
+
+    .chart-wrap {
+      height: 200px;
+      margin: 14px 0
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--brd);
+      margin: 20px 0
+    }
+
+    /* ── INTRO SCREEN ── */
+    .intro-screen {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 24px;
+      text-align: center;
+      gap: 16px
+    }
+
+    .intro-orb {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--acc), #6eff00);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      animation: float 3s ease-in-out infinite;
+      box-shadow: 0 0 40px rgba(200, 255, 0, .3)
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0)
+      }
+
+      50% {
+        transform: translateY(-10px)
+      }
+    }
+
+    .intro-title {
+      font-family: var(--ff);
+      font-size: 1.4rem;
+      font-weight: 800
+    }
+
+    .intro-desc {
+      font-size: .875rem;
+      color: var(--txt2);
+      line-height: 1.7;
+      max-width: 360px
+    }
+
+    .intro-features {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      max-width: 320px;
+      margin: 8px 0
+    }
+
+    .intro-feat {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-align: left;
+      background: var(--bgch);
+      border: 1px solid var(--brd2);
+      border-radius: var(--r-md);
+      padding: 11px 14px;
+      font-size: .82rem;
+      color: var(--txt2)
+    }
+
+    .intro-feat .fi {
+      width: 30px;
+      height: 30px;
+      border-radius: var(--r-sm);
+      background: var(--acc-dim);
+      border: 1px solid var(--acc-brd);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: .9rem
+    }
+
+    /* ── MISC ── */
+    .spinner-sm {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(200, 255, 0, .3);
+      border-top-color: var(--acc);
+      border-radius: 50%;
+      animation: spin .6s linear infinite
+    }
+
+    /* streaming cursor */
+    .cursor {
+      display: inline-block;
+      width: 2px;
+      height: 14px;
+      background: var(--acc);
+      border-radius: 1px;
+      animation: cursorBlink .7s ease infinite;
+      margin-left: 1px;
+      vertical-align: middle
+    }
+
+    @keyframes cursorBlink {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0
+      }
+    }
+
+    /* ── MARKDOWN LIGHT ── */
+    .md h3 {
+      font-family: var(--ff);
+      font-size: .95rem;
+      font-weight: 700;
+      color: var(--txt);
+      margin: 12px 0 6px
+    }
+
+    .md strong {
+      color: var(--txt);
+      font-weight: 600
+    }
+
+    .md ul {
+      padding-left: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px
+    }
+
+    .md li {
+      font-size: .875rem;
+      line-height: 1.6;
+      color: var(--txt2)
+    }
+
+    .md li::marker {
+      color: var(--acc)
+    }
+
+    .md .highlight {
+      background: var(--acc-dim);
+      border: 1px solid var(--acc-brd);
+      border-radius: var(--r-sm);
+      padding: 10px 13px;
+      margin: 8px 0;
+      font-size: .82rem;
+      line-height: 1.6
+    }
+
+    .md .score-line {
+      font-family: var(--ff);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--acc)
+    }
+
+    @media(max-width:900px) {
+      .layout {
+        grid-template-columns: 1fr
+      }
+
+      .analysis-panel {
+        display: none
+      }
+
+      .chat-panel {
+        height: calc(100vh - 65px)
+      }
+    }
+
+
+    /* ══════════════════════════════════════
+   HAMBURGER BUTTON
+══════════════════════════════════════ */
+    .hamburger {
+      display: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--bgc);
+      border: 1px solid var(--brd2);
+      cursor: pointer;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      flex-shrink: 0;
+      transition: var(--tr);
+      z-index: 400;
+    }
+
+    .hamburger:hover {
+      border-color: var(--rose-brd, var(--skin-brd, rgba(255, 255, 255, .2)));
+    }
+
+    .hamburger span {
+      display: block;
+      width: 18px;
+      height: 2px;
+      background: var(--txt);
+      border-radius: 2px;
+      transition: var(--tr);
+    }
+
+    .hamburger.open span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+
+    .hamburger.open span:nth-child(2) {
+      opacity: 0;
+      transform: scaleX(0);
+    }
+
+    .hamburger.open span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+
+    /* ══════════════════════════════════════
+   SIDEBAR OVERLAY (mobile)
+══════════════════════════════════════ */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .6);
+      backdrop-filter: blur(4px);
+      z-index: 198;
+      animation: fadeIn .2s ease;
+    }
+
+    .sidebar-overlay.visible {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* ══════════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+══════════════════════════════════════ */
+    @media (max-width: 900px) {
+
+      /* Show hamburger in nav */
+      .hamburger {
+        display: flex;
+      }
+
+      /* Sidebar: slide in from left */
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform .28s cubic-bezier(.4, 0, .2, 1);
+        z-index: 199;
+        box-shadow: 8px 0 40px rgba(0, 0, 0, .5);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      /* Main content fills full width */
+      .main {
+        margin-left: 0 !important;
+        padding: 14px 14px 80px;
+      }
+
+      /* Grids: 1 column on mobile */
+      .grid-2,
+      .grid-3,
+      .grid-4,
+      .dashboard-grid,
+      .diag-layout,
+      .evolution-layout,
+      .derm-chat-layout,
+      .midwife-layout,
+      .profile-skin-layout,
+      .nutri-grid,
+      .week-detail-layout,
+      .prep-categories {
+        grid-template-columns: 1fr !important;
+      }
+
+      /* Products grid: 2 cols on mobile */
+      .products-grid {
+        grid-template-columns: 1fr 1fr !important;
+      }
+
+      /* Advice/prep cards: 1 col */
+      .advice-cards,
+      .prep-cards {
+        grid-template-columns: 1fr !important;
+      }
+
+      /* Tabs: scrollable horizontally */
+      .tabs {
+        width: 100% !important;
+        overflow-x: auto;
+        flex-wrap: nowrap !important;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .tabs::-webkit-scrollbar {
+        display: none;
+      }
+
+      .tab {
+        white-space: nowrap;
+        font-size: .78rem;
+        padding: 7px 12px;
+      }
+
+      /* Nav: compress */
+      .nav {
+        padding: 0 14px;
+        gap: 8px;
+      }
+
+      .nav-badge {
+        display: none;
+      }
+
+      /* Page title smaller */
+      .page-title {
+        font-size: 1.5rem !important;
+      }
+
+      /* Chat layouts: full height */
+      .derm-chat-layout,
+      .midwife-layout {
+        height: auto !important;
+      }
+
+      .chat-col {
+        min-height: 500px;
+      }
+
+      /* Hide side tools on mobile */
+      .derm-tools,
+      .midwife-tools {
+        display: none;
+      }
+
+      /* Concern/forbidden grids: 2 cols */
+      .concern-grid,
+      .forbidden-grid {
+        grid-template-columns: 1fr 1fr !important;
+      }
+
+      /* Food cats: 3 cols */
+      .food-cats {
+        grid-template-columns: 1fr 1fr 1fr !important;
+      }
+
+      /* Bag list: 2 cols */
+      .bag-list {
+        grid-template-columns: 1fr 1fr !important;
+      }
+
+      /* Quick stats: wrap */
+      .quick-stats {
+        flex-wrap: wrap;
+      }
+
+      .qs {
+        min-width: 80px !important;
+      }
+
+      /* Skin type grid: 3 cols */
+      .skin-type-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+      }
+
+      /* Hero week counter */
+      .week-counter {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .main {
+        padding: 10px 10px 70px;
+      }
+
+      .page-title {
+        font-size: 1.25rem !important;
+      }
+
+      .products-grid,
+      .advice-cards {
+        grid-template-columns: 1fr !important;
+      }
+
+      .food-cats {
+        grid-template-columns: 1fr 1fr !important;
+      }
+
+      .bag-list {
+        grid-template-columns: 1fr !important;
+      }
+
+      .card {
+        padding: 14px;
+      }
+
+      .tab {
+        font-size: .72rem;
+        padding: 6px 10px;
+      }
+
+      .prep-categories {
+        grid-template-columns: 1fr 1fr !important;
+      }
+
+      .advice-categories {
+        grid-template-columns: 1fr 1fr !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="ambient">
+    <div class="amb-orb"></div>
+    <div class="amb-orb"></div>
+  </div>
+
+  <!-- ─── NAVBAR ─────────────────────────────── -->
+  <nav class="nav">
+    <a class="brand" href="dashboard.html">
+      <span class="brand-dot"></span>VitaCore
+    </a>
+    <div class="nav-tag">
+      <span class="nav-tag-dot"></span>
+      Dr. Vita — IA Médicale Avancée
+    </div>
+    <div class="nav-right">
+      <a href="dashboard.html" class="btn btn-ghost btn-sm">← Dashboard</a>
+    </div>
+  </nav>
+
+  <!-- ─── MAIN LAYOUT ────────────────────────── -->
+  <div class="layout">
+
+    <!-- ════ CHAT PANEL ════ -->
+    <div class="chat-panel">
+
+      <!-- DOCTOR HEADER -->
+      <div class="chat-header">
+        <div class="doctor-profile">
+          <div class="doc-avatar">🩺<div class="doc-status"></div>
+          </div>
+          <div>
+            <div class="doc-name">Dr. Vita</div>
+            <div class="doc-title">Assistant Médical IA · Analyse en temps réel</div>
+            <div class="doc-caps">
+              <span class="cap">🧬 Analyse multi-systèmes</span>
+              <span class="cap">📊 Scoring clinique</span>
+              <span class="cap">🔬 Détection de risques</span>
+              <span class="cap">💊 Recommandations</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PHASE BAR -->
+      <div class="phase-bar">
+        <div class="phase-steps">
+          <div class="phase-step active" id="ps1"></div>
+          <div class="phase-step" id="ps2"></div>
+          <div class="phase-step" id="ps3"></div>
+          <div class="phase-step" id="ps4"></div>
+          <div class="phase-step" id="ps5"></div>
+        </div>
+        <div class="phase-label" id="phase-label">Phase <em id="ph-num">1</em>/5</div>
+      </div>
+
+      <!-- MESSAGES -->
+      <div class="chat-messages" id="messages">
+        <!-- INTRO SCREEN (initial state) -->
+        <div class="intro-screen" id="intro-screen">
+          <div class="intro-orb">🩺</div>
+          <div class="intro-title">Votre bilan de santé IA</div>
+          <div class="intro-desc">
+            Dr. Vita analyse votre état de santé global grâce à des algorithmes cliniques avancés et à l'intelligence
+            artificielle. Entretien personnalisé en 5 phases.
+          </div>
+          <div class="intro-features">
+            <div class="intro-feat">
+              <div class="fi">🫀</div>Analyse cardiovasculaire & métabolique
+            </div>
+            <div class="intro-feat">
+              <div class="fi">🧠</div>Évaluation psychologique & stress
+            </div>
+            <div class="intro-feat">
+              <div class="fi">🏃</div>Bilan mode de vie & habitudes
+            </div>
+            <div class="intro-feat">
+              <div class="fi">⚠️</div>Détection précoce des facteurs de risque
+            </div>
+          </div>
+          <button class="btn btn-primary" id="start-btn"
+            style="padding:14px 32px;font-size:.95rem;border-radius:var(--r-xl)">
+            Démarrer mon bilan →
+          </button>
+        </div>
+      </div>
+
+      <!-- QUICK REPLIES -->
+      <div class="quick-replies" id="quick-replies" style="display:none"></div>
+
+      <!-- INPUT -->
+      <div class="chat-input-area">
+        <div class="input-wrap">
+          <textarea id="chat-input" placeholder="Répondez à Dr. Vita..." rows="1" disabled></textarea>
+          <button class="send-btn" id="send-btn" disabled>➤</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ ANALYSIS PANEL ════ -->
+    <div class="analysis-panel">
+
+      <!-- HEALTH SCORE -->
+      <div class="score-section">
+        <div class="score-ring-wrap" id="score-ring-wrap">
+          <div class="score-pending" id="score-pending">
+            <div class="pending-ring"></div>
+            <span>En attente d'analyse…</span>
+          </div>
+          <canvas id="scoreCanvas" style="display:none"></canvas>
+          <div class="score-center" id="score-center" style="display:none">
+            <div class="score-num" id="score-num">0</div>
+            <div class="score-label">/100</div>
+          </div>
+        </div>
+        <div class="score-title" id="score-title">Score de Santé Global</div>
+        <div class="score-subtitle" id="score-subtitle">Démarrez votre bilan pour obtenir votre score personnalisé</div>
+      </div>
+
+      <!-- BODY SYSTEMS -->
+      <div>
+        <div class="sec-header">
+          <div class="sec-title">🫁 Systèmes Corporels</div>
+        </div>
+        <div class="systems-grid" id="systems-grid">
+          <!-- filled by JS -->
+        </div>
+      </div>
+
+      <!-- RISK FACTORS -->
+      <div class="risks-wrap">
+        <div class="risks-title">⚠️ Facteurs de Risque Identifiés</div>
+        <div id="risks-list">
+          <div class="risks-empty">Aucun risque identifié pour l'instant</div>
+        </div>
+      </div>
+
+      <!-- RECOMMENDATIONS -->
+      <div class="recs-wrap">
+        <div class="recs-title">💡 Recommandations Personnalisées</div>
+        <div id="recs-list">
+          <div class="recs-empty">Les recommandations apparaîtront ici</div>
+        </div>
+      </div>
+
+      <!-- GENERATE REPORT -->
+      <div class="report-section" id="report-section" style="opacity:.4;pointer-events:none">
+        <div class="report-title">📄 Rapport Médical Complet</div>
+        <div class="report-sub">Générez votre rapport détaillé avec toutes les analyses, scores par système, facteurs de
+          risque et plan d'action personnalisé.</div>
+        <button class="btn btn-primary" id="gen-report-btn" style="width:100%;padding:13px">
+          Générer mon rapport complet →
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── REPORT MODAL ───────────────────────── -->
+  <div class="modal-overlay" id="report-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <div style="font-family:var(--ff);font-size:1.4rem;font-weight:800">📄 Rapport Médical Complet</div>
+          <div style="font-size:.82rem;color:var(--txt2);margin-top:4px" id="report-date"></div>
+        </div>
+        <button class="modal-close"
+          onclick="document.getElementById('report-modal').classList.remove('show')">✕</button>
+      </div>
+      <div class="modal-body" id="report-body"></div>
+    </div>
+  </div>
+
+  <div id="toasts"></div>
+
+
+  <!-- ─── SCRIPT ─────────────────────────────── -->
+  <script>
+    /* ═══════════════════════════════════════════
+       CONFIG & STATE
+    ═══════════════════════════════════════════ */
+    const API = 'http://localhost:8040/api/v1';
+    const ANTHROPIC_API = `${API}/ai/chat`;
+    const MODEL = 'claude-sonnet-4-20250514';
+
+    const token = () => localStorage.getItem('vc_token');
+    const user = () => { try { return JSON.parse(localStorage.getItem('vc_user')); } catch { return null; } };
+    if (!token()) location.href = 'index.html';
+
+    const U = user();
+    const userName = U?.first_name || 'vous';
+
+    /* Collected health data across phases */
+    let healthData = {
+      identity: {}, vitals: {}, symptoms: {}, lifestyle: {}, history: {}
+    };
+    let conversationHistory = [];
+    let currentPhase = 0;
+    let scoreChart = null;
+    let assessmentComplete = false;
+    let extractedScores = null;
+
+    /* Systems definition */
+    const SYSTEMS = [
+      { id: 'cardio', icon: '🫀', name: 'Cardiovasculaire' },
+      { id: 'metabo', icon: '🩸', name: 'Métabolique' },
+      { id: 'pulmo', icon: '🫁', name: 'Respiratoire' },
+      { id: 'mental', icon: '🧠', name: 'Psychologique' },
+      { id: 'musculo', icon: '💪', name: 'Musculo-squelettique' },
+      { id: 'immuno', icon: '🛡️', name: 'Immunologique' },
+    ];
+
+    /* ═══════════════════════════════════════════
+       SYSTEM PROMPT — Dr. Vita
+    ═══════════════════════════════════════════ */
+    const SYSTEM_PROMPT = `Tu es Dr. Vita, un assistant médical IA de très haut niveau intégré à la plateforme de santé VitaCore. Tu réalises des bilans de santé complets et approfondis en 5 phases structurées.
+
+## TES CAPACITÉS
+- Analyse clinique multi-systèmes (cardiovasculaire, métabolique, respiratoire, psychologique, musculo-squelettique, immunologique)
+- Scoring quantitatif basé sur des algorithmes cliniques validés (Framingham, Wells, PHQ-9, AUDIT, ESS, etc.)
+- Détection précoce de facteurs de risque
+- Recommandations personnalisées et actionnables
+
+## LES 5 PHASES DU BILAN
+
+**PHASE 1 — Identité & Contexte** : Recueille âge, sexe biologique, taille, poids, groupe sanguin, profession, niveau de stress initial.
+
+**PHASE 2 — Constantes & Biologie** : Questions sur tension artérielle, fréquence cardiaque, glycémie, cholestérol, hémoglobine, éventuels résultats de bilan récent.
+
+**PHASE 3 — Symptômes & Plaintes** : Exploration des symptômes actuels (douleurs, fatigue, essoufflement, maux de tête, troubles digestifs, sommeil, humeur). Utilise des échelles validées (0-10).
+
+**PHASE 4 — Antécédents & Mode de vie** : Maladies connues, médicaments, tabac/alcool, activité physique, alimentation, sommeil, antécédents familiaux.
+
+**PHASE 5 — Synthèse & Scoring** : Analyse complète et génération des scores.
+
+## RÈGLES DE CONDUITE
+- Pose 2-3 questions maximum par message, jamais plus
+- Sois chaleureux, professionnel et rassurant
+- Utilise des formulations médicales précises mais accessibles
+- Adapte tes questions aux réponses précédentes (anamnèse dynamique)
+- Propose des choix/échelles quand c'est pertinent
+- N'émets PAS de diagnostic définitif — tu fournis une évaluation de risque
+- Signale toujours si des résultats nécessitent une consultation médicale urgente
+
+## FORMAT DES RÉPONSES
+- Réponds toujours en français
+- Sois concis mais complet (4-8 lignes par message)
+- Pour la phase 5 UNIQUEMENT, génère le bloc JSON d'analyse ci-dessous
+
+## BLOC JSON PHASE 5 (obligatoire en fin de bilan)
+À la fin de la phase 5, après ton texte de synthèse, inclus OBLIGATOIREMENT ce bloc JSON entre les balises:
+<VITACORE_ANALYSIS>
+{
+  "globalScore": <0-100>,
+  "globalLabel": "<Excellent|Bon|Modéré|À améliorer|Critique>",
+  "systems": {
+    "cardio":  { "score": <0-100>, "status": "<ok|warn|alert>", "note": "<courte note>" },
+    "metabo":  { "score": <0-100>, "status": "<ok|warn|alert>", "note": "<courte note>" },
+    "pulmo":   { "score": <0-100>, "status": "<ok|warn|alert>", "note": "<courte note>" },
+    "mental":  { "score": <0-100>, "status": "<ok|warn|alert>", "note": "<courte note>" },
+    "musculo": { "score": <0-100>, "status": "<ok|warn|alert>", "note": "<courte note>" },
+    "immuno":  { "score": <0-100>, "status": "<ok|warn|alert>", "note": "<courte note>" }
+  },
+  "risks": [
+    { "name": "<facteur>", "level": "<low|moderate|high>", "detail": "<explication>" }
+  ],
+  "recommendations": [
+    { "priority": "<urgent|important|conseil>", "icon": "<emoji>", "title": "<titre>", "text": "<texte>" }
+  ],
+  "summary": "<paragraphe de synthèse>",
+  "urgency": "<none|consult|urgent>"
+}
+</VITACORE_ANALYSIS>`;
+
+    /* ═══════════════════════════════════════════
+       RENDER SYSTEMS GRID (initial state)
+    ═══════════════════════════════════════════ */
+    function initSystemsGrid() {
+      document.getElementById('systems-grid').innerHTML = SYSTEMS.map(s => `
+    <div class="sys-card" id="sys-${s.id}">
+      <div class="sys-icon">${s.icon}</div>
+      <div class="sys-name">${s.name}</div>
+      <div class="sys-pending">En attente…</div>
+      <div class="sys-bar"><div class="sys-fill" style="width:0%;background:var(--brd2)"></div></div>
+    </div>`).join('');
+    }
+    initSystemsGrid();
+
+    /* ═══════════════════════════════════════════
+       PHASE MANAGEMENT
+    ═══════════════════════════════════════════ */
+    function setPhase(n) {
+
+      currentPhase = n;
+      const phNum = document.getElementById('ph-num');
+      if (phNum) phNum.textContent = n; 
+      
+      for (let i = 1; i <= 5; i++) {
+        const el = document.getElementById(`ps${i}`);
+        el.classList.remove('active', 'done');
+        if (i < n) el.classList.add('done');
+        else if (i === n) el.classList.add('active');
+      }
+      const labels = ['', 'Identité & Contexte', 'Constantes & Biologie', 'Symptômes & Plaintes', 'Antécédents & Mode de vie', 'Synthèse & Scoring IA'];
+      document.getElementById('phase-label').innerHTML = `<em>${labels[n]}</em>`;
+    }
+
+    /* ═══════════════════════════════════════════
+       MESSAGES
+    ═══════════════════════════════════════════ */
+    function addUserMsg(text) {
+      const el = document.createElement('div');
+      el.className = 'msg msg-user';
+      el.innerHTML = `
+    <div class="msg-avatar user">👤</div>
+    <div class="msg-bubble">${escHtml(text)}</div>`;
+      document.getElementById('messages').appendChild(el);
+      scrollBottom();
+    }
+
+    function addAIMsg(html, id = null) {
+      const el = document.createElement('div');
+      el.className = 'msg msg-ai';
+      if (id) el.id = id;
+      el.innerHTML = `
+    <div class="msg-avatar ai">Dr</div>
+    <div class="msg-bubble md" id="${id ? id + '-bubble' : 'b' + Date.now()}">${html}</div>`;
+      document.getElementById('messages').appendChild(el);
+      scrollBottom();
+      return el;
+    }
+
+    function showTyping() {
+      const el = document.createElement('div');
+      el.className = 'msg msg-ai'; el.id = 'typing-indicator';
+      el.innerHTML = `<div class="msg-avatar ai">Dr</div><div class="typing"><span></span><span></span><span></span></div>`;
+      document.getElementById('messages').appendChild(el);
+      scrollBottom();
+    }
+    function hideTyping() { document.getElementById('typing-indicator')?.remove(); }
+
+    function scrollBottom() {
+      const m = document.getElementById('messages');
+      setTimeout(() => m.scrollTo({ top: m.scrollHeight, behavior: 'smooth' }), 50);
+    }
+
+    function escHtml(s) {
+      return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    /* ═══════════════════════════════════════════
+       QUICK REPLIES
+    ═══════════════════════════════════════════ */
+    function setQuickReplies(options) {
+      const wrap = document.getElementById('quick-replies');
+      if (!options || !options.length) { wrap.style.display = 'none'; return; }
+      wrap.style.display = 'flex';
+      wrap.innerHTML = options.map(o => `<button class="qr" onclick="sendQuick('${o.replace(/'/g, "\\'")}')  ">${o}</button>`).join('');
+    }
+
+    function sendQuick(text) {
+      setQuickReplies([]);
+      sendMessage(text);
+    }
+
+    /* ═══════════════════════════════════════════
+       AI STREAMING CALL
+    ═══════════════════════════════════════════ */
+    async function callAI(userMessage) {
+      conversationHistory.push({ role: 'user', content: userMessage });
+
+      const msgEl = addAIMsg('<span class="cursor"></span>', 'ai-streaming');
+      const bubble = document.getElementById('ai-streaming-bubble');
+      if (!bubble) {
+        setInputEnabled(true);
+        return;
+      }
+      setInputEnabled(false);
+
+      let fullText = '';
+
+      try {
+        const res = await fetch(ANTHROPIC_API, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('vc_token')}`  
+          },
+          body: JSON.stringify({
+            model: MODEL,
+            max_tokens: 1500,
+            system: SYSTEM_PROMPT,
+            messages: conversationHistory,
+            stream: true,
+          })
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error?.message || 'Erreur API');
+        }
+
+        const reader = res.body.getReader();
+        const dec = new TextDecoder();
+
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          const chunk = dec.decode(value);
+          const lines = chunk.split('\n');
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue;
+            const data = line.slice(6);
+            if (data === '[DONE]') continue;
+            try {
+              const parsed = JSON.parse(data);
+              const delta = parsed.delta?.text || '';
+              if (delta) {
+                fullText += delta;
+                bubble.innerHTML = renderMd(fullText) + '<span class="cursor"></span>';
+                scrollBottom();
+              }
+            } catch (_) { }
+          }
+        }
+
+        // Finalize
+        document.getElementById('ai-streaming')?.removeAttribute('id');
+        bubble.removeAttribute('id');  
+        bubble.innerHTML = renderMd(fullText);
+        conversationHistory.push({ role: 'assistant', content: fullText });
+
+        // Parse analysis block if present
+        if (fullText.includes('<VITACORE_ANALYSIS>')) {
+          parseAndApplyAnalysis(fullText);
+        } else {
+          detectPhaseAndSuggestReplies(fullText, userMessage);
+        }
+
+        setInputEnabled(true);
+
+      } catch (err) {
+        document.getElementById('ai-streaming')?.remove();
+        addAIMsg(`<span style="color:var(--danger)">⚠ Erreur de connexion : ${escHtml(err.message)}</span>`);
+        setInputEnabled(true);
+        showToast('Erreur API — vérifiez la clé dans le code', 'error');
+      }
+    }
+
+    /* ═══════════════════════════════════════════
+       MARKDOWN LIGHT RENDERER
+    ═══════════════════════════════════════════ */
+    function renderMd(text) {
+      // Remove the JSON block from display
+      let t = text.replace(/<VITACORE_ANALYSIS>[\s\S]*?<\/VITACORE_ANALYSIS>/g, '');
+      t = t.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+      t = t.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+      t = t.replace(/^## (.+)$/gm, '<h3>$1</h3>');
+      t = t.replace(/^- (.+)$/gm, '<li>$1</li>');
+      t = t.replace(/(<li>.*<\/li>\n?)+/g, m => `<ul>${m}</ul>`);
+      t = t.replace(/`([^`]+)`/g, '<code style="background:var(--bgch);padding:1px 5px;border-radius:4px;font-size:.8em;color:var(--acc)">$1</code>');
+      t = t.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>');
+      t = t.replace(/🔴|🟠|🟡|🟢/g, m => `<span style="font-size:1.1em">${m}</span>`);
+      t = `<p>${t}</p>`;
+      t = t.replace(/<p><h3>/g, '<h3>').replace(/<\/h3><\/p>/g, '</h3>');
+      t = t.replace(/<p><ul>/g, '<ul>').replace(/<\/ul><\/p>/g, '</ul>');
+      return t;
+    }
+
+    /* ═══════════════════════════════════════════
+       PHASE DETECTION & QUICK REPLIES
+    ═══════════════════════════════════════════ */
+    function detectPhaseAndSuggestReplies(aiText, userMsg) {
+      const t = aiText.toLowerCase();
+
+      // Phase transitions
+      if (currentPhase === 0) { setPhase(1); return; }
+
+      if (currentPhase === 1 && (t.includes('tension') || t.includes('pression artérielle') || t.includes('glycémie') || t.includes('cholestérol'))) {
+        setPhase(2);
+        setQuickReplies(['Je ne connais pas mes valeurs', 'Tension normale ~120/80', 'J\'ai un bilan récent']);
+        return;
+      }
+      if (currentPhase === 2 && (t.includes('symptôme') || t.includes('fatigue') || t.includes('douleur') || t.includes('ressentez'))) {
+        setPhase(3);
+        setQuickReplies(['Je me sens bien globalement', 'Fatigue chronique', 'Douleurs récurrentes', 'Troubles du sommeil']);
+        return;
+      }
+      if (currentPhase === 3 && (t.includes('fume') || t.includes('tabac') || t.includes('alcool') || t.includes('activité physique') || t.includes('antécédents'))) {
+        setPhase(4);
+        setQuickReplies(['Non-fumeur, peu d\'alcool', 'Ex-fumeur', 'Fumeur occasionnel', 'Mode de vie sédentaire']);
+        return;
+      }
+      if (currentPhase === 4 && (t.includes('synthèse') || t.includes('analyse') || t.includes('bilan') || t.includes('évaluation'))) {
+        setPhase(5);
+        setQuickReplies(['Oui, générez mon bilan complet', 'J\'ai d\'autres informations à ajouter']);
+        return;
+      }
+
+      // Context-sensitive quick replies
+      if (t.includes('douleur') || t.includes('0 à 10')) {
+        setQuickReplies(['0 — aucune', '3 — légère', '5 — modérée', '7 — intense', '10 — insupportable']);
+      } else if (t.includes('sommeil') || t.includes('heures')) {
+        setQuickReplies(['< 6h / nuit', '6-7h / nuit', '7-8h / nuit', '> 8h / nuit']);
+      } else if (t.includes('physique') || t.includes('sport') || t.includes('exercice')) {
+        setQuickReplies(['Sédentaire', '1-2x / semaine', '3-4x / semaine', 'Quotidien']);
+      } else if (t.includes('stress')) {
+        setQuickReplies(['Très peu stressé(e)', 'Stress modéré', 'Stress élevé', 'Burn-out']);
+      } else if (t.includes('alimentation') || t.includes('manger')) {
+        setQuickReplies(['Alimentation équilibrée', 'Souvent restauration rapide', 'Régime végétarien/vegan', 'Je saute des repas']);
+      } else {
+        setQuickReplies([]);
+      }
+    }
+
+    /* ═══════════════════════════════════════════
+       PARSE & APPLY AI ANALYSIS
+    ═══════════════════════════════════════════ */
+    function parseAndApplyAnalysis(text) {
+      try {
+        const match = text.match(/<VITACORE_ANALYSIS>([\s\S]*?)<\/VITACORE_ANALYSIS>/);
+        if (!match) return;
+        const data = JSON.parse(match[1]);
+        extractedScores = data;
+        assessmentComplete = true;
+
+        // Animate global score
+        animateScore(data.globalScore, data.globalLabel);
+
+        // Update systems
+        setTimeout(() => updateSystems(data.systems), 400);
+
+        // Update risks
+        setTimeout(() => updateRisks(data.risks), 800);
+
+        // Update recommendations
+        setTimeout(() => updateRecs(data.recommendations), 1200);
+
+        // Enable report
+        setTimeout(() => {
+          const rs = document.getElementById('report-section');
+          rs.style.opacity = '1';
+          rs.style.pointerEvents = 'auto';
+        }, 1500);
+
+        // Phase complete
+        setPhase(5);
+        for (let i = 1; i <= 5; i++) {
+          const el = document.getElementById(`ps${i}`);
+          el.classList.remove('active');
+          el.classList.add('done');
+        }
+        document.getElementById('phase-label').innerHTML = `<em style="color:var(--success)">✓ Bilan complété</em>`;
+
+        // Final quick replies
+        setQuickReplies(['Générer mon rapport complet', 'Poser une question sur mes résultats', 'Que faire en priorité ?']);
+
+        showToast('✓ Analyse IA complète !', 'success');
+
+        // Check urgency
+        if (data.urgency === 'urgent') {
+          addAIMsg(`<div style="background:rgba(255,68,68,.1);border:1px solid rgba(255,68,68,.3);border-radius:var(--r-md);padding:12px 14px;margin-top:4px;color:#ff8080"><strong>⚠️ Attention</strong> : Certains résultats nécessitent une consultation médicale dans les plus brefs délais. Prenez rendez-vous avec votre médecin traitant rapidement.</div>`);
+        } else if (data.urgency === 'consult') {
+          addAIMsg(`<div style="background:rgba(255,149,0,.1);border:1px solid rgba(255,149,0,.3);border-radius:var(--r-md);padding:12px 14px;margin-top:4px;color:#ffb740"><strong>📋 Recommandation</strong> : Une consultation médicale de suivi est conseillée pour valider ces résultats avec un professionnel de santé.</div>`);
+        }
+
+      } catch (e) {
+        console.error('Parse error:', e);
+      }
+    }
+
+    /* ═══════════════════════════════════════════
+       SCORE ANIMATION
+    ═══════════════════════════════════════════ */
+    function animateScore(target, label) {
+      document.getElementById('score-pending').style.display = 'none';
+      document.getElementById('scoreCanvas').style.display = 'block';
+      document.getElementById('score-center').style.display = 'flex';
+
+      const color = target >= 75 ? '#c8ff00' : target >= 50 ? '#ff9500' : '#ff4444';
+      const ctx = document.getElementById('scoreCanvas').getContext('2d');
+      if (scoreChart) scoreChart.destroy();
+
+      let current = 0;
+      scoreChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          datasets: [{
+            data: [current, 100 - current],
+            backgroundColor: [color, '#1a1a1a'],
+            borderWidth: 0, borderRadius: 8,
+          }]
+        },
+        options: { cutout: '78%', responsive: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, animation: { duration: 0 } }
+      });
+
+      const numEl = document.getElementById('score-num');
+      numEl.style.color = color;
+
+      // Labels
+      const labelMap = { Excellent: '🌟 Excellent', Bon: '✅ Bon', Modéré: '⚡ Modéré', 'À améliorer': '⚠️ À améliorer', Critique: '🔴 Critique' };
+      const interval = setInterval(() => {
+        current = Math.min(current + 2, target);
+        scoreChart.data.datasets[0].data = [current, 100 - current];
+        scoreChart.update('none');
+        numEl.textContent = current;
+        if (current >= target) clearInterval(interval);
+      }, 18);
+
+      const titleEl = document.getElementById('score-title');
+      const subEl = document.getElementById('score-subtitle');
+      if (titleEl) titleEl.textContent = `Score de Santé Global — ${labelMap[label] || label}`;
+      if (subEl) subEl.textContent = `Calculé à partir de ${conversationHistory.filter(m => m.role === 'user').length} réponses...`;
+
+      document.getElementById('score-title').textContent = `Score de Santé Global — ${labelMap[label] || label}`;
+      document.getElementById('score-subtitle').textContent = `Calculé à partir de ${conversationHistory.filter(m => m.role === 'user').length} réponses et ${SYSTEMS.length} systèmes analysés.`;
+    }
+
+    /* ═══════════════════════════════════════════
+       UPDATE SYSTEMS
+    ═══════════════════════════════════════════ */
+    function updateSystems(systems) {
+      SYSTEMS.forEach(s => {
+        const data = systems[s.id];
+        if (!data) return;
+        const card = document.getElementById(`sys-${s.id}`);
+        if (!card) return;
+
+        const color = data.status === 'ok' ? '#00d68f' : data.status === 'warn' ? '#ff9500' : '#ff4444';
+        const statusLabel = data.status === 'ok' ? '✓ Normal' : data.status === 'warn' ? '⚡ À surveiller' : '⚠️ Attention';
+
+        card.innerHTML = `
+      <div class="sys-icon">${s.icon}</div>
+      <div class="sys-name">${s.name}</div>
+      <div class="sys-score" style="color:${color}">${data.score}<small style="font-size:.6em;color:var(--txt2)">/100</small></div>
+      <div class="sys-bar"><div class="sys-fill" style="width:0%;background:${color}" id="sf-${s.id}"></div></div>
+      <div class="sys-status" style="color:${color}">${statusLabel}</div>`;
+
+        setTimeout(() => {
+          const fill = document.getElementById(`sf-${s.id}`);
+          if (fill) fill.style.width = data.score + '%';
+        }, 100);
+      });
+    }
+
+    /* ═══════════════════════════════════════════
+       UPDATE RISKS
+    ═══════════════════════════════════════════ */
+    function updateRisks(risks) {
+      if (!risks?.length) return;
+      const levelMap = { low: { c: 'rb-low', l: 'Faible', dot: '#00d68f' }, moderate: { c: 'rb-mod', l: 'Modéré', dot: '#ff9500' }, high: { c: 'rb-high', l: 'Élevé', dot: '#ff4444' } };
+      document.getElementById('risks-list').innerHTML = risks.map(r => {
+        const m = levelMap[r.level] || levelMap.low;
+        return `<div class="risk-item">
+      <div class="risk-dot" style="background:${m.dot}"></div>
+      <div class="risk-name"><strong>${r.name}</strong><br><small style="color:var(--txt2)">${r.detail}</small></div>
+      <span class="risk-badge ${m.c}">${m.l}</span>
+    </div>`;
+      }).join('');
+    }
+
+    /* ═══════════════════════════════════════════
+       UPDATE RECOMMENDATIONS
+    ═══════════════════════════════════════════ */
+    function updateRecs(recs) {
+      if (!recs?.length) return;
+      const priorityMap = { urgent: 'rgba(255,68,68,.08)', important: 'rgba(255,149,0,.08)', conseil: 'rgba(200,255,0,.06)' };
+      document.getElementById('recs-list').innerHTML = recs.map(r => `
+    <div class="rec-item">
+      <div class="rec-icon" style="background:${priorityMap[r.priority] || 'var(--bgch)'}">${r.icon}</div>
+      <div class="rec-text"><strong>${r.title}</strong><br>${r.text}</div>
+    </div>`).join('');
+    }
+
+    /* ═══════════════════════════════════════════
+       SEND MESSAGE
+    ═══════════════════════════════════════════ */
+    async function sendMessage(text) {
+      if (!text.trim()) return;
+      document.getElementById('chat-input').value = '';
+      autoResizeInput();
+
+      // Hide intro screen on first send
+      const intro = document.getElementById('intro-screen');
+      if (intro) intro.remove();
+
+      addUserMsg(text);
+      setInputEnabled(false);
+      await callAI(text);
+    }
+
+    function setInputEnabled(on) {
+      document.getElementById('chat-input').disabled = !on;
+      document.getElementById('send-btn').disabled = !on;
+    }
+
+    /* ═══════════════════════════════════════════
+       INPUT HANDLERS
+    ═══════════════════════════════════════════ */
+    function autoResizeInput() {
+      const ta = document.getElementById('chat-input');
+      ta.style.height = 'auto';
+      ta.style.height = Math.min(ta.scrollHeight, 100) + 'px';
+    }
+
+    document.getElementById('chat-input').addEventListener('input', autoResizeInput);
+    document.getElementById('chat-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        const text = document.getElementById('chat-input').value.trim();
+        if (text) sendMessage(text);
+      }
+    });
+    document.getElementById('send-btn').addEventListener('click', () => {
+      const text = document.getElementById('chat-input').value.trim();
+      if (text) sendMessage(text);
+    });
+
+    /* ═══════════════════════════════════════════
+       START ASSESSMENT
+    ═══════════════════════════════════════════ */
+    document.getElementById('start-btn').addEventListener('click', async () => {
+      document.getElementById('intro-screen').remove();
+      document.getElementById('quick-replies').style.display = 'flex';
+      setInputEnabled(true);
+      setPhase(1);
+      showTyping();
+      await new Promise(r => setTimeout(r, 900));
+      hideTyping();
+
+      const greeting = U ? `Bonjour **${U.first_name || U.email}** ! ` : 'Bonjour ! ';
+      const intro = `${greeting}Je suis **Dr. Vita**, votre assistant médical IA. Je vais réaliser votre bilan de santé complet en 5 phases — comptez environ 10 à 15 minutes.\n\nCommençons par faire connaissance. Pour démarrer :\n\n- **Quel est votre âge** ?\n- **Quel est votre sexe biologique** ?\n- **Quelle est votre taille et votre poids approximatifs** ?`;
+
+      addAIMsg(renderMd(intro));
+      conversationHistory.push({ role: 'assistant', content: intro });
+
+      setQuickReplies(['Je suis un homme', 'Je suis une femme', 'Autre genre']);
+    });
+
+    /* ═══════════════════════════════════════════
+       GENERATE FULL REPORT
+    ═══════════════════════════════════════════ */
+    document.getElementById('gen-report-btn').addEventListener('click', async () => {
+      if (!extractedScores) return;
+
+      document.getElementById('report-date').textContent = `Généré le ${new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })} à ${new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
+
+      // Build report body
+      const s = extractedScores;
+      const color = s.globalScore >= 75 ? '#c8ff00' : s.globalScore >= 50 ? '#ff9500' : '#ff4444';
+      const statusColors = { ok: '#00d68f', warn: '#ff9500', alert: '#ff4444' };
+
+      document.getElementById('report-body').innerHTML = `
+    <!-- SCORE HERO -->
+    <div style="text-align:center;padding:28px;background:var(--bgch);border-radius:var(--r-xl);margin-bottom:20px;border:1px solid var(--brd2)">
+      <div style="font-family:var(--ff);font-size:4rem;font-weight:800;color:${color};line-height:1">${s.globalScore}</div>
+      <div style="font-size:.8rem;color:var(--txt2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px">/100</div>
+      <div style="font-family:var(--ff);font-size:1.1rem;font-weight:700">${s.globalLabel}</div>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="report-section-title">📋 Synthèse Médicale</div>
+    <p style="font-size:.875rem;line-height:1.75;color:var(--txt2);margin-bottom:20px">${s.summary}</p>
+    <div class="divider"></div>
+
+    <!-- SYSTEMS -->
+    <div class="report-section-title">🫁 Analyse par Système Corporel</div>
+    <div class="report-grid" style="margin-bottom:20px">
+      ${SYSTEMS.map(sys => {
+        const d = s.systems[sys.id] || {};
+        const c = statusColors[d.status] || '#666';
+        return `<div class="report-stat">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span>${sys.icon}</span>
+            <span style="font-size:.75rem;color:var(--txt2);text-transform:uppercase;letter-spacing:.07em">${sys.name}</span>
+          </div>
+          <div style="font-family:var(--ff);font-size:1.6rem;font-weight:800;color:${c}">${d.score ?? '—'}<small style="font-size:.5em;color:var(--txt3)">/100</small></div>
+          <div style="height:3px;background:var(--brd2);border-radius:2px;margin:6px 0;overflow:hidden"><div style="height:100%;width:${d.score || 0}%;background:${c};border-radius:2px"></div></div>
+          <div style="font-size:.75rem;color:${c};font-weight:600">${d.status === 'ok' ? 'Normal' : d.status === 'warn' ? 'À surveiller' : 'Attention'}</div>
+          <div style="font-size:.75rem;color:var(--txt2);margin-top:3px">${d.note || ''}</div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="divider"></div>
+
+    <!-- RISKS -->
+    ${s.risks?.length ? `
+    <div class="report-section-title">⚠️ Facteurs de Risque</div>
+    <ul class="report-list" style="margin-bottom:20px">
+      ${s.risks.map(r => `<li><strong>${r.name}</strong> (${r.level === 'high' ? 'Élevé' : r.level === 'moderate' ? 'Modéré' : 'Faible'}) — ${r.detail}</li>`).join('')}
+    </ul>
+    <div class="divider"></div>` : ''}
+
+    <!-- RECOMMENDATIONS -->
+    ${s.recommendations?.length ? `
+    <div class="report-section-title">💡 Plan d'Action Personnalisé</div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
+      ${s.recommendations.map(r => {
+        const bg = r.priority === 'urgent' ? 'rgba(255,68,68,.08)' : r.priority === 'important' ? 'rgba(255,149,0,.08)' : 'rgba(200,255,0,.06)';
+        const border = r.priority === 'urgent' ? 'rgba(255,68,68,.25)' : r.priority === 'important' ? 'rgba(255,149,0,.25)' : 'rgba(200,255,0,.2)';
+        return `<div style="display:flex;gap:12px;padding:14px;background:${bg};border:1px solid ${border};border-radius:var(--r-md)">
+          <span style="font-size:1.3rem">${r.icon}</span>
+          <div><strong style="font-size:.875rem">${r.title}</strong><br><span style="font-size:.82rem;color:var(--txt2)">${r.text}</span></div>
+        </div>`;
+      }).join('')}
+    </div>` : ''}
+
+    <!-- DISCLAIMER -->
+    <div style="background:rgba(255,149,0,.06);border:1px solid rgba(255,149,0,.2);border-radius:var(--r-md);padding:14px;font-size:.78rem;color:var(--txt2);line-height:1.6">
+      ⚕️ <strong>Avertissement médical</strong> : Ce rapport est généré par une intelligence artificielle à titre informatif uniquement. Il ne remplace pas un diagnostic médical professionnel. Consultez votre médecin traitant pour tout suivi ou décision médicale.
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button class="btn btn-primary" style="flex:1" onclick="window.print()">🖨️ Imprimer</button>
+      <button class="btn btn-ghost" style="flex:1" onclick="document.getElementById('report-modal').classList.remove('show')">Fermer</button>
+    </div>`;
+
+      document.getElementById('report-modal').classList.add('show');
+    });
+
+    /* ── Quick action from chat ── */
+    window.addEventListener('keydown', e => {
+      if (e.key === 'Escape') document.getElementById('report-modal').classList.remove('show');
+    });
+
+    /* ── Intercept report request from chat ── */
+    const origSend = sendMessage;
+    window.sendMessage = async (text) => {
+      if (text.toLowerCase().includes('rapport') && assessmentComplete) {
+        document.getElementById('gen-report-btn').click();
+        addUserMsg(text);
+        addAIMsg(renderMd('Voici votre **rapport médical complet** ! Il a été généré avec toutes les données collectées durant notre entretien. Vous pouvez l\'imprimer ou le partager avec votre médecin.'));
+        return;
+      }
+      await origSend(text);
+    };
+
+    /* ═══════════════════════════════════════════
+       TOAST
+    ═══════════════════════════════════════════ */
+    function showToast(msg, type = 'success') {
+      const colors = { success: '#00d68f', error: '#ff4444', info: '#2196f3', warning: '#ff9500' };
+      const t = document.createElement('div');
+      t.style.cssText = `background:var(--bgc);border:1px solid ${colors[type]}40;border-left:3px solid ${colors[type]};color:var(--txt);padding:12px 18px;border-radius:10px;font-size:.82rem;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.5);min-width:240px;animation:msgIn .3s ease`;
+      t.innerHTML = `<span style="color:${colors[type]};font-weight:700">${type === 'success' ? '✓' : '⚠'}</span><span>${msg}</span>`;
+      document.getElementById('toasts').appendChild(t);
+      setTimeout(() => t.remove(), 4000);
+    }
+  </script>
+</body>
+
+</html>

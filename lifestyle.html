@@ -1,0 +1,3636 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Style de Vie & Avatar — VitaCore</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* ══════════════════ RESET & VARS ══════════════════ */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        :root {
+            --bg: #07070f;
+            --bg2: #0b0b18;
+            --bgc: #0f0f20;
+            --bgch: #151528;
+            --v1: #7c3aed;
+            --v2: #9d5cf5;
+            --v3: #c084fc;
+            --acc: #a855f7;
+            --acc-dim: rgba(168, 85, 247, .1);
+            --acc-brd: rgba(168, 85, 247, .25);
+            --acc-glow: rgba(168, 85, 247, .4);
+            --pink: #f472b6;
+            --cyan: #22d3ee;
+            --green: #4ade80;
+            --txt: #f0eeff;
+            --txt2: #7068a0;
+            --txt3: #2a2840;
+            --brd: #1a1830;
+            --brd2: #252340;
+            --danger: #f87171;
+            --warning: #fb923c;
+            --success: #4ade80;
+            --info: #60a5fa;
+            --ff: 'Syne', sans-serif;
+            --fb: 'DM Sans', sans-serif;
+            --fg: 'Space Grotesk', sans-serif;
+            --tr: .2s cubic-bezier(.4, 0, .2, 1);
+            --r-sm: 8px;
+            --r-md: 14px;
+            --r-lg: 20px;
+            --r-xl: 28px;
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            font-family: var(--fb);
+            background: var(--bg);
+            color: var(--txt);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--brd2)
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--acc)
+        }
+
+        /* ── AMBIENT ── */
+        .ambient {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(140px);
+            animation: drift 20s ease-in-out infinite
+        }
+
+        .orb1 {
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, rgba(124, 58, 237, .12), transparent 70%);
+            top: -250px;
+            right: -150px
+        }
+
+        .orb2 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(244, 114, 182, .07), transparent 70%);
+            bottom: -150px;
+            left: -100px;
+            animation-delay: -10s
+        }
+
+        .orb3 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(34, 211, 238, .05), transparent 70%);
+            top: 40%;
+            left: 30%;
+            animation-delay: -5s
+        }
+
+        @keyframes drift {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1)
+            }
+
+            50% {
+                transform: translate(30px, -20px) scale(1.05)
+            }
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background-image: linear-gradient(rgba(168, 85, 247, .018) 1px, transparent 1px), linear-gradient(90deg, rgba(168, 85, 247, .018) 1px, transparent 1px);
+            background-size: 52px 52px;
+            pointer-events: none
+        }
+
+        /* ── NAV ── */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 200;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            background: rgba(7, 7, 15, .92);
+            backdrop-filter: blur(22px);
+            border-bottom: 1px solid var(--brd)
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-family: var(--ff);
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--txt);
+            text-decoration: none
+        }
+
+        .brand-dot {
+            width: 7px;
+            height: 7px;
+            background: rgba(200, 255, 0, 1);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(200, 255, 0, .8)
+        }
+
+        .nav-pill {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            background: var(--acc-dim);
+            border: 1px solid var(--acc-brd);
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: .73rem;
+            font-weight: 600;
+            color: var(--v3);
+            font-family: var(--fg)
+        }
+
+        .npd {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--acc);
+            animation: gpulse 2s ease infinite
+        }
+
+        @keyframes gpulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 var(--acc-glow)
+            }
+
+            50% {
+                box-shadow: 0 0 0 7px transparent
+            }
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: var(--r-md);
+            border: 1px solid var(--brd2);
+            cursor: pointer;
+            font-family: var(--fb);
+            font-weight: 600;
+            font-size: .82rem;
+            text-decoration: none;
+            transition: var(--tr);
+            background: transparent;
+            color: var(--txt2)
+        }
+
+        .btn:hover {
+            border-color: var(--acc-brd);
+            color: var(--acc);
+            background: var(--acc-dim)
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--v1), var(--v2));
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 4px 20px rgba(124, 58, 237, .3)
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--v2), var(--v3));
+            transform: translateY(-1px);
+            box-shadow: 0 8px 28px rgba(124, 58, 237, .45)
+        }
+
+        .btn-primary:disabled {
+            opacity: .4;
+            cursor: not-allowed;
+            transform: none
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: .78rem
+        }
+
+        .btn-pink {
+            background: linear-gradient(135deg, #be185d, #ec4899);
+            color: #fff;
+            border-color: transparent
+        }
+
+        .btn-pink:hover {
+            background: linear-gradient(135deg, #db2777, #f472b6);
+            transform: translateY(-1px)
+        }
+
+        .btn-cyan {
+            background: linear-gradient(135deg, #0e7490, #22d3ee);
+            color: #000;
+            border-color: transparent
+        }
+
+        .btn-cyan:hover {
+            background: linear-gradient(135deg, #0891b2, #67e8f9);
+            transform: translateY(-1px)
+        }
+
+        .btn-green {
+            background: linear-gradient(135deg, #15803d, #4ade80);
+            color: #000;
+            border-color: transparent
+        }
+
+        .btn-green:hover {
+            background: linear-gradient(135deg, #16a34a, #86efac);
+            transform: translateY(-1px)
+        }
+
+        /* ── LAYOUT ── */
+        .layout {
+            display: flex;
+            min-height: 100vh;
+            padding-top: 60px;
+            position: relative;
+            z-index: 1
+        }
+
+        .sidebar {
+            width: 240px;
+            min-height: calc(100vh - 60px);
+            background: var(--bg2);
+            border-right: 1px solid var(--brd);
+            padding: 20px 12px;
+            position: fixed;
+            top: 60px;
+            left: 0;
+            bottom: 0;
+            overflow-y: auto
+        }
+
+        .sb-sec {
+            margin-bottom: 24px
+        }
+
+        .sb-tt {
+            font-size: .63rem;
+            font-weight: 700;
+            color: var(--txt3);
+            text-transform: uppercase;
+            letter-spacing: .14em;
+            margin-bottom: 8px;
+            padding: 0 8px
+        }
+
+        .sb-link {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 9px 11px;
+            border-radius: var(--r-sm);
+            color: var(--txt2);
+            text-decoration: none;
+            font-size: .855rem;
+            font-weight: 500;
+            transition: var(--tr);
+            margin-bottom: 2px
+        }
+
+        .sb-link:hover {
+            color: var(--txt);
+            background: var(--bgc)
+        }
+
+        .sb-link.active {
+            color: var(--v3);
+            background: var(--acc-dim);
+            border: 1px solid var(--acc-brd)
+        }
+
+        .main {
+            margin-left: 240px;
+            flex: 1;
+            padding: 28px 28px 80px
+        }
+
+        /* ── PAGE HEADER ── */
+        .page-hdr {
+            margin-bottom: 26px
+        }
+
+        .page-title {
+            font-family: var(--ff);
+            font-size: 2.1rem;
+            font-weight: 800;
+            letter-spacing: -.03em;
+            line-height: 1.05
+        }
+
+        .page-title em {
+            color: var(--acc);
+            font-style: normal;
+            background: linear-gradient(90deg, var(--v2), var(--pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text
+        }
+
+        .page-sub {
+            color: var(--txt2);
+            font-size: .875rem;
+            margin-top: 5px
+        }
+
+        /* ── TABS ── */
+        .tabs {
+            display: flex;
+            gap: 3px;
+            background: var(--bgc);
+            border: 1px solid var(--brd);
+            border-radius: var(--r-lg);
+            padding: 4px;
+            margin-bottom: 26px;
+            width: fit-content
+        }
+
+        .tab {
+            padding: 9px 18px;
+            border-radius: var(--r-md);
+            border: none;
+            cursor: pointer;
+            font-family: var(--fb);
+            font-weight: 600;
+            font-size: .84rem;
+            background: transparent;
+            color: var(--txt2);
+            transition: var(--tr);
+            display: flex;
+            align-items: center;
+            gap: 7px
+        }
+
+        .tab:hover {
+            color: var(--txt)
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, var(--v1), var(--v2));
+            color: #fff;
+            box-shadow: 0 3px 16px rgba(124, 58, 237, .35)
+        }
+
+        .tab-pane {
+            display: none;
+            animation: tabIn .3s ease
+        }
+
+        .tab-pane.active {
+            display: block
+        }
+
+        @keyframes tabIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        /* ── CARDS ── */
+        .card {
+            background: var(--bgc);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-lg);
+            padding: 20px;
+            transition: var(--tr)
+        }
+
+        .card:hover {
+            border-color: var(--acc-brd)
+        }
+
+        .card-v {
+            border-color: var(--acc-brd);
+            box-shadow: 0 0 24px rgba(168, 85, 247, .07)
+        }
+
+        .card-pink {
+            border-color: rgba(244, 114, 182, .25);
+            box-shadow: 0 0 20px rgba(244, 114, 182, .05)
+        }
+
+        .card-cyan {
+            border-color: rgba(34, 211, 238, .25);
+            box-shadow: 0 0 20px rgba(34, 211, 238, .05)
+        }
+
+        .card-green {
+            border-color: rgba(74, 222, 128, .25);
+            box-shadow: 0 0 20px rgba(74, 222, 128, .05)
+        }
+
+        /* ── SH ── */
+        .sh {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px
+        }
+
+        .sh-title {
+            font-family: var(--ff);
+            font-size: .95rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        /* ── BADGE ── */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: .7rem;
+            font-weight: 700
+        }
+
+        .b-ok {
+            background: rgba(74, 222, 128, .12);
+            color: var(--success);
+            border: 1px solid rgba(74, 222, 128, .3)
+        }
+
+        .b-warn {
+            background: rgba(251, 146, 60, .12);
+            color: var(--warning);
+            border: 1px solid rgba(251, 146, 60, .3)
+        }
+
+        .b-bad {
+            background: rgba(248, 113, 113, .12);
+            color: var(--danger);
+            border: 1px solid rgba(248, 113, 113, .3)
+        }
+
+        .b-v {
+            background: rgba(168, 85, 247, .12);
+            color: var(--v3);
+            border: 1px solid var(--acc-brd)
+        }
+
+        .b-pink {
+            background: rgba(244, 114, 182, .12);
+            color: var(--pink);
+            border: 1px solid rgba(244, 114, 182, .3)
+        }
+
+        .b-cyan {
+            background: rgba(34, 211, 238, .12);
+            color: var(--cyan);
+            border: 1px solid rgba(34, 211, 238, .3)
+        }
+
+        /* ══════════════════════════════════════════
+   TAB 1 — AVATAR
+══════════════════════════════════════════ */
+        .avatar-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 22px
+        }
+
+        .avatar-stage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px
+        }
+
+        /* ── AVATAR SVG CONTAINER ── */
+        .avatar-wrap {
+            position: relative;
+            width: 200px;
+            height: 360px;
+            margin: 0 auto
+        }
+
+        .avatar-glow {
+            position: absolute;
+            inset: -20px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--acc-glow), transparent 70%);
+            opacity: .3;
+            animation: breathe 3s ease-in-out infinite;
+            pointer-events: none
+        }
+
+        @keyframes breathe {
+
+            0%,
+            100% {
+                opacity: .2;
+                transform: scale(.95)
+            }
+
+            50% {
+                opacity: .5;
+                transform: scale(1.05)
+            }
+        }
+
+        #avatar-svg {
+            width: 200px;
+            height: 360px;
+            filter: drop-shadow(0 0 18px rgba(168, 85, 247, .35));
+            transition: all 1s cubic-bezier(.4, 0, .2, 1)
+        }
+
+        /* ── AVATAR STATS ── */
+        .avatar-stats {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px
+        }
+
+        .ava-stat {
+            background: var(--bgch);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-md);
+            padding: 10px 12px;
+            text-align: center;
+            transition: var(--tr)
+        }
+
+        .ava-stat:hover {
+            border-color: var(--acc-brd)
+        }
+
+        .ava-stat-lbl {
+            font-size: .63rem;
+            color: var(--txt2);
+            text-transform: uppercase;
+            letter-spacing: .09em;
+            font-family: var(--fg);
+            margin-bottom: 3px
+        }
+
+        .ava-stat-val {
+            font-family: var(--ff);
+            font-size: 1.05rem;
+            font-weight: 700
+        }
+
+        /* ── AVATAR CONTROLS ── */
+        .ava-controls {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+            justify-content: center
+        }
+
+        /* ── EVOLUTION TIMELINE ── */
+        .evo-track {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 4px 0;
+            margin-bottom: 0
+        }
+
+        .evo-track::-webkit-scrollbar {
+            height: 3px
+        }
+
+        .evo-mini {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: var(--tr)
+        }
+
+        .evo-mini:hover .evo-mini-frame {
+            border-color: var(--acc-brd)
+        }
+
+        .evo-mini-frame {
+            width: 60px;
+            height: 100px;
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-md);
+            background: var(--bgch);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: var(--tr)
+        }
+
+        .evo-mini-frame svg {
+            width: 40px;
+            height: 70px
+        }
+
+        .evo-mini-date {
+            font-size: .62rem;
+            color: var(--txt2);
+            font-family: var(--fg);
+            white-space: nowrap
+        }
+
+        .evo-mini-score {
+            font-size: .68rem;
+            font-weight: 700;
+            font-family: var(--ff)
+        }
+
+        .evo-mini.current .evo-mini-frame {
+            border-color: var(--acc);
+            box-shadow: 0 0 12px var(--acc-glow)
+        }
+
+        .evo-mini.future .evo-mini-frame {
+            border-style: dashed;
+            border-color: rgba(168, 85, 247, .3);
+            opacity: .7
+        }
+
+        /* ── RIGHT PANEL ── */
+        .avatar-right {
+            display: flex;
+            flex-direction: column;
+            gap: 16px
+        }
+
+        .score-ring-sm {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            flex-shrink: 0
+        }
+
+        .score-ring-sm canvas {
+            width: 80px !important;
+            height: 80px !important
+        }
+
+        .score-center-sm {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center
+        }
+
+        .body-metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px
+        }
+
+        .bm-card {
+            background: var(--bgch);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-md);
+            padding: 13px;
+            text-align: center;
+            transition: var(--tr)
+        }
+
+        .bm-card:hover {
+            border-color: var(--acc-brd);
+            transform: translateY(-1px)
+        }
+
+        .bm-lbl {
+            font-size: .65rem;
+            color: var(--txt2);
+            text-transform: uppercase;
+            letter-spacing: .09em;
+            margin-bottom: 4px;
+            font-family: var(--fg)
+        }
+
+        .bm-val {
+            font-family: var(--ff);
+            font-size: 1.3rem;
+            font-weight: 800;
+            line-height: 1
+        }
+
+        .bm-unit {
+            font-size: .62rem;
+            color: var(--txt2);
+            margin-top: 2px
+        }
+
+        .bm-bar {
+            height: 3px;
+            background: var(--brd2);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 6px
+        }
+
+        .bm-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width .8s ease
+        }
+
+        .prediction-card {
+            background: linear-gradient(135deg, rgba(124, 58, 237, .1), rgba(168, 85, 247, .05));
+            border: 1px solid var(--acc-brd);
+            border-radius: var(--r-xl);
+            padding: 18px
+        }
+
+        .pred-title {
+            font-family: var(--ff);
+            font-size: .88rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 7px
+        }
+
+        .pred-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 7px 0;
+            border-bottom: 1px solid var(--brd)
+        }
+
+        .pred-row:last-child {
+            border-bottom: none
+        }
+
+        .pred-lbl {
+            font-size: .8rem;
+            color: var(--txt2)
+        }
+
+        .pred-val {
+            font-size: .82rem;
+            font-weight: 600;
+            color: var(--v3);
+            font-family: var(--fg)
+        }
+
+        /* ══════════════════════════════════════════
+   TAB 2 — NUTRITION
+══════════════════════════════════════════ */
+        .nutrition-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px
+        }
+
+        .macro-card {
+            background: var(--bgch);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-lg);
+            padding: 15px;
+            text-align: center;
+            transition: var(--tr)
+        }
+
+        .macro-card:hover {
+            border-color: var(--acc-brd);
+            transform: translateY(-2px)
+        }
+
+        .macro-icon {
+            font-size: 1.5rem;
+            margin-bottom: 6px
+        }
+
+        .macro-lbl {
+            font-size: .68rem;
+            color: var(--txt2);
+            text-transform: uppercase;
+            letter-spacing: .09em;
+            font-family: var(--fg)
+        }
+
+        .macro-val {
+            font-family: var(--ff);
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin: 3px 0
+        }
+
+        .macro-sub {
+            font-size: .72rem;
+            color: var(--txt2)
+        }
+
+        .macro-ring {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 6px
+        }
+
+        .macro-ring canvas {
+            width: 48px !important;
+            height: 48px !important
+        }
+
+        .meal-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 0
+        }
+
+        .meal-slot {
+            display: flex;
+            gap: 16px;
+            position: relative;
+            padding-bottom: 0
+        }
+
+        .meal-slot:not(:last-child) .meal-line {
+            display: block
+        }
+
+        .meal-time-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 60px;
+            flex-shrink: 0
+        }
+
+        .meal-time {
+            font-family: var(--fg);
+            font-size: .72rem;
+            font-weight: 600;
+            color: var(--txt2);
+            white-space: nowrap;
+            padding-top: 14px
+        }
+
+        .meal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid;
+            margin: 4px 0;
+            flex-shrink: 0
+        }
+
+        .meal-line {
+            width: 2px;
+            flex: 1;
+            min-height: 20px;
+            background: linear-gradient(to bottom, var(--acc-brd), transparent);
+            margin: 0 auto;
+            display: none
+        }
+
+        .meal-content {
+            flex: 1;
+            margin-bottom: 16px
+        }
+
+        .meal-card {
+            background: var(--bgch);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-lg);
+            padding: 14px 16px;
+            transition: var(--tr)
+        }
+
+        .meal-card:hover {
+            border-color: var(--acc-brd)
+        }
+
+        .meal-name {
+            font-family: var(--ff);
+            font-size: .88rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between
+        }
+
+        .meal-desc {
+            font-size: .8rem;
+            color: var(--txt2);
+            line-height: 1.6
+        }
+
+        .meal-tags {
+            display: flex;
+            gap: 5px;
+            margin-top: 8px;
+            flex-wrap: wrap
+        }
+
+        .meal-tag {
+            padding: 2px 9px;
+            border-radius: 20px;
+            font-size: .68rem;
+            background: var(--bgc);
+            border: 1px solid var(--brd2);
+            color: var(--txt2);
+            font-family: var(--fg)
+        }
+
+        .meal-macros {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+            font-size: .72rem;
+            color: var(--txt2);
+            font-family: var(--fg)
+        }
+
+        .meal-macros span {
+            display: flex;
+            align-items: center;
+            gap: 3px
+        }
+
+        .how-item {
+            display: flex;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--brd)
+        }
+
+        .how-item:last-child {
+            border-bottom: none
+        }
+
+        .how-num {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--acc-dim);
+            border: 1px solid var(--acc-brd);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .68rem;
+            font-weight: 700;
+            color: var(--acc);
+            flex-shrink: 0;
+            font-family: var(--fg)
+        }
+
+        .how-text {
+            font-size: .82rem;
+            color: var(--txt2);
+            line-height: 1.6
+        }
+
+        .how-text strong {
+            color: var(--txt)
+        }
+
+        .ai-generate-banner {
+            background: linear-gradient(135deg, rgba(124, 58, 237, .12), rgba(168, 85, 247, .05));
+            border: 1px solid var(--acc-brd);
+            border-radius: var(--r-xl);
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px
+        }
+
+        .aig-text h3 {
+            font-family: var(--ff);
+            font-size: .95rem;
+            font-weight: 700;
+            margin-bottom: 4px
+        }
+
+        .aig-text p {
+            font-size: .82rem;
+            color: var(--txt2)
+        }
+
+        .ai-output {
+            background: var(--bgch);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-xl);
+            padding: 20px;
+            min-height: 80px;
+            display: none
+        }
+
+        .ai-output.show {
+            display: block;
+            animation: tabIn .3s ease
+        }
+
+        /* ══════════════════════════════════════════
+   TAB 3 — ACTIVITÉ
+══════════════════════════════════════════ */
+        .week-schedule {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 20px
+        }
+
+        .day-col {
+            background: var(--bgch);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-lg);
+            overflow: hidden;
+            transition: var(--tr)
+        }
+
+        .day-col:hover {
+            border-color: var(--acc-brd)
+        }
+
+        .day-col.today {
+            border-color: var(--acc-brd);
+            box-shadow: 0 0 16px rgba(168, 85, 247, .12)
+        }
+
+        .day-hdr {
+            padding: 10px 8px;
+            text-align: center;
+            border-bottom: 1px solid var(--brd)
+        }
+
+        .day-name {
+            font-size: .68rem;
+            font-weight: 700;
+            color: var(--txt2);
+            text-transform: uppercase;
+            letter-spacing: .09em;
+            font-family: var(--fg)
+        }
+
+        .day-num {
+            font-family: var(--ff);
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--txt);
+            margin-top: 1px
+        }
+
+        .day-col.today .day-hdr {
+            background: var(--acc-dim)
+        }
+
+        .day-col.today .day-name {
+            color: var(--acc)
+        }
+
+        .day-col.today .day-num {
+            color: var(--acc)
+        }
+
+        .day-activities {
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            min-height: 80px
+        }
+
+        .day-act {
+            padding: 5px 7px;
+            border-radius: 6px;
+            font-size: .68rem;
+            font-weight: 600;
+            font-family: var(--fg);
+            line-height: 1.4;
+            cursor: default
+        }
+
+        .da-cardio {
+            background: rgba(248, 113, 113, .12);
+            color: #fca5a5;
+            border: 1px solid rgba(248, 113, 113, .25)
+        }
+
+        .da-strength {
+            background: rgba(251, 146, 60, .12);
+            color: #fdba74;
+            border: 1px solid rgba(251, 146, 60, .25)
+        }
+
+        .da-flex {
+            background: rgba(74, 222, 128, .12);
+            color: #86efac;
+            border: 1px solid rgba(74, 222, 128, .25)
+        }
+
+        .da-rest {
+            background: var(--bgc);
+            color: var(--txt2);
+            border: 1px solid var(--brd)
+        }
+
+        .da-yoga {
+            background: rgba(168, 85, 247, .12);
+            color: var(--v3);
+            border: 1px solid var(--acc-brd)
+        }
+
+        .exercise-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px
+        }
+
+        .ex-card {
+            background: var(--bgch);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-lg);
+            overflow: hidden;
+            transition: var(--tr)
+        }
+
+        .ex-card:hover {
+            border-color: var(--acc-brd)
+        }
+
+        .ex-header {
+            padding: 13px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer
+        }
+
+        .ex-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--r-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0
+        }
+
+        .ex-name {
+            font-family: var(--ff);
+            font-size: .88rem;
+            font-weight: 700
+        }
+
+        .ex-meta {
+            font-size: .73rem;
+            color: var(--txt2);
+            margin-top: 1px;
+            font-family: var(--fg)
+        }
+
+        .ex-tags {
+            margin-left: auto;
+            display: flex;
+            gap: 5px
+        }
+
+        .ex-body {
+            padding: 0 16px 14px;
+            display: none;
+            border-top: 1px solid var(--brd)
+        }
+
+        .ex-body.open {
+            display: block
+        }
+
+        .ex-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            padding-top: 12px
+        }
+
+        .ex-step {
+            display: flex;
+            gap: 9px;
+            font-size: .8rem;
+            color: var(--txt2);
+            line-height: 1.6
+        }
+
+        .ex-step-num {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--v1), var(--v2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .65rem;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+            margin-top: 1px
+        }
+
+        .ex-step strong {
+            color: var(--txt)
+        }
+
+        .timing-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px
+        }
+
+        .time-card {
+            background: var(--bgch);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-lg);
+            padding: 13px;
+            text-align: center;
+            transition: var(--tr);
+            cursor: pointer
+        }
+
+        .time-card:hover,
+        .time-card.sel {
+            border-color: var(--acc-brd);
+            background: var(--acc-dim)
+        }
+
+        .time-card.sel .tc-name {
+            color: var(--acc)
+        }
+
+        .tc-icon {
+            font-size: 1.4rem;
+            margin-bottom: 5px
+        }
+
+        .tc-name {
+            font-size: .78rem;
+            font-weight: 600;
+            color: var(--txt2);
+            font-family: var(--fg)
+        }
+
+        .tc-time {
+            font-size: .68rem;
+            color: var(--txt3);
+            margin-top: 2px
+        }
+
+        /* ══════════════════════════════════════════
+   TAB 4 — HYDRATATION
+══════════════════════════════════════════ */
+        .hydro-hero {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            gap: 20px;
+            margin-bottom: 20px
+        }
+
+        .water-tank {
+            background: var(--bgch);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-xl);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px
+        }
+
+        .tank-wrap {
+            position: relative;
+            width: 100px;
+            height: 180px
+        }
+
+        .tank-svg {
+            width: 100px;
+            height: 180px
+        }
+
+        .tank-fill {
+            fill: rgba(34, 211, 238, .6);
+            transition: all 1s cubic-bezier(.4, 0, .2, 1)
+        }
+
+        .tank-glass {
+            fill: none;
+            stroke: rgba(34, 211, 238, .3);
+            stroke-width: 2
+        }
+
+        .tank-bubbles circle {
+            fill: rgba(34, 211, 238, .4);
+            animation: bubble 3s ease-in-out infinite
+        }
+
+        .tank-pct {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--ff);
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--cyan)
+        }
+
+        .water-goal {
+            display: flex;
+            gap: 7px;
+            width: 100%
+        }
+
+        .wg-btn {
+            flex: 1;
+            padding: 8px;
+            border-radius: var(--r-md);
+            border: 1px solid var(--brd2);
+            background: var(--bgc);
+            color: var(--txt2);
+            font-size: .78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--tr);
+            text-align: center;
+            font-family: var(--fb)
+        }
+
+        .wg-btn:hover {
+            border-color: rgba(34, 211, 238, .4);
+            color: var(--cyan);
+            background: rgba(34, 211, 238, .08)
+        }
+
+        .wg-btn.active {
+            border-color: rgba(34, 211, 238, .5);
+            color: var(--cyan);
+            background: rgba(34, 211, 238, .1)
+        }
+
+        .hydro-schedule {
+            display: flex;
+            flex-direction: column;
+            gap: 0
+        }
+
+        .hs-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 13px 0;
+            border-bottom: 1px solid var(--brd);
+            transition: var(--tr)
+        }
+
+        .hs-item:last-child {
+            border-bottom: none
+        }
+
+        .hs-item:hover {
+            background: var(--bgch);
+            margin: 0 -10px;
+            padding: 13px 10px;
+            border-radius: var(--r-md)
+        }
+
+        .hs-time {
+            font-family: var(--fg);
+            font-size: .75rem;
+            font-weight: 600;
+            color: var(--cyan);
+            width: 50px;
+            flex-shrink: 0;
+            padding-top: 2px
+        }
+
+        .hs-icon {
+            font-size: 1.2rem;
+            flex-shrink: 0
+        }
+
+        .hs-name {
+            font-size: .85rem;
+            font-weight: 600;
+            color: var(--txt)
+        }
+
+        .hs-detail {
+            font-size: .78rem;
+            color: var(--txt2);
+            margin-top: 2px;
+            line-height: 1.5
+        }
+
+        .hs-tags {
+            display: flex;
+            gap: 4px;
+            margin-top: 6px;
+            flex-wrap: wrap
+        }
+
+        .hs-tag {
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: .65rem;
+            background: rgba(34, 211, 238, .08);
+            border: 1px solid rgba(34, 211, 238, .2);
+            color: var(--cyan);
+            font-family: var(--fg)
+        }
+
+        .drink-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 16px
+        }
+
+        .drink-card {
+            background: var(--bgch);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-lg);
+            padding: 14px;
+            text-align: center;
+            transition: var(--tr)
+        }
+
+        .drink-card:hover {
+            border-color: rgba(34, 211, 238, .3);
+            transform: translateY(-1px)
+        }
+
+        .drink-icon {
+            font-size: 1.8rem;
+            margin-bottom: 6px
+        }
+
+        .drink-name {
+            font-size: .78rem;
+            font-weight: 600;
+            font-family: var(--fg);
+            margin-bottom: 4px
+        }
+
+        .drink-when {
+            font-size: .7rem;
+            color: var(--txt2)
+        }
+
+        .drink-how {
+            font-size: .7rem;
+            color: var(--txt2);
+            margin-top: 3px;
+            line-height: 1.4
+        }
+
+        .drink-badge {
+            margin-top: 6px
+        }
+
+        /* ══════════════════════════════════════════
+   AI CHAT PANEL (floating)
+══════════════════════════════════════════ */
+        .ai-panel {
+            position: fixed;
+            right: 0;
+            top: 60px;
+            bottom: 0;
+            width: 360px;
+            background: var(--bg2);
+            border-left: 1px solid var(--brd);
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform .35s cubic-bezier(.4, 0, .2, 1);
+            z-index: 100
+        }
+
+        .ai-panel.open {
+            transform: translateX(0)
+        }
+
+        .ai-panel-toggle {
+            position: fixed;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 36px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--v1), var(--v2));
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .8rem;
+            color: #fff;
+            z-index: 101;
+            border-radius: 8px 0 0 8px;
+            box-shadow: -4px 0 16px rgba(124, 58, 237, .3);
+            transition: var(--tr);
+            writing-mode: vertical-lr
+        }
+
+        .ai-panel-toggle:hover {
+            background: linear-gradient(135deg, var(--v2), var(--v3))
+        }
+
+        .ai-panel-toggle.panel-open {
+            right: 360px
+        }
+
+        .ap-hdr {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--brd);
+            background: var(--bgc);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between
+        }
+
+        .ap-hdr-info {
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .ap-ava {
+            width: 36px;
+            height: 36px;
+            border-radius: 9px;
+            background: linear-gradient(135deg, var(--v1), var(--v2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem
+        }
+
+        .ap-name {
+            font-family: var(--ff);
+            font-size: .85rem;
+            font-weight: 700
+        }
+
+        .ap-sub {
+            font-size: .7rem;
+            color: var(--txt2);
+            font-family: var(--fg)
+        }
+
+        .ap-close {
+            background: none;
+            border: none;
+            color: var(--txt2);
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: var(--tr)
+        }
+
+        .ap-close:hover {
+            color: var(--acc)
+        }
+
+        .ap-msgs {
+            flex: 1;
+            overflow-y: auto;
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px
+        }
+
+        .ap-msg {
+            display: flex;
+            gap: 8px;
+            animation: tabIn .25s ease
+        }
+
+        .am-ai {
+            flex-direction: row
+        }
+
+        .am-user {
+            flex-direction: row-reverse
+        }
+
+        .am-ava {
+            width: 28px;
+            height: 28px;
+            border-radius: 7px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .75rem;
+            background: linear-gradient(135deg, var(--v1), var(--v2))
+        }
+
+        .am-ava.user {
+            background: var(--bgch);
+            border: 1px solid var(--brd2)
+        }
+
+        .am-bbl {
+            max-width: 86%;
+            padding: 10px 13px;
+            border-radius: var(--r-lg);
+            font-size: .82rem;
+            line-height: 1.65
+        }
+
+        .am-ai .am-bbl {
+            background: var(--bgch);
+            border: 1px solid var(--brd2);
+            border-top-left-radius: 3px;
+            color: var(--txt)
+        }
+
+        .am-user .am-bbl {
+            background: var(--acc-dim);
+            border: 1px solid var(--acc-brd);
+            border-top-right-radius: 3px
+        }
+
+        .ap-qr {
+            padding: 8px 16px;
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            border-top: 1px solid var(--brd);
+            background: var(--bg)
+        }
+
+        .aqr {
+            padding: 5px 11px;
+            border-radius: 20px;
+            border: 1px solid var(--brd2);
+            background: var(--bgch);
+            color: var(--txt2);
+            font-size: .75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--tr)
+        }
+
+        .aqr:hover {
+            border-color: var(--acc-brd);
+            color: var(--acc);
+            background: var(--acc-dim)
+        }
+
+        .ap-inp {
+            padding: 12px 16px;
+            border-top: 1px solid var(--brd);
+            background: var(--bg2);
+            flex-shrink: 0;
+            display: flex;
+            gap: 8px;
+            align-items: flex-end
+        }
+
+        .ap-inp textarea {
+            flex: 1;
+            background: var(--bgch);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-xl);
+            padding: 9px 13px;
+            color: var(--txt);
+            font-family: var(--fb);
+            font-size: .82rem;
+            resize: none;
+            max-height: 80px;
+            outline: none;
+            transition: var(--tr);
+            line-height: 1.5
+        }
+
+        .ap-inp textarea:focus {
+            border-color: var(--acc-brd);
+            box-shadow: 0 0 0 3px var(--acc-dim)
+        }
+
+        .ap-inp textarea::placeholder {
+            color: var(--txt3)
+        }
+
+        .send-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--v1), var(--v2));
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .85rem;
+            color: #fff;
+            transition: var(--tr);
+            flex-shrink: 0
+        }
+
+        .send-btn:hover {
+            transform: scale(1.08)
+        }
+
+        .send-btn:disabled {
+            opacity: .3;
+            cursor: not-allowed;
+            transform: none
+        }
+
+        /* ── TYPING ── */
+        .t-dots {
+            display: flex;
+            gap: 4px;
+            padding: 9px 13px;
+            background: var(--bgch);
+            border: 1px solid var(--brd2);
+            border-radius: var(--r-lg);
+            border-top-left-radius: 3px;
+            width: fit-content
+        }
+
+        .t-dots span {
+            width: 5px;
+            height: 5px;
+            background: var(--acc);
+            border-radius: 50%;
+            animation: td .7s ease infinite
+        }
+
+        .t-dots span:nth-child(2) {
+            animation-delay: .15s
+        }
+
+        .t-dots span:nth-child(3) {
+            animation-delay: .3s
+        }
+
+        @keyframes td {
+
+            0%,
+            60%,
+            100% {
+                transform: translateY(0);
+                opacity: .4
+            }
+
+            30% {
+                transform: translateY(-5px);
+                opacity: 1
+            }
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 13px;
+            background: var(--acc);
+            border-radius: 1px;
+            animation: cb .65s ease infinite;
+            margin-left: 1px;
+            vertical-align: middle
+        }
+
+        @keyframes cb {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: 0
+            }
+        }
+
+        /* ── MISC ── */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 16px
+        }
+
+        .inp {
+            width: 100%;
+            padding: 10px 13px;
+            border-radius: var(--r-md);
+            background: var(--bgch);
+            border: 1px solid var(--brd2);
+            color: var(--txt);
+            font-family: var(--fb);
+            font-size: .875rem;
+            transition: var(--tr);
+            outline: none
+        }
+
+        .inp:focus {
+            border-color: var(--acc-brd);
+            box-shadow: 0 0 0 3px var(--acc-dim)
+        }
+
+        .inp::placeholder {
+            color: var(--txt3)
+        }
+
+        select.inp {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 5.5L10 0' stroke='%23666' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center
+        }
+
+        #toasts {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            align-items: center
+        }
+
+        .toast {
+            background: var(--bgc);
+            border: 1px solid var(--brd2);
+            border-left: 2px solid var(--acc);
+            padding: 11px 18px;
+            border-radius: 12px;
+            font-size: .8rem;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, .6);
+            min-width: 250px;
+            animation: tabIn .25s ease;
+            font-family: var(--fb);
+            white-space: nowrap
+        }
+
+        .md strong {
+            color: var(--txt);
+            font-weight: 600
+        }
+
+        .md ul {
+            padding-left: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px
+        }
+
+        .md li {
+            line-height: 1.65;
+            color: var(--txt2);
+            font-size: .83rem
+        }
+
+        .md li::marker {
+            color: var(--acc)
+        }
+
+        .md h3 {
+            font-family: var(--ff);
+            font-size: .9rem;
+            font-weight: 700;
+            color: var(--txt);
+            margin: 10px 0 5px
+        }
+
+        .md p {
+            margin-bottom: .4em
+        }
+
+        .md p:last-child {
+            margin-bottom: 0
+        }
+
+        .md code {
+            background: var(--bgch);
+            padding: 1px 5px;
+            border-radius: 4px;
+            font-size: .8em;
+            color: var(--acc);
+            font-family: var(--fg)
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(168, 85, 247, .3);
+            border-top-color: var(--acc);
+            border-radius: 50%;
+            animation: spin .7s linear infinite
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        @media(max-width:1100px) {
+            .avatar-layout {
+                grid-template-columns: 1fr
+            }
+
+            .nutrition-header {
+                grid-template-columns: 1fr 1fr
+            }
+
+            .week-schedule {
+                grid-template-columns: repeat(4, 1fr)
+            }
+
+            .hydro-hero {
+                grid-template-columns: 1fr
+            }
+
+            .drink-cards {
+                grid-template-columns: 1fr 1fr
+            }
+
+            .body-metrics-grid {
+                grid-template-columns: 1fr 1fr
+            }
+
+            .ai-panel,
+            .ai-panel-toggle {
+                display: none
+            }
+        }
+
+        @media(max-width:900px) {
+            .sidebar {
+                display: none
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 16px
+            }
+
+            .tabs {
+                flex-wrap: wrap
+            }
+
+            .timing-grid {
+                grid-template-columns: 1fr 1fr
+            }
+
+            .nutrition-header {
+                grid-template-columns: 1fr 1fr
+            }
+        }
+
+
+        /* ══════════════════════════════════════
+   HAMBURGER BUTTON
+══════════════════════════════════════ */
+        .hamburger {
+            display: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--bgc);
+            border: 1px solid var(--brd2);
+            cursor: pointer;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            flex-shrink: 0;
+            transition: var(--tr);
+            z-index: 400;
+        }
+
+        .hamburger:hover {
+            border-color: var(--rose-brd, var(--skin-brd, rgba(255, 255, 255, .2)));
+        }
+
+        .hamburger span {
+            display: block;
+            width: 18px;
+            height: 2px;
+            background: var(--txt);
+            border-radius: 2px;
+            transition: var(--tr);
+        }
+
+        .hamburger.open span:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+
+        .hamburger.open span:nth-child(2) {
+            opacity: 0;
+            transform: scaleX(0);
+        }
+
+        .hamburger.open span:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+
+        /* ══════════════════════════════════════
+   SIDEBAR OVERLAY (mobile)
+══════════════════════════════════════ */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .6);
+            backdrop-filter: blur(4px);
+            z-index: 198;
+            animation: fadeIn .2s ease;
+        }
+
+        .sidebar-overlay.visible {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* ══════════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+══════════════════════════════════════ */
+        @media (max-width: 900px) {
+
+            /* Show hamburger in nav */
+            .hamburger {
+                display: flex;
+            }
+
+            /* Sidebar: slide in from left */
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform .28s cubic-bezier(.4, 0, .2, 1);
+                z-index: 199;
+                box-shadow: 8px 0 40px rgba(0, 0, 0, .5);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            /* Main content fills full width */
+            .main {
+                margin-left: 0 !important;
+                padding: 14px 14px 80px;
+            }
+
+            /* Grids: 1 column on mobile */
+            .grid-2,
+            .grid-3,
+            .grid-4,
+            .dashboard-grid,
+            .diag-layout,
+            .evolution-layout,
+            .derm-chat-layout,
+            .midwife-layout,
+            .profile-skin-layout,
+            .nutri-grid,
+            .week-detail-layout,
+            .prep-categories {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* Products grid: 2 cols on mobile */
+            .products-grid {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            /* Advice/prep cards: 1 col */
+            .advice-cards,
+            .prep-cards {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* Tabs: scrollable horizontally */
+            .tabs {
+                width: 100% !important;
+                overflow-x: auto;
+                flex-wrap: nowrap !important;
+                scrollbar-width: none;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .tabs::-webkit-scrollbar {
+                display: none;
+            }
+
+            .tab {
+                white-space: nowrap;
+                font-size: .78rem;
+                padding: 7px 12px;
+            }
+
+            /* Nav: compress */
+            .nav {
+                padding: 0 14px;
+                gap: 8px;
+            }
+
+            .nav-badge {
+                display: none;
+            }
+
+            /* Page title smaller */
+            .page-title {
+                font-size: 1.5rem !important;
+            }
+
+            /* Chat layouts: full height */
+            .derm-chat-layout,
+            .midwife-layout {
+                height: auto !important;
+            }
+
+            .chat-col {
+                min-height: 500px;
+            }
+
+            /* Hide side tools on mobile */
+            .derm-tools,
+            .midwife-tools {
+                display: none;
+            }
+
+            /* Concern/forbidden grids: 2 cols */
+            .concern-grid,
+            .forbidden-grid {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            /* Food cats: 3 cols */
+            .food-cats {
+                grid-template-columns: 1fr 1fr 1fr !important;
+            }
+
+            /* Bag list: 2 cols */
+            .bag-list {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            /* Quick stats: wrap */
+            .quick-stats {
+                flex-wrap: wrap;
+            }
+
+            .qs {
+                min-width: 80px !important;
+            }
+
+            /* Skin type grid: 3 cols */
+            .skin-type-grid {
+                grid-template-columns: repeat(3, 1fr) !important;
+            }
+
+            /* Hero week counter */
+            .week-counter {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main {
+                padding: 10px 10px 70px;
+            }
+
+            .page-title {
+                font-size: 1.25rem !important;
+            }
+
+            .products-grid,
+            .advice-cards {
+                grid-template-columns: 1fr !important;
+            }
+
+            .food-cats {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            .bag-list {
+                grid-template-columns: 1fr !important;
+            }
+
+            .card {
+                padding: 14px;
+            }
+
+            .tab {
+                font-size: .72rem;
+                padding: 6px 10px;
+            }
+
+            .prep-categories {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            .advice-categories {
+                grid-template-columns: 1fr 1fr !important;
+            }
+        }
+
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 58px;
+            left: 0;
+            right: 0;
+            background: rgba(8, 4, 16, .98);
+            backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--brd);
+            padding: 10px 14px 18px;
+            z-index: 299;
+            flex-direction: column;
+            gap: 2px;
+            max-height: calc(100vh - 58px);
+            overflow-y: auto;
+        }
+
+        .mobile-menu.open {
+            display: flex;
+        }
+
+        .hamburger {
+            display: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--bgc);
+            border: 1px solid var(--brd2);
+            cursor: pointer;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: var(--tr);
+        }
+
+        .hamburger span {
+            display: block;
+            width: 18px;
+            height: 2px;
+            background: var(--txt);
+            border-radius: 2px;
+            transition: var(--tr);
+        }
+
+        .hamburger.open span:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+
+        .hamburger.open span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.open span:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+
+        @media (max-width: 900px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0 !important;
+                padding: 14px 14px 80px;
+            }
+
+            .nav-badge {
+                display: none;
+            }
+
+            /* vos autres règles responsive ici */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="ambient">
+        <div class="orb orb1"></div>
+        <div class="orb orb2"></div>
+        <div class="orb orb3"></div>
+    </div>
+
+    <!-- NAV -->
+    <nav class="nav">
+        <a class="brand" href="dashboard.html"><span class="brand-dot"></span>VitaCore</a>
+        <button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+        <div class="mobile-menu" id="mobile-menu">
+            <a class="sb-link" href="dashboard.html">🏠 Dashboard</a>
+            <a class="sb-link" href="health-form.html">📋 Bilan Santé</a>
+            <a class="sb-link" href="analytics.html">📊 Analyses</a>
+            <a class="sb-link" href="ai-bilan.html">🩺 Bilan IA</a>
+            <a class="sb-link" href="consultation.html">🏥 Consultation IA</a>
+            <a class="sb-link" href="evolution.html">📈 Évolution</a>
+            <a class="sb-link" href="nutri.html">🥦 Nutri</a>
+            <a class="sb-link" href="lifestyle.html">✨ Style de Vie</a>
+            <a class="sb-link" href="derma.html">💆 Derma</a>
+            <a class="sb-link" href="maternite.html">🌸 Maternité</a>
+            <a class="sb-link" href="guide.html">🔮 Guide Oracle</a>
+            <a class="sb-link" href="psyche.html">🧠 Psyché</a>
+            <a class="sb-link" href="nexus_ia.html">🌐 Nexus</a>
+
+            <!-- SÉPARATEUR -->
+            <div style="height:1px;background:var(--brd);margin:8px 0"></div>
+
+            <!-- URGENCES -->
+            <div
+                style="font-size:.61rem;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.14em;margin-bottom:7px;padding:0 8px">
+                Urgences</div>
+            <div
+                style="padding:8px 11px;background:rgba(255,90,122,.05);border:1px solid rgba(255,90,122,.2);border-radius:var(--r-sm);font-size:.74rem;color:var(--danger);line-height:1.6;margin-bottom:12px">
+                ⚠️ Secours Abalo: <strong>88 80</strong><br>Urgences: <strong>88 80</strong><br>Maternité 24h:
+                <strong>voir rubrique</strong>
+            </div>
+            <!-- COMPTE -->
+            <div
+                style="font-size:.61rem;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.14em;margin-bottom:7px;padding:0 8px">
+                Compte</div>
+            <a class="sb-link" href="#" id="logout-btn-mobile">🚪 &nbsp;Déconnexion</a>
+        </div>
+        <div class="nav-pill"><span class="npd"></span>Style de Vie & Avatar IA</div>
+        <a href="dashboard.html" class="btn btn-sm">← Dashboard</a>
+    </nav>
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+    <!-- AI PANEL TOGGLE -->
+    <button class="ai-panel-toggle" id="panel-toggle" title="Ouvrir Coach IA">✨ Coach</button>
+
+    <!-- LAYOUT -->
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sb-sec">
+                <div class="sb-tt">Navigation</div>
+                <a class="sb-link" href="dashboard.html">🏠 &nbsp;Dashboard</a>
+                <a class="sb-link" href="health-form.html">📋 &nbsp;Bilan Santé</a>
+                <a class="sb-link" href="analytics.html">📊 &nbsp;Analyses</a>
+                <a class="sb-link" href="ai-bilan.html">🩺 &nbsp;Bilan IA</a>
+                <a class="sb-link" href="consultation.html">🏥 &nbsp;Consultation IA</a>
+                <a class="sb-link" href="evolution.html">📈 &nbsp;Évolution</a>
+                <a class="sb-link" href="nutri.html">🥦 &nbsp;Nutri · Nutrition IA</a>
+                <a class="sb-link active" href="lifestyle.html">✨ &nbsp;Style de Vie</a>
+                <a class="sb-link" href="derma.html">💆 &nbsp;Derma · Beauté IA</a>
+                <a class="sb-link" href="maternite.html">🌸 &nbsp;Maternité · Grossesse IA</a>
+                <a class="sb-link" href="guide.html">🔮 &nbsp;Guide Oracle</a>
+                <a class="sb-link" href="psyche.html">🧠 &nbsp;Psyché</a>
+                <a class="sb-link" href="nexus_ia.html">🌐 &nbsp;Nexus · Analyse</a>
+            </div>
+            <div class="sb-sec">
+                <div class="sb-tt">Urgences</div>
+                <div
+                    style="padding:8px 11px;background:rgba(255,90,122,.05);border:1px solid rgba(255,90,122,.2);border-radius:var(--r-sm);font-size:.74rem;color:var(--danger);line-height:1.6">
+                    ⚠️ Secours Abalo: <strong>88 80</strong><br>Urgences: <strong>88 80</strong><br>Maternité 24h:
+                    <strong>voir rubrique</strong>
+                </div>
+            </div>
+            <div class="sb-sec">
+                <div class="sb-tt">Compte</div>
+                <a class="sb-link" href="#" id="logout-btn">🚪 &nbsp;Déconnexion</a>
+            </div>
+        </aside>
+
+        <main class="main">
+            <div class="page-hdr">
+                <div class="page-title">✨ Style de Vie &amp; <em>Avatar</em></div>
+                <div class="page-sub">Nutrition · Activité · Hydratation · Simulation morphologique IA</div>
+            </div>
+
+            <!-- TABS -->
+            <div class="tabs">
+                <button class="tab active" data-tab="avatar">🧬 Mon Avatar</button>
+                <button class="tab" data-tab="nutrition">🥗 Nutrition</button>
+                <button class="tab" data-tab="activity">🏃 Activité</button>
+                <button class="tab" data-tab="hydration">💧 Hydratation</button>
+            </div>
+
+            <!-- ══════ TAB: AVATAR ══════ -->
+            <div class="tab-pane active" id="tab-avatar">
+                <div class="avatar-layout">
+
+                    <!-- LEFT — AVATAR -->
+                    <div class="avatar-stage">
+                        <div class="avatar-wrap">
+                            <div class="avatar-glow"></div>
+                            <svg id="avatar-svg" viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#7c3aed" stop-opacity="0.9" />
+                                        <stop offset="100%" stop-color="#a855f7" stop-opacity="0.8" />
+                                    </linearGradient>
+                                    <linearGradient id="skinGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" stop-color="#c4b5fd" stop-opacity="0.9" />
+                                        <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0.7" />
+                                    </linearGradient>
+                                    <filter id="glow">
+                                        <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+                                        <feMerge>
+                                            <feMergeNode in="coloredBlur" />
+                                            <feMergeNode in="SourceGraphic" />
+                                        </feMerge>
+                                    </filter>
+                                </defs>
+                                <!-- Head -->
+                                <ellipse id="av-head" cx="50" cy="16" rx="12" ry="14" fill="url(#skinGrad)"
+                                    filter="url(#glow)" />
+                                <!-- Hair -->
+                                <ellipse id="av-hair" cx="50" cy="8" rx="13" ry="8" fill="#4c1d95" />
+                                <!-- Eyes -->
+                                <circle cx="45" cy="14" r="1.5" fill="#1a1a2e" />
+                                <circle cx="55" cy="14" r="1.5" fill="#1a1a2e" />
+                                <circle cx="45.5" cy="13.5" r=".5" fill="white" />
+                                <circle cx="55.5" cy="13.5" r=".5" fill="white" />
+                                <!-- Mouth -->
+                                <path d="M46 19 Q50 21 54 19" stroke="#6d28d9" stroke-width="1" fill="none"
+                                    stroke-linecap="round" />
+                                <!-- Neck -->
+                                <rect id="av-neck" x="46" y="28" width="8" height="8" rx="2" fill="url(#skinGrad)" />
+                                <!-- Body -->
+                                <path id="av-torso" d="M30 36 Q50 33 70 36 L67 85 Q50 88 33 85 Z" fill="url(#bodyGrad)"
+                                    filter="url(#glow)" />
+                                <!-- Chest detail -->
+                                <line x1="50" y1="38" x2="50" y2="82" stroke="rgba(255,255,255,.12)"
+                                    stroke-width=".5" />
+                                <!-- Left arm -->
+                                <path id="av-larm" d="M30 36 L18 42 L14 78 L20 79 L24 48 L32 42 Z"
+                                    fill="url(#bodyGrad)" />
+                                <!-- Right arm -->
+                                <path id="av-rarm" d="M70 36 L82 42 L86 78 L80 79 L76 48 L68 42 Z"
+                                    fill="url(#bodyGrad)" />
+                                <!-- Left hand -->
+                                <ellipse cx="17" cy="84" rx="5" ry="7" fill="url(#skinGrad)" />
+                                <!-- Right hand -->
+                                <ellipse cx="83" cy="84" rx="5" ry="7" fill="url(#skinGrad)" />
+                                <!-- Hips / Pelvis -->
+                                <path id="av-hips" d="M33 85 Q50 88 67 85 L65 100 Q50 103 35 100 Z"
+                                    fill="url(#bodyGrad)" />
+                                <!-- Left leg -->
+                                <path id="av-lleg" d="M35 100 L33 85 Q42 88 50 88 L48 148 Q39 148 35 148 Z"
+                                    fill="url(#bodyGrad)" />
+                                <!-- Right leg -->
+                                <path id="av-rleg" d="M65 100 L67 85 Q58 88 50 88 L52 148 Q61 148 65 148 Z"
+                                    fill="url(#bodyGrad)" />
+                                <!-- Left foot -->
+                                <ellipse cx="41" cy="156" rx="7" ry="9" fill="url(#bodyGrad)" />
+                                <!-- Right foot -->
+                                <ellipse cx="59" cy="156" rx="7" ry="9" fill="url(#bodyGrad)" />
+                                <!-- Health score aura ring -->
+                                <circle id="av-aura" cx="50" cy="80" r="55" fill="none" stroke="rgba(168,85,247,.15)"
+                                    stroke-width=".5" stroke-dasharray="4 3" />
+                            </svg>
+                        </div>
+
+                        <!-- STATS BELOW AVATAR -->
+                        <div class="avatar-stats">
+                            <div class="ava-stat">
+                                <div class="ava-stat-lbl">IMC</div>
+                                <div class="ava-stat-val" id="av-bmi-val" style="color:var(--acc)">—</div>
+                            </div>
+                            <div class="ava-stat">
+                                <div class="ava-stat-lbl">Poids</div>
+                                <div class="ava-stat-val" id="av-weight-val">—</div>
+                            </div>
+                            <div class="ava-stat">
+                                <div class="ava-stat-lbl">Score</div>
+                                <div class="ava-stat-val" id="av-score-val" style="color:var(--success)">—</div>
+                            </div>
+                            <div class="ava-stat">
+                                <div class="ava-stat-lbl">Objectif</div>
+                                <div class="ava-stat-val" id="av-goal-val" style="color:var(--pink)">—</div>
+                            </div>
+                        </div>
+
+                        <div class="ava-controls">
+                            <button class="btn btn-sm btn-primary" id="gen-avatar-btn">🤖 Analyse IA</button>
+                            <button class="btn btn-sm" id="reset-avatar-btn">↺ Reset</button>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT PANEL -->
+                    <div class="avatar-right">
+
+                        <!-- SCORE RING + BODY METRICS -->
+                        <div class="card card-v">
+                            <div class="sh">
+                                <span class="sh-title">📊 Métriques Corporelles</span>
+                                <span id="health-status-badge" class="badge b-v">Chargement…</span>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:18px;margin-bottom:16px">
+                                <div class="score-ring-sm">
+                                    <canvas id="scoreRingCanvas"></canvas>
+                                    <div class="score-center-sm">
+                                        <div style="font-family:var(--ff);font-size:1.25rem;font-weight:800"
+                                            id="score-ring-num">—</div>
+                                        <div style="font-size:.6rem;color:var(--txt2)">/100</div>
+                                    </div>
+                                </div>
+                                <div style="flex:1">
+                                    <div style="font-family:var(--ff);font-size:1.05rem;font-weight:700"
+                                        id="health-label-main">—</div>
+                                    <div style="font-size:.8rem;color:var(--txt2);margin-top:3px;line-height:1.5"
+                                        id="health-desc-main">Entrez vos données pour une analyse complète.</div>
+                                </div>
+                            </div>
+                            <div class="body-metrics-grid" id="body-metrics-grid"></div>
+                        </div>
+
+                        <!-- EVOLUTION MINI AVATARS -->
+                        <div class="card">
+                            <div class="sh"><span class="sh-title">🗓️ Progression Morphologique</span></div>
+                            <div class="evo-track" id="evo-track"></div>
+                        </div>
+
+                        <!-- PREDICTIONS -->
+                        <div class="prediction-card">
+                            <div class="pred-title">🔮 Prédictions IA (dans 3 mois)</div>
+                            <div id="predictions-list"></div>
+                        </div>
+
+                        <!-- AI ANALYSIS OUTPUT -->
+                        <div class="ai-output" id="ai-avatar-output">
+                            <div class="sh-title" style="margin-bottom:10px">🤖 Analyse IA de votre avatar</div>
+                            <div class="md" id="ai-avatar-content"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ══════ TAB: NUTRITION ══════ -->
+            <div class="tab-pane" id="tab-nutrition">
+                <div class="ai-generate-banner">
+                    <div class="aig-text">
+                        <h3>🥗 Plan Nutritionnel Personnalisé par IA</h3>
+                        <p>Générez un plan alimentaire complet basé sur vos données de santé, objectifs et morphologie
+                        </p>
+                    </div>
+                    <div style="display:flex;gap:8px;flex-shrink:0">
+                        <select class="inp" id="nutrition-goal" style="width:160px">
+                            <option value="perte_poids">Perte de poids</option>
+                            <option value="masse">Prise de masse</option>
+                            <option value="sante" selected>Santé globale</option>
+                            <option value="energie">Énergie & vitalité</option>
+                            <option value="coeur">Santé cardiaque</option>
+                        </select>
+                        <button class="btn btn-primary" id="gen-nutrition-btn">✨ Générer</button>
+                    </div>
+                </div>
+
+                <!-- MACROS -->
+                <div class="nutrition-header" id="macros-header"></div>
+
+                <!-- MEAL TIMELINE -->
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="sh"><span class="sh-title">🕐 Programme Alimentaire Journalier</span></div>
+                        <div class="meal-timeline" id="meal-timeline"></div>
+                    </div>
+                    <div class="card">
+                        <div class="sh"><span class="sh-title">👨‍🍳 Comment Bien Manger</span></div>
+                        <div id="how-to-eat"></div>
+                    </div>
+                </div>
+
+                <!-- AI NUTRITION OUTPUT -->
+                <div class="ai-output card" id="nutrition-ai-output">
+                    <div class="sh-title" style="margin-bottom:10px">✨ Plan IA Personnalisé</div>
+                    <div class="md" id="nutrition-ai-content"></div>
+                </div>
+            </div>
+
+            <!-- ══════ TAB: ACTIVITÉ ══════ -->
+            <div class="tab-pane" id="tab-activity">
+                <div class="ai-generate-banner"
+                    style="border-color:rgba(251,146,60,.3);background:linear-gradient(135deg,rgba(251,146,60,.08),transparent)">
+                    <div class="aig-text">
+                        <h3>🏃 Programme Sportif Personnalisé</h3>
+                        <p>Plan d'entraînement adapté à votre condition physique, objectifs et disponibilité</p>
+                    </div>
+                    <div style="display:flex;gap:8px;flex-shrink:0">
+                        <select class="inp" id="activity-level" style="width:160px">
+                            <option value="debutant">Débutant</option>
+                            <option value="intermediaire" selected>Intermédiaire</option>
+                            <option value="avance">Avancé</option>
+                            <option value="athlete">Athlète</option>
+                        </select>
+                        <button class="btn btn-pink" id="gen-activity-btn">✨ Générer</button>
+                    </div>
+                </div>
+
+                <!-- TIMING GRID -->
+                <div class="timing-grid" id="timing-grid"></div>
+
+                <!-- WEEKLY SCHEDULE -->
+                <div class="card" style="margin-bottom:16px">
+                    <div class="sh"><span class="sh-title">📅 Planning Hebdomadaire</span></div>
+                    <div class="week-schedule" id="week-schedule"></div>
+                </div>
+
+                <!-- EXERCISE LIST -->
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="sh"><span class="sh-title">💪 Exercices Recommandés</span><span
+                                class="badge b-ok">Adapté à vous</span></div>
+                        <div class="exercise-list" id="exercise-list"></div>
+                    </div>
+                    <div class="card">
+                        <div class="sh"><span class="sh-title">📋 Instructions & Conseils</span></div>
+                        <div id="activity-instructions"></div>
+                    </div>
+                </div>
+
+                <!-- AI ACTIVITY OUTPUT -->
+                <div class="ai-output card" id="activity-ai-output" style="margin-top:16px">
+                    <div class="sh-title" style="margin-bottom:10px">✨ Programme IA Personnalisé</div>
+                    <div class="md" id="activity-ai-content"></div>
+                </div>
+            </div>
+
+            <!-- ══════ TAB: HYDRATATION ══════ -->
+            <div class="tab-pane" id="tab-hydration">
+                <div class="ai-generate-banner"
+                    style="border-color:rgba(34,211,238,.3);background:linear-gradient(135deg,rgba(34,211,238,.07),transparent)">
+                    <div class="aig-text">
+                        <h3>💧 Plan Hydratation Personnalisé</h3>
+                        <p>Quoi boire, quand le boire, comment le boire — optimisé pour votre corps</p>
+                    </div>
+                    <button class="btn btn-cyan" id="gen-hydration-btn">✨ Générer</button>
+                </div>
+
+                <div class="hydro-hero">
+                    <!-- WATER TANK -->
+                    <div class="water-tank card-cyan">
+                        <div style="font-family:var(--ff);font-size:.85rem;font-weight:700;text-align:center">Jauge
+                            d'Hydratation</div>
+                        <div class="tank-wrap">
+                            <svg class="tank-svg" viewBox="0 0 100 180" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <clipPath id="tank-clip">
+                                        <rect x="15" y="20" width="70" height="150" rx="10" />
+                                    </clipPath>
+                                    <linearGradient id="waterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" stop-color="#67e8f9" stop-opacity=".8" />
+                                        <stop offset="100%" stop-color="#0e7490" stop-opacity=".9" />
+                                    </linearGradient>
+                                </defs>
+                                <rect x="15" y="20" width="70" height="150" rx="10" fill="rgba(34,211,238,.05)"
+                                    stroke="rgba(34,211,238,.3)" stroke-width="1.5" />
+                                <rect id="water-fill-rect" x="15" y="100" width="70" height="70" rx="0"
+                                    fill="url(#waterGrad)" clip-path="url(#tank-clip)" />
+                                <!-- Wave top of water -->
+                                <path id="water-wave" d="M15 100 Q30 95 50 100 Q70 105 85 100 L85 100 L15 100Z"
+                                    fill="rgba(103,232,249,.6)" clip-path="url(#tank-clip)" />
+                                <!-- Bubbles -->
+                                <circle cx="30" cy="130" r="3" fill="rgba(103,232,249,.4)" opacity="0">
+                                    <animate attributeName="cy" values="150;90;90" dur="3s" repeatCount="indefinite" />
+                                    <animate attributeName="opacity" values="0;.6;0" dur="3s"
+                                        repeatCount="indefinite" />
+                                </circle>
+                                <circle cx="55" cy="140" r="2" fill="rgba(103,232,249,.4)" opacity="0">
+                                    <animate attributeName="cy" values="160;100;100" dur="4s" begin="1s"
+                                        repeatCount="indefinite" />
+                                    <animate attributeName="opacity" values="0;.5;0" dur="4s" begin="1s"
+                                        repeatCount="indefinite" />
+                                </circle>
+                                <circle cx="70" cy="135" r="2.5" fill="rgba(103,232,249,.4)" opacity="0">
+                                    <animate attributeName="cy" values="155;95;95" dur="3.5s" begin=".5s"
+                                        repeatCount="indefinite" />
+                                    <animate attributeName="opacity" values="0;.5;0" dur="3.5s" begin=".5s"
+                                        repeatCount="indefinite" />
+                                </circle>
+                                <!-- Level marks -->
+                                <line x1="15" y1="57" x2="20" y2="57" stroke="rgba(34,211,238,.4)" stroke-width="1" />
+                                <text x="22" y="60" font-size="6" fill="rgba(34,211,238,.5)"
+                                    font-family="monospace">75%</text>
+                                <line x1="15" y1="95" x2="20" y2="95" stroke="rgba(34,211,238,.4)" stroke-width="1" />
+                                <text x="22" y="98" font-size="6" fill="rgba(34,211,238,.5)"
+                                    font-family="monospace">50%</text>
+                                <line x1="15" y1="133" x2="20" y2="133" stroke="rgba(34,211,238,.4)" stroke-width="1" />
+                                <text x="22" y="136" font-size="6" fill="rgba(34,211,238,.5)"
+                                    font-family="monospace">25%</text>
+                            </svg>
+                            <div class="tank-pct" id="water-pct">0%</div>
+                        </div>
+                        <div style="font-family:var(--ff);font-size:1.4rem;font-weight:800;color:var(--cyan);text-align:center"
+                            id="water-consumed">0 / 2.5L</div>
+                        <div class="water-goal">
+                            <button class="wg-btn" onclick="addWater(250)">+250ml</button>
+                            <button class="wg-btn" onclick="addWater(500)">+500ml</button>
+                            <button class="wg-btn" onclick="addWater(-250)">-250ml</button>
+                        </div>
+                        <button class="btn btn-sm" style="width:100%" onclick="resetWater()">Réinitialiser</button>
+                    </div>
+
+                    <!-- SCHEDULE -->
+                    <div class="card card-cyan">
+                        <div class="sh"><span class="sh-title">🕐 Planning Hydratation Journalier</span></div>
+                        <div class="hydro-schedule" id="hydro-schedule"></div>
+                    </div>
+                </div>
+
+                <!-- DRINKS GUIDE -->
+                <div class="card" style="margin-bottom:16px">
+                    <div class="sh"><span class="sh-title">🥤 Guide des Boissons</span><span
+                            class="badge b-cyan">Personnalisé</span></div>
+                    <div class="drink-cards" id="drink-cards"></div>
+                </div>
+
+                <!-- AI HYDRATION OUTPUT -->
+                <div class="ai-output card" id="hydration-ai-output">
+                    <div class="sh-title" style="margin-bottom:10px">✨ Plan Hydratation IA</div>
+                    <div class="md" id="hydration-ai-content"></div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- AI PANEL -->
+    <div class="ai-panel" id="ai-panel">
+        <div class="ap-hdr">
+            <div class="ap-hdr-info">
+                <div class="ap-ava">✨</div>
+                <div>
+                    <div class="ap-name">Coach Aria — IA Style de Vie</div>
+                    <div class="ap-sub">Nutrition · Sport · Bien-être</div>
+                </div>
+            </div>
+            <button class="ap-close" id="panel-close">✕</button>
+        </div>
+        <div class="ap-msgs" id="panel-msgs"></div>
+        <div class="ap-qr" id="panel-qr"></div>
+        <div class="ap-inp">
+            <textarea id="panel-input" placeholder="Posez votre question à Coach Aria…" rows="1" disabled></textarea>
+            <button class="send-btn" id="panel-send" disabled>➤</button>
+        </div>
+    </div>
+
+    <div id="toasts"></div>
+
+    
+    <script>
+        /* ═══════════════════════════════════════════
+           CONFIG & AUTH
+        ═══════════════════════════════════════════ */
+        const API = 'http://localhost:8040/api/v1';
+        const ANTHROPIC_API = `${API}/ai/chat`;
+        const MDL = 'claude-sonnet-4-20250514';
+        const token = () => localStorage.getItem('vc_token');
+        const userObj = () => { try { return JSON.parse(localStorage.getItem('vc_user')); } catch { return null; } };
+        if (!token()) location.href = 'index.html';
+        const U = userObj();
+        document.getElementById('logout-btn').addEventListener('click', e => { e.preventDefault(); localStorage.clear(); location.href = 'index.html'; });
+
+        /* ═══════════════════════════════════════════
+           HEALTH DATA
+        ═══════════════════════════════════════════ */
+        function getMeasurements() {
+            const s = localStorage.getItem('vc_measurements');
+            if (s) return JSON.parse(s);
+            return [
+                { date: 'Sep 2024', weight: 84.2, bps: 135, bpd: 88, hr: 78, glucose: 108, waist: 92, score: 58, wellbeing: 5 },
+                { date: 'Oct 2024', weight: 83.0, bps: 132, bpd: 86, hr: 76, glucose: 104, waist: 90, score: 62, wellbeing: 6 },
+                { date: 'Nov 2024', weight: 81.5, bps: 128, bpd: 84, hr: 74, glucose: 101, waist: 88, score: 66, wellbeing: 6 },
+                { date: 'Déc 2024', weight: 80.8, bps: 126, bpd: 82, hr: 73, glucose: 99, waist: 86, score: 69, wellbeing: 7 },
+                { date: 'Jan 2025', weight: 79.5, bps: 124, bpd: 81, hr: 72, glucose: 97, waist: 84, score: 72, wellbeing: 7 },
+                { date: 'Fév 2025', weight: 78.2, bps: 122, bpd: 80, hr: 70, glucose: 95, waist: 82, score: 76, wellbeing: 8 },
+            ];
+        }
+
+        const measurements = getMeasurements();
+        const last = measurements[measurements.length - 1];
+        const first = measurements[0];
+        const bmi = +(last.weight / (1.75 ** 2)).toFixed(1);
+        const HEIGHT = 1.75;
+
+        function healthContext() {
+            return `Données patient (${U?.first_name || 'Patient'} ${U?.last_name || ''}) :
+- Poids actuel : ${last.weight} kg | IMC : ${bmi} | Taille estimée : ${HEIGHT} m
+- Tension : ${last.bps}/${last.bpd} mmHg | FC : ${last.hr} bpm | Glycémie : ${last.glucose} mg/dL
+- Tour de taille : ${last.waist || 82} cm | Score santé : ${last.score}/100
+- Variation poids : ${(last.weight - first.weight).toFixed(1)} kg sur ${measurements.length} mois
+- Bien-être subjectif : ${last.wellbeing || 7}/10`;
+        }
+
+        /* ═══════════════════════════════════════════
+           TABS
+        ═══════════════════════════════════════════ */
+        document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+            document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+            document.querySelectorAll('.tab-pane').forEach(x => x.classList.remove('active'));
+            t.classList.add('active');
+            document.getElementById(`tab-${t.dataset.tab}`).classList.add('active');
+        }));
+
+        /* ═══════════════════════════════════════════
+           AVATAR — SCORE RING
+        ═══════════════════════════════════════════ */
+        let scoreRingChart = null;
+        function renderScoreRing(score) {
+            const ctx = document.getElementById('scoreRingCanvas').getContext('2d');
+            if (scoreRingChart) scoreRingChart.destroy();
+            const color = score >= 70 ? '#4ade80' : score >= 50 ? '#fb923c' : '#f87171';
+            scoreRingChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: { datasets: [{ data: [score, 100 - score], backgroundColor: [color, 'rgba(255,255,255,.05)'], borderWidth: 0, borderRadius: 4 }] },
+                options: { cutout: '78%', plugins: { legend: { display: false }, tooltip: { enabled: false } }, animation: { duration: 900 } }
+            });
+            document.getElementById('score-ring-num').textContent = score;
+            document.getElementById('score-ring-num').style.color = color;
+        }
+
+        /* ═══════════════════════════════════════════
+           AVATAR — MORPHOLOGY
+        ═══════════════════════════════════════════ */
+        function morphAvatar(data) {
+            const { weight, bmi, score } = data;
+            const torso = document.getElementById('av-torso');
+            const hips = document.getElementById('av-hips');
+            const larm = document.getElementById('av-larm');
+            const rarm = document.getElementById('av-rarm');
+            const lleg = document.getElementById('av-lleg');
+            const rleg = document.getElementById('av-rleg');
+            const aura = document.getElementById('av-aura');
+
+            // Morphological modifiers based on BMI
+            const fat = Math.max(0, Math.min(1, (bmi - 18.5) / 16));       // 0=lean, 1=obese
+            const lean = Math.max(0, Math.min(1, (25 - bmi) / 6.5));       // 0=fat, 1=lean
+
+            // Aura color based on score
+            const auraColor = score >= 70 ? 'rgba(74,222,128,.25)' : score >= 50 ? 'rgba(251,146,60,.2)' : 'rgba(248,113,113,.2)';
+            aura.setAttribute('stroke', auraColor);
+
+            // Torso — widen with fat
+            const tw = 20 + fat * 12;
+            torso.setAttribute('d', `M${50 - tw} 36 Q50 ${33 - fat * 3} ${50 + tw} 36 L${67 + fat * 4} 85 Q50 ${88 + fat * 4} ${33 - fat * 4} 85 Z`);
+            hips.setAttribute('d', `M${33 - fat * 4} 85 Q50 ${88 + fat * 4} ${67 + fat * 4} 85 L${65 + fat * 3} 100 Q50 ${103 + fat * 3} ${35 - fat * 3} 100 Z`);
+
+            // Arms
+            const armW = 4 + fat * 3;
+            larm.setAttribute('d', `M${30 - fat * 2} 36 L${18 - fat} 42 L${14 - fat} 78 L${20} 79 L${24} 48 L${32} 42 Z`);
+            rarm.setAttribute('d', `M${70 + fat * 2} 36 L${82 + fat} 42 L${86 + fat} 78 L${80} 79 L${76} 48 L${68} 42 Z`);
+
+            // Legs
+            const legW = fat * 4;
+            lleg.setAttribute('d', `M${35 - legW} 100 L${33 - legW} 85 Q42 88 50 88 L${48 - legW * .5} 148 Q${39 - legW} 148 ${35 - legW} 148 Z`);
+            rleg.setAttribute('d', `M${65 + legW} 100 L${67 + legW} 85 Q58 88 50 88 L${52 + legW * .5} 148 Q${61 + legW} 148 ${65 + legW} 148 Z`);
+
+            // Gradient based on score
+            const stop1 = score >= 70 ? '#4c1d95' : score >= 50 ? '#92400e' : '#7f1d1d';
+            const stop2 = score >= 70 ? '#7c3aed' : score >= 50 ? '#c2410c' : '#b91c1c';
+            const grad = document.getElementById('bodyGrad');
+            grad.children[0].setAttribute('stop-color', stop1);
+            grad.children[1].setAttribute('stop-color', stop2);
+        }
+
+        /* ═══════════════════════════════════════════
+           AVATAR — INIT
+        ═══════════════════════════════════════════ */
+        function initAvatar() {
+            const score = last.score;
+            const status = score >= 80 ? { l: 'Excellent', c: 'b-ok' } : score >= 65 ? { l: 'Bon', c: 'b-v' } : score >= 50 ? { l: 'Moyen', c: 'b-warn' } : { l: 'À améliorer', c: 'b-bad' };
+
+            document.getElementById('av-bmi-val').textContent = bmi;
+            document.getElementById('av-weight-val').textContent = `${last.weight} kg`;
+            document.getElementById('av-score-val').textContent = `${score}/100`;
+            document.getElementById('av-goal-val').textContent = `${(last.weight - 5).toFixed(0)} kg`;
+            document.getElementById('health-status-badge').className = `badge ${status.c}`;
+            document.getElementById('health-status-badge').textContent = status.l;
+            document.getElementById('health-label-main').textContent = `Santé ${status.l}`;
+            document.getElementById('health-desc-main').textContent = `IMC ${bmi} · ${score >= 70 ? 'Continuez sur cette lancée !' : 'Des améliorations sont possibles.'}`;
+
+            renderScoreRing(score);
+            morphAvatar({ weight: last.weight, bmi, score });
+            renderBodyMetrics();
+            renderEvoTrack();
+            renderPredictions();
+        }
+
+        function renderBodyMetrics() {
+            const items = [
+                { l: 'Poids', v: `${last.weight}`, u: 'kg', pct: Math.max(0, 100 - (bmi - 18.5) * 3), c: '#a855f7' },
+                { l: 'IMC', v: bmi, u: '', pct: bmi < 25 ? 85 : bmi < 30 ? 55 : 30, c: bmi < 25 ? '#4ade80' : bmi < 30 ? '#fb923c' : '#f87171' },
+                { l: 'Tension', v: `${last.bps}/${last.bpd}`, u: 'mmHg', pct: last.bps < 130 ? 90 : 60, c: last.bps < 130 ? '#4ade80' : '#fb923c' },
+                { l: 'Glycémie', v: last.glucose, u: 'mg/dL', pct: last.glucose < 100 ? 90 : 65, c: last.glucose < 100 ? '#22d3ee' : '#fb923c' },
+                { l: 'FC repos', v: last.hr, u: 'bpm', pct: last.hr < 75 ? 85 : 60, c: '#60a5fa' },
+                { l: 'Taille tour', v: last.waist || 82, u: 'cm', pct: Math.max(0, 100 - ((last.waist || 82) - 70) * 2), c: '#f472b6' },
+            ];
+            document.getElementById('body-metrics-grid').innerHTML = items.map(i => `
+    <div class="bm-card">
+      <div class="bm-lbl">${i.l}</div>
+      <div class="bm-val" style="color:${i.c}">${i.v}<small style="font-size:.5em;color:var(--txt2)"> ${i.u}</small></div>
+      <div class="bm-bar"><div class="bm-fill" style="width:${i.pct}%;background:${i.c}"></div></div>
+    </div>`).join('');
+        }
+
+        function renderEvoTrack() {
+            const colors = ['#f87171', '#fb923c', '#fbbf24', '#4ade80', '#22d3ee', '#a855f7'];
+            document.getElementById('evo-track').innerHTML = [...measurements.map((m, i) => {
+                const b = +(m.weight / (HEIGHT ** 2)).toFixed(1);
+                const fat = Math.max(0, Math.min(1, (b - 18.5) / 16));
+                const tw = 20 + fat * 10;
+                return `<div class="evo-mini ${i === measurements.length - 1 ? 'current' : ''}">
+      <div class="evo-mini-frame">
+        <svg viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="50" cy="16" rx="12" ry="14" fill="${colors[i % colors.length]}" opacity=".8"/>
+          <path d="M${50 - tw} 36 Q50 33 ${50 + tw} 36 L${66 + fat * 3} 85 Q50 88 ${34 - fat * 3} 85 Z" fill="${colors[i % colors.length]}" opacity=".7"/>
+          <path d="M35 148 L${34 - fat * 3} 85 Q42 88 50 88 L48 148Z" fill="${colors[i % colors.length]}" opacity=".7"/>
+          <path d="M65 148 L${66 + fat * 3} 85 Q58 88 50 88 L52 148Z" fill="${colors[i % colors.length]}" opacity=".7"/>
+        </svg>
+      </div>
+      <div class="evo-mini-date">${m.date.split(' ')[0]}</div>
+      <div class="evo-mini-score" style="color:${colors[i % colors.length]}">${m.score}</div>
+    </div>`;
+            }),
+                `<div class="evo-mini future">
+    <div class="evo-mini-frame">
+      <svg viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="50" cy="16" rx="12" ry="14" fill="#a855f7" opacity=".4"/>
+        <path d="M32 36 Q50 33 68 36 L65 85 Q50 88 35 85 Z" fill="#a855f7" opacity=".3"/>
+        <text x="50" y="110" font-size="18" text-anchor="middle" fill="rgba(168,85,247,.5)">?</text>
+      </svg>
+    </div>
+    <div class="evo-mini-date">+3 mois</div>
+    <div class="evo-mini-score" style="color:rgba(168,85,247,.5)">🔮</div>
+  </div>`].join('');
+        }
+
+        function renderPredictions() {
+            const weightTrend = (last.weight - first.weight) / measurements.length;
+            const scoreTrend = (last.score - first.score) / measurements.length;
+            const preds = [
+                { l: 'Poids estimé', v: `${(last.weight + weightTrend * 3).toFixed(1)} kg`, c: weightTrend < 0 ? 'var(--success)' : 'var(--warning)' },
+                { l: 'Score santé', v: `${Math.min(100, Math.round(last.score + scoreTrend * 3))}/100`, c: 'var(--v3)' },
+                { l: 'IMC prédit', v: `${+((last.weight + weightTrend * 3) / (HEIGHT ** 2)).toFixed(1)}`, c: 'var(--cyan)' },
+                { l: 'Objectif atteint', v: scoreTrend > 1 ? 'Probable ✓' : 'Possible', c: scoreTrend > 1 ? 'var(--success)' : 'var(--warning)' },
+            ];
+            document.getElementById('predictions-list').innerHTML = preds.map(p => `
+    <div class="pred-row">
+      <span class="pred-lbl">${p.l}</span>
+      <span class="pred-val" style="color:${p.c}">${p.v}</span>
+    </div>`).join('');
+        }
+
+        /* ═══════════════════════════════════════════
+           NUTRITION — STATIC DATA
+        ═══════════════════════════════════════════ */
+        const MEALS = [
+            {
+                time: '07:00', dot: '#f472b6', name: 'Petit-déjeuner', icon: '🌅', kcal: 450, p: 25, c: 55, f: 14,
+                desc: 'Flocons d\'avoine + fruits rouges + yaourt grec + café sans sucre',
+                tags: ['Anti-inflammatoire', 'Fibre', 'Protéines'], color: 'rgba(244,114,182,.2)', border: 'rgba(244,114,182,.4)'
+            },
+            {
+                time: '10:30', dot: '#22d3ee', name: 'Collation matin', icon: '🍎', kcal: 150, p: 8, c: 20, f: 4,
+                desc: '1 pomme + 15g d\'amandes + eau citronnée',
+                tags: ['Satiété', 'Énergie stable'], color: 'rgba(34,211,238,.15)', border: 'rgba(34,211,238,.35)'
+            },
+            {
+                time: '12:30', dot: '#4ade80', name: 'Déjeuner', icon: '☀️', kcal: 600, p: 40, c: 65, f: 18,
+                desc: 'Quinoa + filet de poulet grillé + légumes rôtis + salade verte + huile d\'olive',
+                tags: ['Protéines maigres', 'Index glycémique bas', 'Oméga'], color: 'rgba(74,222,128,.12)', border: 'rgba(74,222,128,.3)'
+            },
+            {
+                time: '16:00', dot: '#fb923c', name: 'Collation après-midi', icon: '☕', kcal: 180, p: 10, c: 22, f: 6,
+                desc: 'Smoothie protéiné maison : banane + lait végétal + protéine + cacao',
+                tags: ['Récupération', 'Pré-entraînement'], color: 'rgba(251,146,60,.12)', border: 'rgba(251,146,60,.3)'
+            },
+            {
+                time: '19:30', dot: '#a855f7', name: 'Dîner', icon: '🌙', kcal: 520, p: 35, c: 50, f: 16,
+                desc: 'Saumon vapeur + riz complet + brocolis + 1 verre de vin rouge (optionnel)',
+                tags: ['Oméga-3', 'Récupération', 'Sommeil'], color: 'rgba(168,85,247,.12)', border: 'rgba(168,85,247,.3)'
+            },
+            {
+                time: '21:00', dot: '#60a5fa', name: 'Infusion soir', icon: '🍵', kcal: 0, p: 0, c: 0, f: 0,
+                desc: 'Tisane camomille-mélisse ou tilleul. Éviter tout sucre après 20h.',
+                tags: ['Sommeil', 'Digestion', 'Anti-stress'], color: 'rgba(96,165,250,.1)', border: 'rgba(96,165,250,.25)'
+            },
+        ];
+
+        const HOW_EAT = [
+            { n: '20min', text: '<strong>Mangez lentement</strong> — au moins 20 min par repas. La satiété met 15-20 min à être perçue par le cerveau.' },
+            { n: 'Assis', text: '<strong>Toujours assis, sans écran</strong> — la pleine conscience alimentaire réduit de 30% les calories ingérées.' },
+            { n: '80%', text: '<strong>Règle des 80%</strong> — arrêtez avant d\'être rassasié. Inspiré du principe Okinawa « Hara Hachi Bu ».' },
+            { n: 'Mâchez', text: '<strong>20-30 mastications</strong> par bouchée. Améliore la digestion, l\'absorption et la satiété.' },
+            { n: 'Ordre', text: '<strong>Ordre des aliments</strong> — légumes → protéines → féculents. Réduit les pics glycémiques de 40%.' },
+            { n: 'Eau', text: '<strong>1 verre d\'eau avant les repas</strong> — réduit l\'appétit de 15% et améliore l\'hydratation.' },
+        ];
+
+        function renderNutrition() {
+            const totalKcal = MEALS.reduce((a, m) => a + m.kcal, 0);
+            const totalP = MEALS.reduce((a, m) => a + m.p, 0);
+            const totalC = MEALS.reduce((a, m) => a + m.c, 0);
+            const totalF = MEALS.reduce((a, m) => a + m.f, 0);
+
+            document.getElementById('macros-header').innerHTML = [
+                { icon: '🔥', lbl: 'Calories', val: totalKcal, unit: 'kcal', sub: 'Objectif journalier', c: '#f87171' },
+                { icon: '🥩', lbl: 'Protéines', val: `${totalP}g`, unit: '', sub: `${Math.round(totalP * 4 / totalKcal * 100)}% des calories`, c: '#fb923c' },
+                { icon: '🌾', lbl: 'Glucides', val: `${totalC}g`, unit: '', sub: `${Math.round(totalC * 4 / totalKcal * 100)}% des calories`, c: '#4ade80' },
+                { icon: '🥑', lbl: 'Lipides', val: `${totalF}g`, unit: '', sub: `${Math.round(totalF * 9 / totalKcal * 100)}% des calories`, c: '#22d3ee' },
+            ].map(m => `
+    <div class="macro-card">
+      <div class="macro-icon">${m.icon}</div>
+      <div class="macro-lbl">${m.lbl}</div>
+      <div class="macro-val" style="color:${m.c}">${m.val}<small style="font-size:.5em;color:var(--txt2)"> ${m.unit}</small></div>
+      <div class="macro-sub">${m.sub}</div>
+    </div>`).join('');
+
+            document.getElementById('meal-timeline').innerHTML = MEALS.map((m, i) => `
+    <div class="meal-slot">
+      <div class="meal-time-col">
+        <div class="meal-time">${m.time}</div>
+        <div class="meal-dot" style="background:${m.dot};border-color:${m.dot}"></div>
+        ${i < MEALS.length - 1 ? '<div class="meal-line"></div>' : ''}
+      </div>
+      <div class="meal-content">
+        <div class="meal-card" style="border-color:${m.border};background:${m.color}">
+          <div class="meal-name">${m.icon} ${m.name}<span class="badge b-v" style="font-size:.65rem">${m.kcal} kcal</span></div>
+          <div class="meal-desc">${m.desc}</div>
+          <div class="meal-macros"><span>🥩 ${m.p}g</span><span>🌾 ${m.c}g</span><span>🥑 ${m.f}g</span></div>
+          <div class="meal-tags">${m.tags.map(t => `<span class="meal-tag">${t}</span>`).join('')}</div>
+        </div>
+      </div>
+    </div>`).join('');
+
+            document.getElementById('how-to-eat').innerHTML = HOW_EAT.map(h => `
+    <div class="how-item">
+      <div class="how-num">${h.n}</div>
+      <div class="how-text">${h.text}</div>
+    </div>`).join('');
+        }
+        renderNutrition();
+
+        /* ═══════════════════════════════════════════
+           ACTIVITY — STATIC DATA
+        ═══════════════════════════════════════════ */
+        const TIMINGS = [
+            { icon: '🌅', name: 'Matin jeun', time: '06:00–07:30', benefits: 'Brûle les graisses' },
+            { icon: '☀️', name: 'Matin classique', time: '08:00–10:00', benefits: 'Optimal pour force' },
+            { icon: '🕑', name: 'Après-midi', time: '15:00–18:00', benefits: 'Pic de performance' },
+            { icon: '🌆', name: 'Soir léger', time: '18:00–20:00', benefits: 'Déstress, pas intens.' },
+        ];
+
+        const WEEK = [
+            { day: 'Lun', acts: [{ type: 'cardio', t: 'Cardio 30min' }] },
+            { day: 'Mar', acts: [{ type: 'strength', t: 'Muscu haut' }] },
+            { day: 'Mer', acts: [{ type: 'flex', t: 'Yoga 20min' }] },
+            { day: 'Jeu', acts: [{ type: 'cardio', t: 'Course 25min' }] },
+            { day: 'Ven', acts: [{ type: 'strength', t: 'Muscu bas' }] },
+            { day: 'Sam', acts: [{ type: 'yoga', t: 'Stretching' }, { type: 'cardio', t: 'Vélo 40min' }] },
+            { day: 'Dim', acts: [{ type: 'rest', t: 'Repos actif' }] },
+        ];
+
+        const EXERCISES = [
+            {
+                icon: '🏃', bg: 'rgba(248,113,113,.12)', border: 'rgba(248,113,113,.3)', name: 'Marche rapide / Course', meta: '30 min · 3x/semaine · Intensité modérée',
+                tags: ['Cardio', 'Poids', 'Coeur'], steps: ['Commencez par 5 min d\'échauffement à pas lent', '<strong>Rythme cible</strong> : 120–140 bpm (test vocal : pouvez parler mais difficilement chanter)', 'Alterner 2 min rapide / 1 min lent (fractionné)', 'Finissez par 5 min de retour au calme + étirements mollets']
+            },
+            {
+                icon: '💪', bg: 'rgba(251,146,60,.12)', border: 'rgba(251,146,60,.3)', name: 'Gainage & Renforcement', meta: '20 min · 4x/semaine · Full body',
+                tags: ['Force', 'Posture', 'Métabolisme'], steps: ['<strong>Planche frontale</strong> : 3 séries de 30 secondes, repos 30s', '<strong>Pompes</strong> : 3×10 (genoux si nécessaire)', '<strong>Squats</strong> : 3×15, dos droit, genoux dans l\'axe des pieds', 'Respiration : expirez à l\'effort, inspirez au relâchement']
+            },
+            {
+                icon: '🧘', bg: 'rgba(168,85,247,.12)', border: 'rgba(168,85,247,.3)', name: 'Yoga & Mobilité', meta: '20 min · 2x/semaine · Récupération',
+                tags: ['Flexibilité', 'Stress', 'Sommeil'], steps: ['Posture du chat-vache : 10 cycles respiratoires pour la colonne', '<strong>Chien tête en bas</strong> : 5 respirations profondes, talons vers le sol', 'Torsion couchée : 30s chaque côté, libère la tension lombaire', 'Savasana finale 3 min : scan corporel, relâchement total']
+            },
+        ];
+
+        const ACT_INSTRUCTIONS = [
+            { t: 'Avant l\'effort', text: 'Mangez 1h30–2h avant. Hydratez-vous (500ml). Échauffement dynamique 5–10 min obligatoire.' },
+            { t: 'Pendant l\'effort', text: 'Buvez 150–250ml d\'eau toutes les 15–20 min. Surveillez votre FC. Arrêtez si douleur.' },
+            { t: 'Après l\'effort', text: 'Protéines dans les 30 min (fenêtre anabolique). Étirements 5–10 min. Récupération 48h entre muscles.' },
+            { t: 'Progressivité', text: 'Augmentez charge/durée de max 10% par semaine. Respectez vos jours de repos. Le muscle se construit au repos.' },
+        ];
+
+        function renderActivity() {
+            document.getElementById('timing-grid').innerHTML = TIMINGS.map((t, i) => `
+    <div class="time-card ${i === 1 ? 'sel' : ''}" onclick="document.querySelectorAll('.time-card').forEach(x=>x.classList.remove('sel'));this.classList.add('sel')">
+      <div class="tc-icon">${t.icon}</div>
+      <div class="tc-name">${t.name}</div>
+      <div class="tc-time">${t.time}</div>
+      <div style="font-size:.68rem;color:var(--v3);margin-top:3px;font-family:var(--fg)">${t.benefits}</div>
+    </div>`).join('');
+
+            const today = new Date().getDay(); // 0=Sun
+            const days = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+            document.getElementById('week-schedule').innerHTML = WEEK.map((d, i) => {
+                const isToday = days[(today)] === d.day || (today === 0 && d.day === 'Dim');
+                return `<div class="day-col ${d.day === days[today] ? 'today' : ''}">
+      <div class="day-hdr">
+        <div class="day-name">${d.day}</div>
+        <div class="day-num">${i + 1}</div>
+      </div>
+      <div class="day-activities">${d.acts.map(a => `<div class="day-act da-${a.type}">${a.t}</div>`).join('')}</div>
+    </div>`;
+            }).join('');
+
+            document.getElementById('exercise-list').innerHTML = EXERCISES.map(e => `
+    <div class="ex-card" style="border-color:${e.border}">
+      <div class="ex-header" onclick="this.nextElementSibling.classList.toggle('open')">
+        <div class="ex-icon" style="background:${e.bg};border:1px solid ${e.border}">${e.icon}</div>
+        <div>
+          <div class="ex-name">${e.name}</div>
+          <div class="ex-meta">${e.meta}</div>
+        </div>
+        <div class="ex-tags">${e.tags.slice(0, 2).map(t => `<span class="badge b-v" style="font-size:.62rem">${t}</span>`).join('')}</div>
+      </div>
+      <div class="ex-body">
+        <div class="ex-steps">${e.steps.map((s, i) => `<div class="ex-step"><div class="ex-step-num">${i + 1}</div><div>${s}</div></div>`).join('')}</div>
+      </div>
+    </div>`).join('');
+
+            document.getElementById('activity-instructions').innerHTML = ACT_INSTRUCTIONS.map(a => `
+    <div class="how-item">
+      <div class="how-num" style="font-size:.6rem;width:30px;height:20px;border-radius:4px">${a.t.split(' ')[0]}</div>
+      <div class="how-text"><strong>${a.t}</strong> — ${a.text}</div>
+    </div>`).join('');
+        }
+        renderActivity();
+
+        /* ═══════════════════════════════════════════
+           HYDRATION — DATA & TANK
+        ═══════════════════════════════════════════ */
+        const DAILY_GOAL = 2500; // ml
+        let waterConsumed = parseInt(localStorage.getItem('vc_water') || '0');
+
+        function updateWaterUI() {
+            const pct = Math.min(100, Math.round(waterConsumed / DAILY_GOAL * 100));
+            const fillH = pct / 100 * 150;
+            const rect = document.getElementById('water-fill-rect');
+            const wave = document.getElementById('water-wave');
+            if (rect) {
+                const y = 170 - fillH;
+                rect.setAttribute('y', y);
+                rect.setAttribute('height', fillH);
+                if (wave) wave.setAttribute('d', `M15 ${y} Q30 ${y - 5} 50 ${y} Q70 ${y + 5} 85 ${y} L85 ${y} L15 ${y}Z`);
+            }
+            document.getElementById('water-pct').textContent = `${pct}%`;
+            document.getElementById('water-consumed').textContent = `${(waterConsumed / 1000).toFixed(2).replace('.', ',')}L / ${DAILY_GOAL / 1000}L`;
+        }
+
+        function addWater(ml) {
+            waterConsumed = Math.max(0, waterConsumed + ml);
+            localStorage.setItem('vc_water', waterConsumed);
+            updateWaterUI();
+            toast(`${ml > 0 ? '+' : ''}${ml}ml enregistré`, ml > 0 ? 'success' : 'info');
+        }
+
+        function resetWater() {
+            waterConsumed = 0;
+            localStorage.setItem('vc_water', 0);
+            updateWaterUI();
+        }
+
+        const HYDRO_SCHEDULE = [
+            { time: '06:30', icon: '🌅', name: 'Réveil', detail: '500ml d\'eau tiède + jus de citron (1/2 citron). Active le métabolisme et alcalinise l\'organisme.', tags: ['Détox', 'Métabolisme'] },
+            { time: '07:30', icon: '☕', name: 'Café/Thé matin', detail: 'Café noir (max 2/j) ou thé vert. Pas de café à jeun si estomac fragile. Comptez 150ml.', tags: ['Énergie', 'Antioxydants'] },
+            { time: '10:30', icon: '💧', name: 'Hydratation matin', detail: '300ml d\'eau plate ou pétillante. Boire entre les repas, jamais en grande quantité pendant.', tags: ['Régulier'] },
+            { time: '12:15', icon: '🥗', name: 'Avant déjeuner', detail: '250ml d\'eau 15 min avant le repas. Réduit l\'appétit et prépare la digestion.', tags: ['Satiété', 'Digestion'] },
+            { time: '15:00', icon: '🍵', name: 'Infusion après-midi', detail: 'Thé vert, rooibos ou eau aromatisée (menthe, concombre). Évitez excitants après 15h.', tags: ['Concentration', 'Antioxydants'] },
+            { time: '18:30', icon: '🏃', name: 'Post-entraînement', detail: '500ml eau minérale magnésienne (Hépar, Contrex). Compense les pertes sudorales.', tags: ['Récupération', 'Électrolytes'] },
+            { time: '21:30', icon: '🌙', name: 'Tisane soir', detail: 'Camomille, mélisse ou valériane. Facilite l\'endormissement. Max 200ml pour ne pas perturber le sommeil.', tags: ['Sommeil', 'Relaxation'] },
+        ];
+
+        const DRINKS = [
+            { icon: '💧', name: 'Eau plate', when: 'Tout au long de la journée', how: 'Petites gorgées régulières · Jamais glacée pendant les repas', badge: 'b-cyan', bl: '✓ Essentiel' },
+            { icon: '☕', name: 'Café', when: 'Matin seulement, avant 14h', how: 'Noir de préférence · Max 2 tasses · Pas à jeun si sensible', badge: 'b-warn', bl: '⚠ Modéré' },
+            { icon: '🍵', name: 'Thé vert', when: '10h30 et 15h', how: 'Infusion 3 min max · Sans sucre · Attend 1h après les repas', badge: 'b-ok', bl: '✓ Recommandé' },
+            { icon: '🥤', name: 'Eau pétillante', when: 'Après sport ou en collation', how: 'Riche en minéraux · Pas pendant les repas si ballonnements', badge: 'b-cyan', bl: '✓ Option' },
+            { icon: '🧃', name: 'Jus de fruits', when: 'Max 1 verre le matin', how: 'Pressé frais uniquement · Pas industriel · Privilégier fruits entiers', badge: 'b-warn', bl: '⚠ Limité' },
+            { icon: '🍺', name: 'Alcool', when: 'Occasionnel uniquement', how: 'Max 1 verre par occasion · Toujours avec nourriture · Compensez 500ml eau', badge: 'b-bad', bl: '✗ Limiter' },
+        ];
+
+        function renderHydration() {
+            updateWaterUI();
+            document.getElementById('hydro-schedule').innerHTML = HYDRO_SCHEDULE.map(h => `
+    <div class="hs-item">
+      <div class="hs-time">${h.time}</div>
+      <div class="hs-icon">${h.icon}</div>
+      <div style="flex:1">
+        <div class="hs-name">${h.name}</div>
+        <div class="hs-detail">${h.detail}</div>
+        <div class="hs-tags">${h.tags.map(t => `<span class="hs-tag">${t}</span>`).join('')}</div>
+      </div>
+    </div>`).join('');
+
+            document.getElementById('drink-cards').innerHTML = DRINKS.map(d => `
+    <div class="drink-card">
+      <div class="drink-icon">${d.icon}</div>
+      <div class="drink-name">${d.name}</div>
+      <div class="drink-when" style="color:var(--txt2);margin-top:2px;font-size:.7rem">🕐 ${d.when}</div>
+      <div class="drink-how">📋 ${d.how}</div>
+      <div class="drink-badge"><span class="badge ${d.badge}">${d.bl}</span></div>
+    </div>`).join('');
+        }
+        renderHydration();
+
+        /* ═══════════════════════════════════════════
+           AI HELPERS
+        ═══════════════════════════════════════════ */
+        function mdRender(t) {
+            t = t.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            t = t.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+            t = t.replace(/^## (.+)$/gm, '<h3>$1</h3>');
+            t = t.replace(/^- (.+)$/gm, '<li>$1</li>');
+            t = t.replace(/(<li>[\s\S]+?<\/li>\n?)+/g, m => `<ul>${m}</ul>`);
+            t = t.replace(/`([^`]+)`/g, '<code>$1</code>');
+            t = t.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>');
+            t = `<p>${t}</p>`;
+            t = t.replace(/<p><h3>/g, '<h3>').replace(/<\/h3><\/p>/g, '</h3>');
+            t = t.replace(/<p><ul>/g, '<ul>').replace(/<\/ul><\/p>/g, '</ul>');
+            return t;
+        }
+
+        function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+        async function streamAI(prompt, system, targetEl, onDone) {
+            let full = '';
+            try {
+                const res = await fetch(API, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('vc_token')}`  
+                    },
+                    body: JSON.stringify({ model: MDL, max_tokens: 1800, system, messages: [{ role: 'user', content: prompt }], stream: true })
+                });
+                if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message || 'API error'); }
+                const reader = res.body.getReader(), dec = new TextDecoder();
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+                    for (const line of dec.decode(value).split('\n')) {
+                        if (!line.startsWith('data: ')) continue;
+                        const d = line.slice(6); if (d === '[DONE]') continue;
+                        try { const p = JSON.parse(d); const delta = p.delta?.text || ''; if (delta) { full += delta; targetEl.innerHTML = mdRender(full) + '<span class="cursor"></span>'; } } catch (_) { }
+                    }
+                }
+                targetEl.innerHTML = mdRender(full);
+                if (onDone) onDone(full);
+            } catch (err) {
+                targetEl.innerHTML = `<span style="color:var(--danger)">⚠ Erreur : ${esc(err.message)}</span>`;
+            }
+            return full;
+        }
+
+        /* ═══════════════════════════════════════════
+           AI BUTTONS
+        ═══════════════════════════════════════════ */
+        document.getElementById('gen-avatar-btn').addEventListener('click', async () => {
+            const out = document.getElementById('ai-avatar-output');
+            const content = document.getElementById('ai-avatar-content');
+            out.classList.add('show');
+            content.innerHTML = '<div style="display:flex;align-items:center;gap:8px;color:var(--txt2)"><div class="spinner"></div>Analyse morphologique en cours…</div>';
+            const sys = `Tu es un médecin et nutritionniste IA expert en morphologie et composition corporelle. Tu analyses les données biométriques d'un patient et fournis une analyse corporelle détaillée avec recommandations concrètes et personnalisées. Réponds en français, sois précis et bienveillant.`;
+            const prompt = `${healthContext()}\n\nRéalise une analyse morphologique et physiologique complète de ce patient incluant :\n1. Analyse de la composition corporelle (IMC, répartition, risques)\n2. Points forts et zones d'amélioration\n3. Évolution observée et tendances\n4. Recommandations prioritaires personnalisées\n5. Objectifs réalistes à 3 et 6 mois`;
+            await streamAI(prompt, sys, content, () => toast('✓ Analyse avatar générée !', 'success'));
+        });
+
+        document.getElementById('gen-nutrition-btn').addEventListener('click', async () => {
+            const goal = document.getElementById('nutrition-goal').value;
+            const goalLabels = { perte_poids: 'perte de poids', masse: 'prise de masse musculaire', sante: 'santé globale', energie: 'énergie et vitalité', coeur: 'santé cardiovasculaire' };
+            const out = document.getElementById('nutrition-ai-output');
+            const content = document.getElementById('nutrition-ai-content');
+            out.classList.add('show');
+            content.innerHTML = '<div style="display:flex;align-items:center;gap:8px;color:var(--txt2)"><div class="spinner"></div>Génération du plan nutritionnel…</div>';
+            const btn = document.getElementById('gen-nutrition-btn');
+            btn.disabled = true; btn.innerHTML = '<div class="spinner"></div>';
+            const sys = `Tu es un diététicien-nutritionniste IA expert. Tu crées des plans nutritionnels ultra-personnalisés basés sur les données biométriques, les objectifs et les préférences du patient. Plans précis avec aliments, quantités, timings et explications scientifiques. Français uniquement.`;
+            const prompt = `${healthContext()}\n\nObjectif principal : ${goalLabels[goal]}\n\nCrée un plan nutritionnel détaillé sur 7 jours incluant :\n1. Besoins caloriques calculés (TDEE) et répartition des macronutriments\n2. Plan de 3 exemples de journées types complètes (petit-déj, déjeuner, dîner, collations) avec aliments précis et quantités\n3. Aliments clés à privilégier et à éviter selon les données du patient\n4. Conseils spécifiques quoi manger, quand et comment le manger\n5. Supplémentation recommandée si pertinente`;
+            await streamAI(prompt, sys, content, () => toast('✓ Plan nutritionnel généré !', 'success'));
+            btn.disabled = false; btn.innerHTML = '✨ Générer';
+        });
+
+        document.getElementById('gen-activity-btn').addEventListener('click', async () => {
+            const level = document.getElementById('activity-level').value;
+            const out = document.getElementById('activity-ai-output');
+            const content = document.getElementById('activity-ai-content');
+            out.classList.add('show');
+            content.innerHTML = '<div style="display:flex;align-items:center;gap:8px;color:var(--txt2)"><div class="spinner"></div>Génération du programme sportif…</div>';
+            const btn = document.getElementById('gen-activity-btn');
+            btn.disabled = true; btn.innerHTML = '<div class="spinner"></div>';
+            const sys = `Tu es un coach sportif et kinésiologue IA expert. Tu crées des programmes d'entraînement personnalisés basés sur les données de santé, l'état physique et les objectifs du patient. Programmes précis avec exercices, séries, répétitions, durées et conseils techniques. Français uniquement.`;
+            const prompt = `${healthContext()}\n\nNiveau sportif : ${level}\n\nCrée un programme sportif complet sur 4 semaines incluant :\n1. Évaluation de la condition physique actuelle et recommandations de départ\n2. Programme semaine type avec jours, exercices, durées, intensités\n3. Pour chaque exercice : comment le faire, combien de séries/répétitions, conseils techniques\n4. Quand faire chaque type d'activité (horaires optimaux selon le profil)\n5. Progression semaine par semaine et signaux d'alarme à surveiller`;
+            await streamAI(prompt, sys, content, () => toast('✓ Programme sportif généré !', 'success'));
+            btn.disabled = false; btn.innerHTML = '✨ Générer';
+        });
+
+        document.getElementById('gen-hydration-btn').addEventListener('click', async () => {
+            const out = document.getElementById('hydration-ai-output');
+            const content = document.getElementById('hydration-ai-content');
+            out.classList.add('show');
+            content.innerHTML = '<div style="display:flex;align-items:center;gap:8px;color:var(--txt2)"><div class="spinner"></div>Génération du plan hydratation…</div>';
+            const btn = document.getElementById('gen-hydration-btn');
+            btn.disabled = true; btn.innerHTML = '<div class="spinner"></div>';
+            const sys = `Tu es un médecin nutritionniste spécialisé en hydratation et micronutrition. Tu crées des plans d'hydratation ultra-personnalisés basés sur les données de santé et l'activité physique. Conseils précis sur quoi boire, quand le boire, comment le boire et en quelle quantité. Français uniquement.`;
+            const prompt = `${healthContext()}\n\nCrée un plan d'hydratation personnalisé incluant :\n1. Besoins hydriques calculés (poids, activité, climat) avec justifications\n2. Planning horaire précis : quelle boisson, quelle quantité, à quel moment et pourquoi\n3. Boissons recommandées et déconseillées selon le profil de santé du patient (tension, glycémie, etc.)\n4. Comment boire correctement (température, rythme, association aux repas)\n5. Signes de déshydratation à surveiller et astuces pratiques au quotidien`;
+            await streamAI(prompt, sys, content, () => toast('✓ Plan hydratation généré !', 'success'));
+            btn.disabled = false; btn.innerHTML = '✨ Générer';
+        });
+
+        /* ═══════════════════════════════════════════
+           AI PANEL — COACH ARIA
+        ═══════════════════════════════════════════ */
+        let panelOpen = false;
+        let panelConv = [];
+        let panelStarted = false;
+
+        const PANEL_SYS = `Tu es Coach Aria, une coach IA spécialisée en style de vie santé intégrée à VitaCore. Tu connais toutes les données de santé du patient et tu réponds à ses questions sur :
+- Nutrition : quoi manger, quand, comment, quelles quantités
+- Activité physique : quels exercices, quand les faire, comment les exécuter
+- Hydratation : quoi boire, quand, combien, pourquoi
+- Bien-être global : sommeil, stress, récupération
+
+Style : expert, chaleureux, concret, motivant. Réponses courtes (5-8 lignes max). Français uniquement.`;
+
+        function togglePanel() {
+            panelOpen = !panelOpen;
+            document.getElementById('ai-panel').classList.toggle('open', panelOpen);
+            document.getElementById('panel-toggle').classList.toggle('panel-open', panelOpen);
+            document.getElementById('panel-toggle').textContent = panelOpen ? '✕ Fermer' : '✨ Coach';
+            if (panelOpen && !panelStarted) initPanel();
+        }
+
+        document.getElementById('panel-toggle').addEventListener('click', togglePanel);
+        document.getElementById('panel-close').addEventListener('click', togglePanel);
+
+        function addPanelMsg(html, role = 'ai') {
+            const wrap = document.getElementById('panel-msgs');
+            const el = document.createElement('div');
+            el.className = `ap-msg am-${role}`;
+            el.innerHTML = `<div class="am-ava ${role}">${role === 'ai' ? '✨' : '👤'}</div><div class="am-bbl md">${html}</div>`;
+            wrap.appendChild(el);
+            wrap.scrollTo({ top: wrap.scrollHeight, behavior: 'smooth' });
+            return el.querySelector('.am-bbl');
+        }
+
+        function setPanelQR(opts) {
+            const w = document.getElementById('panel-qr');
+            if (!opts?.length) { w.style.display = 'none'; return; }
+            w.style.display = 'flex';
+            w.innerHTML = opts.map(o => `<button class="aqr" onclick="sendPanel('${o.replace(/'/g, "\\'")}')">  ${o}</button>`).join('');
+        }
+
+        async function sendPanel(text) {
+            if (!text.trim()) return;
+            document.getElementById('panel-input').value = '';
+            setPanelQR([]);
+            addPanelMsg(esc(text), 'user');
+            panelConv.push({ role: 'user', content: text });
+            document.getElementById('panel-send').disabled = true;
+
+            // Typing
+            const tp = document.createElement('div');
+            tp.className = 'ap-msg am-ai'; tp.id = 'panel-typing';
+            tp.innerHTML = `<div class="am-ava ai">✨</div><div class="t-dots"><span></span><span></span><span></span></div>`;
+            document.getElementById('panel-msgs').appendChild(tp);
+            document.getElementById('panel-msgs').scrollTo({ top: document.getElementById('panel-msgs').scrollHeight, behavior: 'smooth' });
+            await new Promise(r => setTimeout(r, 500));
+            tp.remove();
+
+            const bbl = addPanelMsg('<span class="cursor"></span>', 'ai');
+            let full = '';
+            try {
+                const sysWithData = PANEL_SYS + '\n\n' + healthContext();
+                const res = await fetch(API, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('vc_token')}`  
+                    },
+                    body: JSON.stringify({ model: MDL, max_tokens: 800, system: sysWithData, messages: panelConv, stream: true })
+                });
+                if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message); }
+                const reader = res.body.getReader(), dec = new TextDecoder();
+                while (true) {
+                    const { value, done } = await reader.read(); if (done) break;
+                    for (const line of dec.decode(value).split('\n')) {
+                        if (!line.startsWith('data: ')) continue;
+                        const d = line.slice(6); if (d === '[DONE]') continue;
+                        try { const p = JSON.parse(d); const delta = p.delta?.text || ''; if (delta) { full += delta; bbl.innerHTML = mdRender(full) + '<span class="cursor"></span>'; document.getElementById('panel-msgs').scrollTo({ top: document.getElementById('panel-msgs').scrollHeight, behavior: 'smooth' }); } } catch (_) { }
+                    }
+                }
+                bbl.innerHTML = mdRender(full);
+                panelConv.push({ role: 'assistant', content: full });
+                // Contextual QRs
+                const tl = full.toLowerCase();
+                if (tl.includes('manger') || tl.includes('repas') || tl.includes('aliment')) setPanelQR(['Quelle quantité précisément ?', 'Alternatives si allergie ?', 'Programme semaine type']);
+                else if (tl.includes('exercice') || tl.includes('sport') || tl.includes('entraîn')) setPanelQR(['Combien de séries ?', 'Si je suis débutant ?', 'Récupération musculaire']);
+                else if (tl.includes('boire') || tl.includes('eau') || tl.includes('hydrat')) setPanelQR(['Eau avant ou pendant ?', 'Boissons à éviter ?', 'Signes de déshydratation']);
+                else setPanelQR(['Mon alimentation du jour', 'Exercice ce soir ?', 'Combien d\'eau aujourd\'hui ?', 'Conseil récupération']);
+            } catch (err) { bbl.innerHTML = `<span style="color:var(--danger)">⚠ ${esc(err.message)}</span>`; }
+            document.getElementById('panel-send').disabled = false;
+        }
+
+        function initPanel() {
+            panelStarted = true;
+            document.getElementById('panel-input').disabled = false;
+            document.getElementById('panel-send').disabled = false;
+            const name = U?.first_name || 'vous';
+            const welcome = `Bonjour **${name}** ! 🌟 Je suis **Coach Aria**, votre guide style de vie.\n\nJ'ai accès à toutes vos données de santé. Je peux vous conseiller sur **ce que manger, quand et comment**, **quels exercices faire et quand**, **comment vous hydrater** et bien plus.\n\nQue voulez-vous optimiser aujourd'hui ?`;
+            const bbl = addPanelMsg(mdRender(welcome), 'ai');
+            panelConv.push({ role: 'assistant', content: welcome });
+            setPanelQR(['Mon repas de ce soir', 'Exercice pour ce soir', 'Ma dose d\'eau', 'Récupération musculaire']);
+        }
+
+        document.getElementById('panel-send').addEventListener('click', () => { const t = document.getElementById('panel-input').value.trim(); if (t) sendPanel(t); });
+        document.getElementById('panel-input').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); const t = document.getElementById('panel-input').value.trim(); if (t) sendPanel(t); } });
+        document.getElementById('panel-input').addEventListener('input', () => { const ta = document.getElementById('panel-input'); ta.style.height = 'auto'; ta.style.height = Math.min(ta.scrollHeight, 80) + 'px'; });
+
+        /* ═══════════════════════════════════════════
+           RESET AVATAR
+        ═══════════════════════════════════════════ */
+        document.getElementById('reset-avatar-btn').addEventListener('click', () => {
+            morphAvatar({ weight: last.weight, bmi, score: last.score });
+            toast('Avatar réinitialisé', 'info');
+        });
+
+        /* ═══════════════════════════════════════════
+           TOAST
+        ═══════════════════════════════════════════ */
+        function toast(msg, type = 'success') {
+            const c = { success: 'var(--success)', error: 'var(--danger)', warning: 'var(--warning)', info: 'var(--cyan)' };
+            const el = document.createElement('div');
+            el.className = 'toast';
+            el.style.borderLeftColor = c[type] || c.success;
+            el.innerHTML = `<span style="color:${c[type] || c.success};font-weight:700">${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'}</span>${msg}`;
+            document.getElementById('toasts').appendChild(el);
+            setTimeout(() => el.remove(), 3500);
+        }
+
+        /* ═══════════════════════════════════════════
+           INIT
+        ═══════════════════════════════════════════ */
+        initAvatar();
+
+        // Fix keyframes
+        const sk = document.createElement('style');
+        sk.textContent = '@keyframes spin{to{transform:rotate(360deg)}} @keyframes tabIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}} @keyframes bubble{0%{cy:150px;opacity:0}50%{opacity:.6}100%{cy:90px;opacity:0}}';
+        document.head.appendChild(sk);
+
+
+        /* ══════════════════════════
+           MOBILE SIDEBAR TOGGLE
+        ══════════════════════════ */
+        function toggleSidebar() {
+            const sb = document.querySelector('.sidebar');
+            const btn = document.getElementById('hamburger-btn');
+            const ovl = document.getElementById('sidebar-overlay');
+            const isOpen = sb.classList.contains('open');
+            if (isOpen) { closeSidebar(); }
+            else {
+                sb.classList.add('open');
+                btn.classList.add('open');
+                ovl.classList.add('visible');
+                document.body.style.overflow = 'hidden'; // empêche scroll fond
+            }
+        }
+
+        function closeSidebar() {
+            document.querySelector('.sidebar')?.classList.remove('open');
+            document.getElementById('hamburger-btn')?.classList.remove('open');
+            document.getElementById('sidebar-overlay')?.classList.remove('visible');
+            document.body.style.overflow = '';
+        }
+
+        // Ferme la sidebar au clic sur un lien (navigation mobile)
+        document.querySelectorAll('.sb-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 900) closeSidebar();
+            });
+        });
+
+        // Ferme si on redimensionne vers desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 900) closeSidebar();
+        });
+
+
+        document.getElementById('hamburger-btn').addEventListener('click', () => {
+            const menu = document.getElementById('mobile-menu');
+            const btn = document.getElementById('hamburger-btn');
+            menu.classList.toggle('open');
+            btn.classList.toggle('open');
+        });
+
+        // Ferme au clic sur un lien
+        document.querySelectorAll('#mobile-menu .sb-link').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('mobile-menu').classList.remove('open');
+                document.getElementById('hamburger-btn').classList.remove('open');
+            });
+        });
+
+        document.getElementById('logout-btn-mobile')?.addEventListener('click', e => {
+            e.preventDefault();
+            localStorage.clear();
+            location.href = 'index.html';
+        });
+    </script>
+</body>
+
+</html>

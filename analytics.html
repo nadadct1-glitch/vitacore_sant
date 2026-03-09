@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Analyses — VitaCore</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        :root {
+            --bg: #0a0a0a;
+            --bg2: #111;
+            --bgc: #161616;
+            --acc: #c8ff00;
+            --acc-dim: rgba(200, 255, 0, .12);
+            --acc-brd: rgba(200, 255, 0, .3);
+            --txt: #f0f0f0;
+            --txt2: #888;
+            --txt3: #444;
+            --brd: #222;
+            --danger: #ff4d4d;
+            --warning: #ffaa00;
+            --success: #00d68f;
+            --info: #0095ff;
+            --r-sm: 8px;
+            --r-md: 14px;
+            --r-lg: 20px;
+            --r-xl: 28px;
+            --tr: all .22s cubic-bezier(.4, 0, .2, 1);
+            --ff: 'Syne', sans-serif;
+            --fb: 'DM Sans', sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            font-family: var(--fb);
+            background: var(--bg);
+            color: var(--txt);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg2)
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--brd);
+            border-radius: 3px
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--acc)
+        }
+
+        /* ── NAV ── */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 28px;
+            background: rgba(10, 10, 10, .88);
+            backdrop-filter: blur(18px);
+            border-bottom: 1px solid var(--brd)
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-family: var(--ff);
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--txt);
+            text-decoration: none
+        }
+
+        .brand-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--acc);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--acc)
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--acc);
+            color: #000;
+            font-weight: 800;
+            font-size: .82rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-family: var(--ff)
+        }
+
+        /* ── LAYOUT ── */
+        .layout {
+            display: flex;
+            min-height: 100vh;
+            padding-top: 73px
+        }
+
+        .sidebar {
+            width: 250px;
+            min-height: calc(100vh - 73px);
+            background: var(--bg2);
+            border-right: 1px solid var(--brd);
+            padding: 24px 14px;
+            position: fixed;
+            top: 73px;
+            left: 0;
+            bottom: 0;
+            overflow-y: auto
+        }
+
+        .sb-sec {
+            margin-bottom: 28px
+        }
+
+        .sb-title {
+            font-size: .67rem;
+            font-weight: 700;
+            color: var(--txt3);
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            margin-bottom: 8px;
+            padding: 0 8px
+        }
+
+        .sb-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: var(--r-sm);
+            color: var(--txt2);
+            text-decoration: none;
+            font-size: .875rem;
+            font-weight: 500;
+            transition: var(--tr);
+            margin-bottom: 2px
+        }
+
+        .sb-link:hover {
+            color: var(--txt);
+            background: var(--bgc)
+        }
+
+        .sb-link.active {
+            color: var(--acc);
+            background: var(--acc-dim);
+            border: 1px solid var(--acc-brd)
+        }
+
+        .main {
+            margin-left: 250px;
+            flex: 1;
+            padding: 32px
+        }
+
+        /* ── BUTTONS ── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 10px 20px;
+            border-radius: var(--r-md);
+            border: none;
+            cursor: pointer;
+            font-family: var(--fb);
+            font-weight: 600;
+            font-size: .875rem;
+            text-decoration: none;
+            transition: var(--tr)
+        }
+
+        .btn-primary {
+            background: var(--acc);
+            color: #000;
+            box-shadow: 0 4px 18px rgba(200, 255, 0, .25)
+        }
+
+        .btn-primary:hover {
+            background: #d4ff33;
+            transform: translateY(-1px)
+        }
+
+        /* ── CARDS ── */
+        .card {
+            background: var(--bgc);
+            border: 1px solid var(--brd);
+            border-radius: var(--r-lg);
+            padding: 22px;
+            transition: var(--tr)
+        }
+
+        .card:hover {
+            border-color: var(--acc-brd)
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 11px;
+            border-radius: 20px;
+            font-size: .73rem;
+            font-weight: 700
+        }
+
+        .badge-success {
+            background: rgba(0, 214, 143, .12);
+            color: var(--success);
+            border: 1px solid rgba(0, 214, 143, .3)
+        }
+
+        .badge-warning {
+            background: rgba(255, 170, 0, .12);
+            color: var(--warning);
+            border: 1px solid rgba(255, 170, 0, .3)
+        }
+
+        .badge-danger {
+            background: rgba(255, 77, 77, .12);
+            color: var(--danger);
+            border: 1px solid rgba(255, 77, 77, .3)
+        }
+
+        .badge-info {
+            background: rgba(0, 149, 255, .12);
+            color: var(--info);
+            border: 1px solid rgba(0, 149, 255, .3)
+        }
+
+        /* ── HEADER CARD ── */
+        .header-card {
+            background: var(--bgc);
+            border: 1px solid var(--brd);
+            border-radius: var(--r-xl);
+            padding: 30px;
+            margin-bottom: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px
+        }
+
+        .total-lbl {
+            font-size: .72rem;
+            color: var(--txt3);
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            margin-bottom: 4px
+        }
+
+        .total-val {
+            font-family: var(--ff);
+            font-size: 2.8rem;
+            font-weight: 800
+        }
+
+        .total-val em {
+            color: var(--acc);
+            font-style: normal
+        }
+
+        .kpi-group {
+            display: flex;
+            gap: 28px;
+            flex-wrap: wrap
+        }
+
+        .kpi {
+            text-align: center
+        }
+
+        .kpi-lbl {
+            font-size: .68rem;
+            color: var(--txt3);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: 3px
+        }
+
+        .kpi-val {
+            font-family: var(--ff);
+            font-size: 1.45rem;
+            font-weight: 800
+        }
+
+        /* ── GRID ── */
+        .g2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 18px
+        }
+
+        .g3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-bottom: 18px
+        }
+
+        /* ── SECTION HEADER ── */
+        .sh {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px
+        }
+
+        .sh-title {
+            font-family: var(--ff);
+            font-size: 1.05rem;
+            font-weight: 700
+        }
+
+        /* ── DONUT ── */
+        .donut-wrap {
+            position: relative;
+            width: 170px;
+            height: 170px;
+            margin: 0 auto
+        }
+
+        .donut-center {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center
+        }
+
+        .donut-pct {
+            font-family: var(--ff);
+            font-size: 1.7rem;
+            font-weight: 800
+        }
+
+        .donut-sub {
+            font-size: .7rem;
+            color: var(--txt2);
+            margin-top: 1px
+        }
+
+        /* ── LEGEND ── */
+        .legend-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 9px 0;
+            border-bottom: 1px solid var(--brd)
+        }
+
+        .legend-item:last-child {
+            border-bottom: none
+        }
+
+        .leg-left {
+            display: flex;
+            align-items: center;
+            gap: 9px
+        }
+
+        .leg-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%
+        }
+
+        .leg-name {
+            font-weight: 600;
+            font-size: .82rem
+        }
+
+        .leg-pct {
+            font-size: .72rem;
+            color: var(--txt2)
+        }
+
+        .leg-val {
+            font-family: var(--ff);
+            font-weight: 700;
+            font-size: .82rem;
+            color: var(--acc)
+        }
+
+        /* ── INDICATOR ROWS ── */
+        .ind-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 0;
+            border-bottom: 1px solid var(--brd)
+        }
+
+        .ind-row:last-child {
+            border-bottom: none
+        }
+
+        .ind-lbl {
+            flex: 1;
+            font-size: .82rem;
+            font-weight: 500
+        }
+
+        .pbar {
+            flex: 2;
+            height: 5px;
+            background: var(--brd);
+            border-radius: 3px;
+            overflow: hidden
+        }
+
+        .pfill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width .5s ease
+        }
+
+        .ind-val {
+            font-family: var(--ff);
+            font-weight: 700;
+            font-size: .82rem;
+            min-width: 90px;
+            text-align: right
+        }
+
+        /* ── CHART HEIGHTS ── */
+        .ch-md {
+            height: 210px
+        }
+
+        .ch-sm {
+            height: 165px
+        }
+
+        /* ── TABLE ── */
+        .tbl {
+            width: 100%;
+            border-collapse: collapse
+        }
+
+        .tbl th {
+            padding: 10px 0;
+            text-align: left;
+            font-size: .7rem;
+            color: var(--txt3);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            border-bottom: 1px solid var(--brd)
+        }
+
+        .tbl th:not(:first-child) {
+            text-align: right
+        }
+
+        .tbl td {
+            padding: 11px 0;
+            border-bottom: 1px solid var(--brd);
+            font-size: .85rem
+        }
+
+        .tbl td:not(:first-child) {
+            text-align: right
+        }
+
+        .tbl tr:last-child td {
+            border-bottom: none
+        }
+
+        .tbl .td-name {
+            font-weight: 600
+        }
+
+        .tbl .td-val {
+            font-family: var(--ff);
+            font-weight: 700
+        }
+
+        .tbl .td-ref {
+            color: var(--txt2);
+            font-size: .78rem
+        }
+
+        @media(max-width:900px) {
+
+            .g2,
+            .g3 {
+                grid-template-columns: 1fr
+            }
+
+            .sidebar {
+                display: none
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 20px
+            }
+        }
+
+        /* ══════════════════════════════════════
+   HAMBURGER BUTTON
+══════════════════════════════════════ */
+        .hamburger {
+            display: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--bgc);
+            border: 1px solid var(--brd2);
+            cursor: pointer;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            flex-shrink: 0;
+            transition: var(--tr);
+            z-index: 400;
+        }
+
+        .hamburger:hover {
+            border-color: var(--rose-brd, var(--skin-brd, rgba(255, 255, 255, .2)));
+        }
+
+        .hamburger span {
+            display: block;
+            width: 18px;
+            height: 2px;
+            background: var(--txt);
+            border-radius: 2px;
+            transition: var(--tr);
+        }
+
+        .hamburger.open span:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+
+        .hamburger.open span:nth-child(2) {
+            opacity: 0;
+            transform: scaleX(0);
+        }
+
+        .hamburger.open span:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+
+        /* ══════════════════════════════════════
+   SIDEBAR OVERLAY (mobile)
+══════════════════════════════════════ */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .6);
+            backdrop-filter: blur(4px);
+            z-index: 198;
+            animation: fadeIn .2s ease;
+        }
+
+        .sidebar-overlay.visible {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* ══════════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+══════════════════════════════════════ */
+        @media (max-width: 900px) {
+
+            /* Show hamburger in nav */
+            .hamburger {
+                display: flex;
+            }
+
+            /* Sidebar: slide in from left */
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform .28s cubic-bezier(.4, 0, .2, 1);
+                z-index: 199;
+                box-shadow: 8px 0 40px rgba(0, 0, 0, .5);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            /* Main content fills full width */
+            .main {
+                margin-left: 0 !important;
+                padding: 14px 14px 80px;
+            }
+
+            /* Grids: 1 column on mobile */
+            .grid-2,
+            .grid-3,
+            .grid-4,
+            .dashboard-grid,
+            .diag-layout,
+            .evolution-layout,
+            .derm-chat-layout,
+            .midwife-layout,
+            .profile-skin-layout,
+            .nutri-grid,
+            .week-detail-layout,
+            .prep-categories {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* Products grid: 2 cols on mobile */
+            .products-grid {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            /* Advice/prep cards: 1 col */
+            .advice-cards,
+            .prep-cards {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* Tabs: scrollable horizontally */
+            .tabs {
+                width: 100% !important;
+                overflow-x: auto;
+                flex-wrap: nowrap !important;
+                scrollbar-width: none;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .tabs::-webkit-scrollbar {
+                display: none;
+            }
+
+            .tab {
+                white-space: nowrap;
+                font-size: .78rem;
+                padding: 7px 12px;
+            }
+
+            /* Nav: compress */
+            .nav {
+                padding: 0 14px;
+                gap: 8px;
+            }
+
+            .nav-badge {
+                display: none;
+            }
+
+            /* Page title smaller */
+            .page-title {
+                font-size: 1.5rem !important;
+            }
+
+            /* Chat layouts: full height */
+            .derm-chat-layout,
+            .midwife-layout {
+                height: auto !important;
+            }
+
+            .chat-col {
+                min-height: 500px;
+            }
+
+            /* Hide side tools on mobile */
+            .derm-tools,
+            .midwife-tools {
+                display: none;
+            }
+
+            /* Concern/forbidden grids: 2 cols */
+            .concern-grid,
+            .forbidden-grid {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            /* Food cats: 3 cols */
+            .food-cats {
+                grid-template-columns: 1fr 1fr 1fr !important;
+            }
+
+            /* Bag list: 2 cols */
+            .bag-list {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            /* Quick stats: wrap */
+            .quick-stats {
+                flex-wrap: wrap;
+            }
+
+            .qs {
+                min-width: 80px !important;
+            }
+
+            /* Skin type grid: 3 cols */
+            .skin-type-grid {
+                grid-template-columns: repeat(3, 1fr) !important;
+            }
+
+            /* Hero week counter */
+            .week-counter {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main {
+                padding: 10px 10px 70px;
+            }
+
+            .page-title {
+                font-size: 1.25rem !important;
+            }
+
+            .products-grid,
+            .advice-cards {
+                grid-template-columns: 1fr !important;
+            }
+
+            .food-cats {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            .bag-list {
+                grid-template-columns: 1fr !important;
+            }
+
+            .card {
+                padding: 14px;
+            }
+
+            .tab {
+                font-size: .72rem;
+                padding: 6px 10px;
+            }
+
+            .prep-categories {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            .advice-categories {
+                grid-template-columns: 1fr 1fr !important;
+            }
+        }
+
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 58px;
+            left: 0;
+            right: 0;
+            background: rgba(8, 4, 16, .98);
+            backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--brd);
+            padding: 10px 14px 18px;
+            z-index: 299;
+            flex-direction: column;
+            gap: 2px;
+            max-height: calc(100vh - 58px);
+            overflow-y: auto;
+        }
+
+        .mobile-menu.open {
+            display: flex;
+        }
+
+        .hamburger {
+            display: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--bgc);
+            border: 1px solid var(--brd2);
+            cursor: pointer;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: var(--tr);
+        }
+
+        .hamburger span {
+            display: block;
+            width: 18px;
+            height: 2px;
+            background: var(--txt);
+            border-radius: 2px;
+            transition: var(--tr);
+        }
+
+        .hamburger.open span:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+
+        .hamburger.open span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.open span:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+
+        @media (max-width: 900px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0 !important;
+                padding: 14px 14px 80px;
+            }
+
+            .nav-badge {
+                display: none;
+            }
+
+            /* vos autres règles responsive ici */
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="nav">
+        <a class="brand" href="dashboard.html"><span class="brand-dot"></span>VitaCore</a>
+        <button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+        <div class="mobile-menu" id="mobile-menu">
+            <a class="sb-link" href="dashboard.html">🏠 Dashboard</a>
+            <a class="sb-link" href="health-form.html">📋 Bilan Santé</a>
+            <a class="sb-link" href="analytics.html">📊 Analyses</a>
+            <a class="sb-link" href="ai-bilan.html">🩺 Bilan IA</a>
+            <a class="sb-link" href="consultation.html">🏥 Consultation IA</a>
+            <a class="sb-link" href="evolution.html">📈 Évolution</a>
+            <a class="sb-link" href="nutri.html">🥦 Nutri</a>
+            <a class="sb-link" href="lifestyle.html">✨ Style de Vie</a>
+            <a class="sb-link" href="derma.html">💆 Derma</a>
+            <a class="sb-link" href="maternite.html">🌸 Maternité</a>
+            <a class="sb-link" href="guide.html">🔮 Guide Oracle</a>
+            <a class="sb-link" href="psyche.html">🧠 Psyché</a>
+            <a class="sb-link" href="nexus_ia.html">🌐 Nexus</a>
+
+            <!-- SÉPARATEUR -->
+            <div style="height:1px;background:var(--brd);margin:8px 0"></div>
+
+            <!-- URGENCES -->
+            <div
+                style="font-size:.61rem;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.14em;margin-bottom:7px;padding:0 8px">
+                Urgences</div>
+            <div
+                style="padding:8px 11px;background:rgba(255,90,122,.05);border:1px solid rgba(255,90,122,.2);border-radius:var(--r-sm);font-size:.74rem;color:var(--danger);line-height:1.6;margin-bottom:12px">
+                ⚠️ Secours Abalo: <strong>88 80</strong><br>Urgences: <strong>88 80</strong><br>Maternité 24h:
+                <strong>voir rubrique</strong>
+            </div>
+            <!-- COMPTE -->
+            <div
+                style="font-size:.61rem;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.14em;margin-bottom:7px;padding:0 8px">
+                Compte</div>
+            <a class="sb-link" href="#" id="logout-btn-mobile">🚪 &nbsp;Déconnexion</a>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+            <div class="avatar" id="nav-avatar">U</div>
+        </div>
+    </nav>
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sb-sec">
+                <div class="sb-tt">Navigation</div>
+                <a class="sb-link" href="dashboard.html">🏠 &nbsp;Dashboard</a>
+                <a class="sb-link" href="health-form.html">📋 &nbsp;Bilan Santé</a>
+                <a class="sb-link active" href="analytics.html">📊 &nbsp;Analyses</a>
+                <a class="sb-link" href="ai-bilan.html">🩺 &nbsp;Bilan IA</a>
+                <a class="sb-link" href="consultation.html">🏥 &nbsp;Consultation IA</a>
+                <a class="sb-link" href="evolution.html">📈 &nbsp;Évolution</a>
+                <a class="sb-link" href="nutri.html">🥦 &nbsp;Nutri · Nutrition IA</a>
+                <a class="sb-link" href="lifestyle.html">✨ &nbsp;Style de Vie</a>
+                <a class="sb-link" href="derma.html">💆 &nbsp;Derma · Beauté IA</a>
+                <a class="sb-link" href="maternite.html">🌸 &nbsp;Maternité · Grossesse IA</a>
+                <a class="sb-link" href="guide.html">🔮 &nbsp;Guide Oracle</a>
+                <a class="sb-link" href="psyche.html">🧠 &nbsp;Psyché</a>
+                <a class="sb-link" href="nexus_ia.html">🌐 &nbsp;Nexus · Analyse</a>
+            </div>
+            <div class="sb-sec">
+                <div class="sb-tt">Urgences</div>
+                <div
+                    style="padding:8px 11px;background:rgba(255,90,122,.05);border:1px solid rgba(255,90,122,.2);border-radius:var(--r-sm);font-size:.74rem;color:var(--danger);line-height:1.6">
+                    ⚠️ Secours Abalo: <strong>88 80</strong><br>Urgences: <strong>88 80</strong><br>Maternité 24h:
+                    <strong>voir rubrique</strong>
+                </div>
+            </div>
+            <div class="sb-sec">
+                <div class="sb-tt">Compte</div>
+                <a class="sb-link" href="#" id="logout-btn">🚪 &nbsp;Déconnexion</a>
+            </div>
+        </aside>
+
+        <main class="main">
+            <!-- PAGE HEADER -->
+            <div
+                style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:14px">
+                <div>
+                    <h1 style="font-family:var(--ff);font-size:2rem;font-weight:800">📊 Analyses</h1>
+                    <p style="color:var(--txt2);margin-top:4px;font-size:.875rem">Vue détaillée de vos indicateurs de
+                        santé</p>
+                </div>
+                <a href="health-form.html" class="btn btn-primary">Mettre à jour →</a>
+            </div>
+
+            <!-- KPI HEADER -->
+            <div class="header-card">
+                <div>
+                    <div class="total-lbl">Score de santé global</div>
+                    <div class="total-val"><em id="big-score">—</em> / 100</div>
+                    <div style="margin-top:8px" id="big-badge"></div>
+                </div>
+                <div class="kpi-group">
+                    <div class="kpi">
+                        <div class="kpi-lbl">IMC</div>
+                        <div class="kpi-val" id="k-bmi">—</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-lbl">Tension</div>
+                        <div class="kpi-val" id="k-bp">—</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-lbl">Glycémie</div>
+                        <div class="kpi-val" id="k-gly">— <span style="font-size:.75rem;color:var(--txt2)">mg/dL</span>
+                        </div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-lbl">Fréq. card.</div>
+                        <div class="kpi-val" id="k-hr">— <span style="font-size:.75rem;color:var(--txt2)">bpm</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ROW 1 -->
+            <div class="g2">
+                <!-- DONUT -->
+                <div class="card">
+                    <div class="sh-title" style="margin-bottom:18px">Répartition du score</div>
+                    <div style="display:flex;align-items:center;gap:22px;flex-wrap:wrap">
+                        <div class="donut-wrap">
+                            <canvas id="donutChart"></canvas>
+                            <div class="donut-center">
+                                <div class="donut-pct" id="d-pct">—%</div>
+                                <div class="donut-sub">Score global</div>
+                            </div>
+                        </div>
+                        <div style="flex:1;min-width:140px" id="legend"></div>
+                    </div>
+                </div>
+                <!-- EVOLUTION -->
+                <div class="card">
+                    <div class="sh"><span class="sh-title">Évolution sur 6 mois</span></div>
+                    <div class="ch-md"><canvas id="evoChart"></canvas></div>
+                </div>
+            </div>
+
+            <!-- ROW 2 -->
+            <div class="g3">
+                <!-- VITALS -->
+                <div class="card">
+                    <div class="sh-title" style="margin-bottom:14px">Constantes vitales</div>
+                    <div id="vitals-ind"></div>
+                </div>
+                <!-- LIPID -->
+                <div class="card">
+                    <div class="sh-title" style="margin-bottom:14px">Bilan lipidique</div>
+                    <div class="ch-sm"><canvas id="lipidChart"></canvas></div>
+                </div>
+                <!-- RADAR -->
+                <div class="card">
+                    <div class="sh-title" style="margin-bottom:14px">Mode de vie</div>
+                    <div class="ch-sm"><canvas id="radarChart"></canvas></div>
+                </div>
+            </div>
+
+            <!-- INDICATORS TABLE -->
+            <div class="card">
+                <div class="sh-title" style="margin-bottom:18px">Tableau complet des indicateurs</div>
+                <div id="ind-table"></div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const API = 'http://localhost:8040/api/v1';
+        const token = () => localStorage.getItem('vc_token');
+        if (!token()) location.href = 'index.html';
+
+        const u = (() => { try { return JSON.parse(localStorage.getItem('vc_user')); } catch { return null; } })();
+        if (u) document.getElementById('nav-avatar').textContent = (u.first_name?.[0] || u.email?.[0] || 'U').toUpperCase();
+        document.getElementById('logout-btn').addEventListener('click', e => { e.preventDefault(); localStorage.clear(); location.href = 'index.html'; });
+
+        const COLORS = ['#c8ff00', '#0095ff', '#ff4d4d', '#ffaa00', '#00d68f', '#cc66ff'];
+        const fmtBMI = (w, h) => (w / ((h / 100) ** 2)).toFixed(1);
+
+        /* ── DEMO DATA ── */
+        const DEMO = {
+            health_score: 72,
+            profile: { weight: 78, height: 178, blood_pressure_systolic: 128, blood_pressure_diastolic: 82, heart_rate: 74, blood_sugar: 102, cholesterol_total: 195, cholesterol_hdl: 52, cholesterol_ldl: 120, triglycerides: 145 },
+            breakdown: [
+                { label: 'Constantes vitales', value: 28, color: '#c8ff00' },
+                { label: 'Mode de vie', value: 22, color: '#0095ff' },
+                { label: 'Pathologies', value: 12, color: '#ff4d4d' },
+                { label: 'Alimentation', value: 10, color: '#ffaa00' },
+            ]
+        };
+
+        async function load() {
+            let data = DEMO;
+            try {
+                const r = await fetch(`${API}/health/dashboard`, { headers: { Authorization: `Bearer ${token()}` } });
+                if (r.ok) {
+                    const d = await r.json();
+                    if (d?.profile) data = { ...DEMO, ...d, breakdown: DEMO.breakdown };
+                }
+            } catch (e) { }
+
+            const p = data.profile || DEMO.profile;
+            const score = data.health_score || 72;
+
+            // KPIs
+            document.getElementById('big-score').textContent = score;
+            const scoreCls = score >= 70 ? 'badge-success' : score >= 50 ? 'badge-warning' : 'badge-danger';
+            const scoreLbl = score >= 70 ? 'Bon état de santé' : score >= 50 ? 'État modéré' : 'À améliorer';
+            document.getElementById('big-badge').innerHTML = `<span class="badge ${scoreCls}">${scoreLbl}</span>`;
+
+            if (p.weight && p.height) document.getElementById('k-bmi').textContent = fmtBMI(p.weight, p.height);
+            if (p.blood_pressure_systolic) document.getElementById('k-bp').textContent = `${p.blood_pressure_systolic}/${p.blood_pressure_diastolic}`;
+            if (p.blood_sugar) document.getElementById('k-gly').innerHTML = `${p.blood_sugar} <span style="font-size:.75rem;color:var(--txt2)">mg/dL</span>`;
+            if (p.heart_rate) document.getElementById('k-hr').innerHTML = `${p.heart_rate} <span style="font-size:.75rem;color:var(--txt2)">bpm</span>`;
+
+            renderDonut(data.breakdown, score);
+            renderEvo(data.score_trend);
+            renderVitals(p);
+            renderLipid(p);
+            renderRadar();
+            renderTable(p);
+        }
+
+        function renderDonut(breakdown, score) {
+            document.getElementById('d-pct').textContent = score + '%';
+            const rem = 100 - breakdown.reduce((a, b) => a + b.value, 0);
+            const ctx = document.getElementById('donutChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: { datasets: [{ data: [...breakdown.map(b => b.value), rem], backgroundColor: [...breakdown.map(b => b.color), '#1a1a1a'], borderWidth: 0, borderRadius: 4 }] },
+                options: { cutout: '73%', responsive: true, plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+            });
+            document.getElementById('legend').innerHTML = breakdown.map(b => `
+    <div class="legend-item">
+      <div class="leg-left"><div class="leg-dot" style="background:${b.color}"></div>
+        <div><div class="leg-name">${b.label}</div><div class="leg-pct">${b.value}%</div></div>
+      </div>
+      <div class="leg-val">${b.value} pts</div>
+    </div>`).join('');
+        }
+
+        function renderEvo(trend) {
+            const ctx = document.getElementById('evoChart').getContext('2d');
+            const labels = trend?.labels || ['Sep', 'Oct', 'Nov', 'Déc', 'Jan', 'Fév'];
+            const values = trend?.values || [65, 68, 70, 67, 71, 72];
+            new Chart(ctx, {
+                type: 'line',
+                data: { labels, datasets: [{ data: values, borderColor: '#c8ff00', backgroundColor: 'rgba(200,255,0,.07)', fill: true, tension: .4, pointBackgroundColor: '#c8ff00', pointRadius: 4 }] },
+                options: {
+                    responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+                    scales: { x: { grid: { color: '#1a1a1a' }, ticks: { color: '#555' } }, y: { grid: { color: '#1a1a1a' }, ticks: { color: '#555' }, min: 50, max: 100 } }
+                }
+            });
+        }
+
+        function renderVitals(p) {
+            const IND = [
+                { l: 'Tension artérielle', v: p.blood_pressure_systolic ? `${p.blood_pressure_systolic}/${p.blood_pressure_diastolic} mmHg` : '—', pct: Math.min(100, (p.blood_pressure_systolic || 120) / 180 * 100), s: (p.blood_pressure_systolic || 0) < 130 ? '#00d68f' : '#ff4d4d' },
+                { l: 'Fréq. cardiaque', v: p.heart_rate ? `${p.heart_rate} bpm` : '—', pct: Math.min(100, (p.heart_rate || 72) / 120 * 100), s: (p.heart_rate >= 60 && p.heart_rate <= 100) ? '#00d68f' : '#ffaa00' },
+                { l: 'Glycémie', v: p.blood_sugar ? `${p.blood_sugar} mg/dL` : '—', pct: Math.min(100, (p.blood_sugar || 95) / 200 * 100), s: (p.blood_sugar || 0) < 100 ? '#00d68f' : (p.blood_sugar || 0) < 126 ? '#ffaa00' : '#ff4d4d' },
+                { l: 'Cholestérol total', v: p.cholesterol_total ? `${p.cholesterol_total} mg/dL` : '—', pct: Math.min(100, (p.cholesterol_total || 180) / 300 * 100), s: (p.cholesterol_total || 0) < 200 ? '#00d68f' : '#ffaa00' },
+            ];
+            document.getElementById('vitals-ind').innerHTML = IND.map(i => `
+    <div class="ind-row">
+      <div class="ind-lbl">${i.l}</div>
+      <div class="pbar"><div class="pfill" style="width:${i.pct}%;background:${i.s}"></div></div>
+      <div class="ind-val" style="color:${i.s}">${i.v}</div>
+    </div>`).join('');
+        }
+
+        function renderLipid(p) {
+            const ctx = document.getElementById('lipidChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: { labels: ['Total', 'HDL', 'LDL', 'TG'], datasets: [{ data: [p.cholesterol_total || 195, p.cholesterol_hdl || 52, p.cholesterol_ldl || 120, p.triglycerides || 145], backgroundColor: ['#c8ff00', '#00d68f', '#ff4d4d', '#ffaa00'], borderRadius: 6, borderWidth: 0 }] },
+                options: {
+                    responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+                    scales: { x: { grid: { display: false }, ticks: { color: '#555' } }, y: { grid: { color: '#1a1a1a' }, ticks: { color: '#555' } } }
+                }
+            });
+        }
+
+        function renderRadar() {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Activité', 'Alimentation', 'Sommeil', 'Stress', 'Hydratation', 'Tabac'],
+                    datasets: [{ data: [70, 65, 75, 55, 80, 90], borderColor: '#c8ff00', backgroundColor: 'rgba(200,255,0,.1)', pointBackgroundColor: '#c8ff00', pointRadius: 3 }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+                    scales: { r: { angleLines: { color: '#1e1e1e' }, grid: { color: '#1e1e1e' }, pointLabels: { color: '#666', font: { size: 10 } }, ticks: { display: false }, min: 0, max: 100 } }
+                }
+            });
+        }
+
+        function renderTable(p) {
+            const statusInfo = (ok, warn) => ok ? { c: 'badge-success', l: 'Normal' } : warn ? { c: 'badge-warning', l: 'À surveiller' } : { c: 'badge-danger', l: 'Critique' };
+            const bmi = (p.weight && p.height) ? parseFloat(fmtBMI(p.weight, p.height)) : null;
+            const rows = [
+                { name: 'Poids', val: p.weight ? `${p.weight} kg` : '—', ref: '50–100 kg', ...statusInfo(true, false) },
+                { name: 'Taille', val: p.height ? `${p.height} cm` : '—', ref: '—', ...statusInfo(true, false) },
+                { name: 'IMC', val: bmi ? `${bmi}` : '—', ref: '18.5–24.9', ...statusInfo(bmi && bmi < 25, bmi && bmi < 30) },
+                { name: 'Tension systolique', val: p.blood_pressure_systolic ? `${p.blood_pressure_systolic} mmHg` : '—', ref: '< 130 mmHg', ...statusInfo((p.blood_pressure_systolic || 0) < 130, (p.blood_pressure_systolic || 0) < 140) },
+                { name: 'Tension diastolique', val: p.blood_pressure_diastolic ? `${p.blood_pressure_diastolic} mmHg` : '—', ref: '< 85 mmHg', ...statusInfo((p.blood_pressure_diastolic || 0) < 85, (p.blood_pressure_diastolic || 0) < 90) },
+                { name: 'Fréq. cardiaque', val: p.heart_rate ? `${p.heart_rate} bpm` : '—', ref: '60–100 bpm', ...statusInfo(p.heart_rate >= 60 && p.heart_rate <= 100, p.heart_rate < 110) },
+                { name: 'Glycémie', val: p.blood_sugar ? `${p.blood_sugar} mg/dL` : '—', ref: '70–100 mg/dL', ...statusInfo((p.blood_sugar || 0) < 100, (p.blood_sugar || 0) < 126) },
+                { name: 'Cholestérol total', val: p.cholesterol_total ? `${p.cholesterol_total} mg/dL` : '—', ref: '< 200 mg/dL', ...statusInfo((p.cholesterol_total || 0) < 200, (p.cholesterol_total || 0) < 240) },
+                { name: 'HDL', val: p.cholesterol_hdl ? `${p.cholesterol_hdl} mg/dL` : '—', ref: '> 40 mg/dL', ...statusInfo((p.cholesterol_hdl || 0) > 40, (p.cholesterol_hdl || 0) > 30) },
+                { name: 'LDL', val: p.cholesterol_ldl ? `${p.cholesterol_ldl} mg/dL` : '—', ref: '< 130 mg/dL', ...statusInfo((p.cholesterol_ldl || 0) < 130, (p.cholesterol_ldl || 0) < 160) },
+                { name: 'Triglycérides', val: p.triglycerides ? `${p.triglycerides} mg/dL` : '—', ref: '< 150 mg/dL', ...statusInfo((p.triglycerides || 0) < 150, (p.triglycerides || 0) < 200) },
+            ];
+            document.getElementById('ind-table').innerHTML = `
+    <table class="tbl">
+      <thead><tr>
+        <th>Indicateur</th><th>Valeur</th><th>Référence</th><th>Statut</th>
+      </tr></thead>
+      <tbody>
+        ${rows.map(r => `<tr>
+          <td class="td-name">${r.name}</td>
+          <td class="td-val">${r.val}</td>
+          <td class="td-ref">${r.ref}</td>
+          <td><span class="badge ${r.c}">${r.l}</span></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+        }
+
+        load();
+
+        /* ══════════════════════════
+           MOBILE SIDEBAR TOGGLE
+        ══════════════════════════ */
+        function toggleSidebar() {
+            const sb = document.querySelector('.sidebar');
+            const btn = document.getElementById('hamburger-btn');
+            const ovl = document.getElementById('sidebar-overlay');
+            const isOpen = sb.classList.contains('open');
+            if (isOpen) { closeSidebar(); }
+            else {
+                sb.classList.add('open');
+                btn.classList.add('open');
+                ovl.classList.add('visible');
+                document.body.style.overflow = 'hidden'; // empêche scroll fond
+            }
+        }
+
+        function closeSidebar() {
+            document.querySelector('.sidebar')?.classList.remove('open');
+            document.getElementById('hamburger-btn')?.classList.remove('open');
+            document.getElementById('sidebar-overlay')?.classList.remove('visible');
+            document.body.style.overflow = '';
+        }
+
+        // Ferme la sidebar au clic sur un lien (navigation mobile)
+        document.querySelectorAll('.sb-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 900) closeSidebar();
+            });
+        });
+
+        // Ferme si on redimensionne vers desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 900) closeSidebar();
+        });
+
+        document.getElementById('hamburger-btn').addEventListener('click', () => {
+            const menu = document.getElementById('mobile-menu');
+            const btn = document.getElementById('hamburger-btn');
+            menu.classList.toggle('open');
+            btn.classList.toggle('open');
+        });
+
+        // Ferme au clic sur un lien
+        document.querySelectorAll('#mobile-menu .sb-link').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('mobile-menu').classList.remove('open');
+                document.getElementById('hamburger-btn').classList.remove('open');
+            });
+        });
+
+        document.getElementById('logout-btn-mobile')?.addEventListener('click', e => {
+            e.preventDefault();
+            localStorage.clear();
+            location.href = 'index.html';
+        });
+    </script>
+</body>
+
+</html>
