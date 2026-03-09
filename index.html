@@ -99,6 +99,28 @@ body{font-family:var(--fb);background:var(--bg);color:var(--txt);min-height:100v
   .auth-panel{border-left:none;padding:60px 24px 40px;min-height:100vh}
   .auth-panel::before{content:'VitaCore';display:block;font-family:var(--ff);font-weight:800;font-size:1.6rem;color:var(--acc);text-align:center;margin-bottom:32px}
 }
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .hero{display:none}
+  .auth-panel{
+    border-left:none;
+    padding:40px 20px;
+    min-height:100vh;
+    align-items:flex-start;
+    padding-top:60px;
+  }
+  .auth-box{max-width:100%}
+  .form-row{grid-template-columns:1fr} /* empile Prénom/Nom */
+}
+
+@media(max-width:480px){
+  .auth-panel{padding:30px 16px}
+  .auth-tabs{margin-bottom:20px}
+  .form-title{font-size:1.3rem}
+  .inp{padding:12px 14px}
+  .btn-primary{padding:14px}
+  .cards-row{flex-direction:column}
+}
 </style>
 </head>
 <body>
